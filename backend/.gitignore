@@ -1,5 +1,5 @@
-.idea
+.idea/
 .venv
-venv
+venv/
 .cpy
 __pycache__
