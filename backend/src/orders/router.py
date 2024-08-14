@@ -48,9 +48,7 @@ async def update_order(
     )
 
 
-@router.delete(
-    path="/{order_id}/", response_model=Order, description="Delete order by id"
-)
+@router.delete(path="/", response_model=Order, description="Delete order by id")
 async def delete_order_by_id(
     session: AsyncSession = Depends(db_manager.session_dependency),
     order: Order = Depends(dependencies.order_by_id_dependency),
