@@ -26,12 +26,16 @@ async def create_order(session: AsyncSession, order_create: OrderCreate) -> Orde
     return order
 
 
-async def update_order(session: AsyncSession, order: Order, order_update: OrderUpdatePartial) -> Order:
+async def update_order(
+    session: AsyncSession, order: Order, order_update: OrderUpdatePartial
+) -> Order:
     for name, value in order_update.model_dump(exclude_unset=True).items():
         setattr(order, name, value)
     await session.commit()
     return order
 
-async def delete_order(session: AsyncSession, order: Order) -> None:
+
+async def delete_order(session: AsyncSession, order: Order) -> Order:
     await session.delete(order)
     await session.commit()
+    return order

@@ -64,6 +64,8 @@ app.add_middleware(
 
 app.add_middleware(LogPostPatchRequestsMiddleware)
 
+app.include_router(orders_router)
+
 
 @app.get("/")
 async def get():
