@@ -1,0 +1,37 @@
+.popularButton{
+    border: 1px solid #0000004D;
+    padding: 5px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 16px;
+    line-height: 19px;
+}
+
+.popularButton__container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.popularButton_img{
+    width: 13px;
+    height: 13px;
+}
+
+.popularButton__search{
+    width: 242px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.popularButton__hover:hover{
+    color: #fff;
+    background: linear-gradient(270deg, rgba(78,140,255,1) 0%, rgba(53,102,191,1) 100%);
+    transition: all 0.3s;
+}
+
+.popularButton__hover:hover .popularButton_text {
+    color: #fff;
+    transition: all 0.3s;
+}

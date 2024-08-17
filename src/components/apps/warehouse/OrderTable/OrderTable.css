@@ -1,0 +1,146 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+.table th,
+.table td {
+    border-right: 1px solid #00000033;
+    padding: 8px;
+    text-align: center;
+}
+
+.table th:last-child,
+.table td:last-child{
+    border: none;
+}
+  
+.table th{
+    padding: 8px 0 26px;
+    color: #00000080;
+}
+
+.column-class{
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.column-number{
+    min-width: 95px;
+}
+
+.column-number__container{
+    display: flex;
+    align-items: center;
+}
+
+.column-number-input__container{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.column-number-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.column-number-input__custom {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    height: 15px;
+    width: 15px;
+    background-color: transparent; 
+    border: 1px solid black; 
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.column-number-input:checked ~ .column-number-input__custom {
+    background-color: black; 
+}
+
+.column-number-input__custom::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.column-number-input:checked ~ .column-number-input__custom::after {
+    display: block;
+}
+
+.column-number-input__custom::after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white; 
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.column-number-content__container{
+    flex-grow: 1;
+    height: 100%;
+}
+
+.column-date{
+    min-width: 109px;
+}
+
+.column-full_name{
+    min-width: 140px;
+}
+
+.column-status{
+    min-width: 135px;
+}
+
+.column-messages{
+    min-width: 124px;
+}
+
+.column-tag{
+    min-width: 98px;
+}
+
+.column-summ{
+    min-width: 98px;
+}
+
+.column-channel{
+    min-width: 141px;
+}
+
+.column-address{
+    min-width: 146px;
+}
+
+.column-storage{
+    min-width: 140px;
+}
+
+.column-note{
+    min-width: 140px;
+}
+
+.column-comment{
+    min-width: 140px;
+}
+
+.column-phone_number{
+    min-width: 140px;
+}
+
+.column-email{
+    min-width: 140px;
+}
+
+.highlighted-cell{
+    border: 1px solid #000;
+}

@@ -1,0 +1,14 @@
+.Newproducts__header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.Newproducts__separator{
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+}

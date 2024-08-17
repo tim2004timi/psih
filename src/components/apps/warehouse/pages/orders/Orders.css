@@ -1,0 +1,158 @@
+.orders__header{
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.orders__btn-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 220px;
+    position: relative;
+}
+
+.orderTable__settings{
+    position: absolute;
+    right: 28px;
+    top: 24px;
+    border-radius: 7px;
+    padding: 17px 35px 20px 14px;
+    background-color: #DEDEDE;
+    z-index: 3;
+}
+
+.orderTable__settings-container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.orderTable__settings-item{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 9px;
+}
+
+.orderTable__settings-content{
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.orderTable__settings-input {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.custom-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkbox-custom {
+    position: absolute;
+    top: -9px;
+    left: 0;
+    height: 15px;
+    width: 15px;
+    background-color: transparent; 
+    border: 1px solid black; 
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-checkbox:checked ~ .checkbox-custom {
+    background-color: black; 
+}
+
+.checkbox-custom::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox:checked ~ .checkbox-custom::after {
+    display: block;
+}
+
+.checkbox-custom::after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white; 
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.filter{
+    position: absolute;
+}
+
+.filter__content{
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 7px;
+    padding: 20px 22px;
+    width: 552px;
+}
+
+.closeBtn__container{
+    display: flex;
+    justify-content: end;
+}
+
+.filter__container{
+    display: flex;
+    margin-bottom: 16px;
+    gap: 39px;
+}
+
+.filter__container + .filter__container{
+    margin-bottom: 27px;
+}
+
+.filter__item{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.filter__input{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    width: 150px;
+    height: 29px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.filter__input--pokupatel{
+    width: 323px;
+    cursor: text;
+}
+
+.filter__input--zakaz{
+    cursor: text;
+}
+
+.filter__select{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    width: 150px;
+    height: 29px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.filter-btn-container{
+    display: flex;
+    justify-content: end;
+    gap: 21px;
+}
