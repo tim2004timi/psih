@@ -14,6 +14,8 @@ const Orders = () => {
     const filterRef = useRef(null);
     const [selectedColumns, setSelectedColumns] = useState(['№', 'дата', 'покупатель', 'статус', 'сообщения', 'тег', 'сумма']);
     const [showColumnList, setShowColumnList] = useState(false);
+    const columnsListRef =  useRef(null);
+    const columnsListBtnRef = useRef(null);
 
     const columns = ['№', 'дата', 'покупатель', 'статус', 'сообщения', 'тег', 'сумма', 'канал продаж', 'адрес доставки', 'доставка', 'заметки', 'комментарий', 'телефон', 'почта'];
 
@@ -26,22 +28,34 @@ const Orders = () => {
     };
 
     const handleOutsideClick = (event) => {
+
         if (filterRef.current && !filterRef.current.contains(event.target)) {
             closeFilter();
         }
+
+        if (columnsListBtnRef.current && columnsListBtnRef.current.contains(event.target)) {
+            return;
+        }
+
+        if (columnsListRef.current && !columnsListRef.current.contains(event.target) && event.target !== columnsListRef.current) {
+            setShowColumnList(false);
+        }
+
     };
 
     useEffect(() => {
-        if (isFilterOpen) {
+
+        if (isFilterOpen || showColumnList) {
             document.addEventListener('mousedown', handleOutsideClick);
         } else {
             document.removeEventListener('mousedown', handleOutsideClick);
         }
-
+    
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, [isFilterOpen]);
+
+    }, [isFilterOpen, showColumnList]);
 
     const handleColumnSelect = (column) => {
         if (selectedColumns.includes(column)) {
@@ -76,9 +90,13 @@ const Orders = () => {
                         <PopularButton img={plus} text={'Заказ'} isHover={true}/>
                     </Link>
                 </div>    
-                <HeaderButton img={settings} onClick={() => setShowColumnList(!showColumnList)}/>
+                <button className='orderTable__settings-btn' ref={columnsListBtnRef} onClick={() => {
+                    setShowColumnList(!showColumnList);
+                }}>
+                    <img src={settings} alt="settings" />
+                </button>
                 {showColumnList && (
-                    <div className='orderTable__settings'>
+                    <div className='orderTable__settings' ref={columnsListRef}>
                         {columns.map((column, index) => (
                             <div key={index} className='orderTable__settings-container'>
                                 <label className='orderTable__settings-item'>
