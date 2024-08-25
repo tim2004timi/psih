@@ -1,0 +1,26 @@
+.Appnavbar__container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    line-height: 21px;
+    min-width: 493px;
+}
+
+.Appnavbar__container-li{
+    border: 1px solid #fff;
+    border-radius: 7px;
+}
+
+.Appnavbar__container-li_active{
+    border: 1px solid #000000;
+}
+
+.Appnavbar__container-li:hover{
+    border: 1px solid #000000;
+}
+
+.Appnavbar__container-link{
+    display: block;
+    padding: 5px 20px;
+}
