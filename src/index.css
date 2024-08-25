@@ -71,4 +71,7 @@ html {
   box-sizing: inherit;
 }
 
+button {
+	font-family: 'IBM', sans-serif;
+}
 

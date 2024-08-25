@@ -114,6 +114,7 @@
     border: 1px solid transparent;
     border-radius: 7px;
     padding: 5px 10px;
+    white-space: nowrap;
 }
 
 .column-status{
@@ -121,31 +122,49 @@
     max-width: 230px;
 }
 
+.column-status__list-container{
+    position: relative;
+}
+
+.column-status__list{
+    position: absolute;
+    top: 5px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    justify-content: center;
+    background-color: #fff;
+}
+
 .column-status__container{
-    border: 1px solid transparent;
-    border-radius: 7px;
-    padding: 4px 7px;
+    width: 100%;
+    
 }
 
 .column-status__in-process{
-    background-color: #FFCAA9;
+    background-color: rgba(255, 202, 169, 1);
     border-radius: 7px;
     padding: 4px 7px;
-    width: 100%;
+    cursor: pointer;
+    border: 1px solid transparent;
 }
 
 .column-status__refund{
-    background-color: #ADFFA9;
+    background-color: rgba(255, 169, 169, 1);
     border-radius: 7px;
     padding: 4px 7px;
-    width: 100%;
+    cursor: pointer;
+    border: 1px solid transparent;
 }
 
 .column-status__delivered{
-    background-color: #FFA9A9;
+    background-color: rgba(173, 255, 169, 1);
     border-radius: 7px;
     padding: 4px 7px;
-    width: 100%;
+    cursor: pointer;
+    border: 1px solid transparent;
 }
 
 .column-messages{
@@ -186,9 +205,9 @@
 }
 
 .column-address{
-    min-width: 146px;
+    /* min-width: 146px; */
     white-space: nowrap;
-    max-width: 200px;
+    max-width: 146px;
 }
 
 .column-address__container{
@@ -220,6 +239,7 @@
     padding: 5px 5px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .column-comment{
@@ -233,6 +253,7 @@
     padding: 5px 5px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .column-phone_number{

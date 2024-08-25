@@ -27,7 +27,7 @@
 
 .popularButton__hover:hover{
     color: #fff;
-    background: linear-gradient(270deg, rgba(78,140,255,1) 0%, rgba(53,102,191,1) 100%);
+    background: rgba(0, 0, 0, 1);
     transition: all 0.3s;
 }
 

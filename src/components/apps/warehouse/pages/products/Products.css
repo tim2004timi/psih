@@ -20,10 +20,11 @@
 .filter__content{
     display: flex;
     flex-direction: column;
-    background-color: #fff;
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 7px;
     padding: 37px 22px;
     width: 568px;
+    backdrop-filter: blur(10px);
 }
 
 .closeBtn__container{
@@ -53,11 +54,14 @@
     height: 29px;
     border-radius: 7px;
     cursor: pointer;
+    background-color: #fff;
 }
 
 .filter__input--pokupatel{
     width: 323px;
     cursor: text;
+    /* overflow-x: scroll;
+    overflow-y: hidden; */
 }
 
 .filter__input--zakaz{
@@ -70,6 +74,7 @@
     height: 29px;
     border-radius: 7px;
     cursor: pointer;
+    background-color: #fff;
 }
 
 .filter-btn-container{

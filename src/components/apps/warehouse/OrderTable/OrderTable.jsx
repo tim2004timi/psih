@@ -3,28 +3,82 @@ import '../../../../../node_modules/react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip'
 import axios from "axios";
 import './OrderTable.css';
-
-const OrderTable = ({ selectedColumns }) => {
+import SelectionArea from '../../../selectionArea/SelectionArea';
+const OrderTable = ({ selectedColumns, childValue }) => {
     const [data, setData] = useState([]);
     const [checkboxStates, setCheckboxStates] = useState({});
+    const [showStatusList, setShowStatusList] = useState(false);
+    const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
+    let initialCheckboxStates;
+    const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
+    const [uniqueStatuses, setUniqueStatuses] = useState(new Set());
+    const [handleCheckboxCount, handleIdList, handleStatusList] = childValue;
 
-    const handleCheckboxChange = (rowId) => {
-        console.log('Checkbox changed for rowId:', rowId);
-        setCheckboxStates(prevState => ({
-            ...prevState,
-            [rowId]: !prevState[rowId]
-        }));
+    const handleCheckboxChange = (rowId, event) => {
+        setLastSelectedIndex(rowId);
+    
+        let countChange = 0;
+    
+        setCheckboxStates(prevState => {
+            let upFlag;
+            const newState = { ...prevState };
+    
+            if (event.shiftKey) {
+                const start = Math.min(lastSelectedIndex, rowId);
+                const end = Math.max(lastSelectedIndex, rowId);
+
+                if (start == rowId) {
+                    upFlag = false;
+                } else {
+                    upFlag = true;
+                }
+                
+                if (upFlag) {
+                    for (let i = start + 1; i <= end; i++) {
+                        if (newState[i] !== undefined) {
+                            newState[i] = !newState[i];
+                            countChange += newState[i] ? 1 : -1;
+                        }
+                    }
+                } else {
+                    for (let i = start; i < end; i++) {
+                        if (newState[i] !== undefined) {
+                            newState[i] = !newState[i];
+                            countChange += newState[i] ? 1 : -1;
+                        }
+                    }
+                }
+
+            } else {
+                const wasChecked = newState[rowId] || false;
+                newState[rowId] = !wasChecked;
+                countChange += newState[rowId] ? 1 : -1;
+            }
+    
+            return newState;
+        });
+    
+        setActiveCheckboxCount(prevCount => prevCount + countChange);
     };
+    
+    useEffect(() => {
+        handleCheckboxCount(Math.floor(activeCheckboxCount/2));
+    }, [activeCheckboxCount]);
 
     async function fetchData() {
         try {
             const response = await axios.get('http://87.242.85.68:8000/orders/');
             setData(response.data);
-            const initialCheckboxStates = response.data.reduce((acc, row) => {
+            initialCheckboxStates = response.data.reduce((acc, row) => {
                 acc[row.id] = false;
                 return acc;
             }, {});
             setCheckboxStates(initialCheckboxStates);
+            const ids = response.data.map(row => row.id);
+            handleIdList(ids);
+            const statuses = new Set(response.data.map(row => row.status));
+            setUniqueStatuses(statuses);
+            handleStatusList(Array.from(statuses))
         } catch (error) {
             console.error(error);
         }
@@ -32,6 +86,19 @@ const OrderTable = ({ selectedColumns }) => {
 
     useEffect(() => {
         fetchData()
+
+        const handleDocumentClick = (event) => {
+            if (!event.target.closest('.table')) {
+                setCheckboxStates(initialCheckboxStates);
+                setActiveCheckboxCount(0);
+            }
+        };
+    
+        document.addEventListener('click', handleDocumentClick);
+    
+        return () => {
+            document.removeEventListener('click', handleDocumentClick);
+        };
     }, []);
 
     const getStatusStyle = (status) => {
@@ -45,6 +112,35 @@ const OrderTable = ({ selectedColumns }) => {
         }
     };
 
+    const updateOrderStatus = async (orderId, newStatus) => {
+        try {
+            await axios.patch(`http://87.242.85.68:8000/orders/?order_id=${orderId}`, { status: newStatus });
+            setData(prevData => prevData.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
+            setShowStatusList(prev => ({ ...prev, [orderId]: false }));
+
+            setUniqueStatuses(prevStatuses => {
+                const newStatuses = new Set(prevStatuses);
+                newStatuses.add(newStatus);
+                handleStatusList(Array.from(newStatuses));
+                return newStatuses;
+            });
+        } catch (error) {
+            console.error('Error updating order status:', error);
+        }
+    };
+
+    const renderStatusList = (row) => {
+        return (
+            <div className="column-status__list-container">
+                <div className="column-status__list">
+                    <button className="column-status__in-process" onClick={() => updateOrderStatus(row.id, 'в обработке')}>в обработке</button>
+                    <button className="column-status__refund" onClick={() => updateOrderStatus(row.id, 'возврат')}>возврат</button>
+                    <button className="column-status__delivered" onClick={() => updateOrderStatus(row.id, 'доставлен')}>доставлен</button>
+                </div>
+            </div>
+        )
+    }
+
     const columnConfig = {
         '№': {
             className: 'column-class column-number', 
@@ -57,7 +153,8 @@ const OrderTable = ({ selectedColumns }) => {
                                 type="checkbox"
                                 className="column-number-input"
                                 checked={isChecked}
-                                onChange={() => handleCheckboxChange(row.id)}
+                                onClick={(event) => handleCheckboxChange(row.id, event)}
+                                readOnly
                             />
                         </div>
                         <div className="column-number-content__container">
@@ -91,7 +188,7 @@ const OrderTable = ({ selectedColumns }) => {
                 return (
                     row.full_name
                         ? 
-                            <div className={`column-full_name__container ${isChecked ? 'highlighted-cell' : ''}`}>
+                            <div className={`column-full_name__container ${isChecked ? 'highlighted-cell' : ''}`} data-tooltip-id="full_name-tooltip" data-tooltip-content={row.full_name}>
                                 {row.full_name}
                             </div> 
                         :
@@ -104,17 +201,18 @@ const OrderTable = ({ selectedColumns }) => {
             className: 'column-class column-status', 
             content: (row) => {
                 const isChecked = checkboxStates[row.id] || false;
-                return (
-                    row.status
-                        ? 
-                            <div className={`column-status__container ${isChecked ? 'highlighted-cell' : ''} ${getStatusStyle(row.status)}`}>
-                                {row.status}
-                            </div> 
-                        :
-                            null
-                );
+                return row.status ? (
+                    <div>
+                        <button className={`column-status__container ${isChecked ? 'highlighted-cell' : ''} ${getStatusStyle(row.status)}`} onClick={() => setShowStatusList(prev => ({ ...prev, [row.id]: !prev[row.id] }))}>
+                            {row.status}
+                        </button>
+                        {showStatusList[row.id] && (
+                            renderStatusList(row)
+                        )}
+                    </div>
+                ) : null;
             }
-        },  
+        }, 
     
         'сообщения': { 
             className: 'column-class column-messages', 
@@ -123,11 +221,11 @@ const OrderTable = ({ selectedColumns }) => {
     
         'тег': { 
             className: 'column-class column-tag', 
-            content: (row) => (
+            content: (row) => row.tag != 'null' ? (
                 <div className="column-tag__container">
                     <div className="column-status__tag">{row.tag}</div>
                 </div>
-            )
+            ) : null
         },
     
         'сумма': { 
@@ -292,15 +390,18 @@ const OrderTable = ({ selectedColumns }) => {
     
     return (
         <>
+           {/* <SelectionArea > */}
             <table className="table">
                 <thead>
                     <tr>{renderHeaders()}</tr>
                 </thead>
                 <tbody>{renderRows()}</tbody>
             </table>
+            <Tooltip id="full_name-tooltip" />
             <Tooltip id="address-tooltip" />
             <Tooltip id="note-tooltip" />
             <Tooltip id="comment-tooltip" />
+          {/* </SelectionArea > */}
         </>
     );
 };
