@@ -11,7 +11,9 @@ const AppNavBar = () => {
             `Appnavbar__container-li ${
             location.pathname === '/' 
             || location.pathname === '/orders' 
+            || location.pathname === '/orders/neworder/orderdata' 
             || location.pathname === '/products' 
+            || location.pathname === '/productsarchive' 
             || location.pathname === '/remains' 
             || location.pathname === '/parties' 
             || location.pathname === '/neworder'

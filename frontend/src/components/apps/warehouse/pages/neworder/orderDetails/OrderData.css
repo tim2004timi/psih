@@ -1,0 +1,250 @@
+.orderData__header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 23px;
+    padding-bottom: 93px;
+}
+
+.orderData__navBar{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-right: 111px;
+}
+
+.orderData__navBar-link{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    padding: 5px 8.5px;
+    cursor: pointer;
+}
+
+.orderData__navBar-link:first-child{
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.orderData__header-data{
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.OrderData__settings-btn{
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+}
+
+.orderDataInfo{
+    display: flex;
+    justify-content: space-between;
+    width: 82.3%;
+    margin: 0 auto;
+}
+
+.orderDataInfo__personalInfo{
+    display: flex;
+    flex-direction: column;
+}
+
+.orderDataInfo__header{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 31px;
+}
+
+.orderDataInfo-item{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    cursor: text;
+}
+
+.orderDataInfo__fullName{
+    padding: 5px 11px;
+}
+
+.orderDataInfo__input{
+    border: none;
+    padding: 0;
+    width: 100%;
+}
+
+.orderDataInfo__input-area{
+    padding-bottom: 37px;
+    resize: none;
+    height: 100%;
+}
+
+.orderDataInfo__message{
+    padding: 6px 19px;
+}
+
+.orderDataInfo-text{
+    color: rgba(0, 0, 0, 0.5);
+}
+.orderDataInfo__email{
+    margin-bottom: 17px;
+}
+
+.orderDataInfo__email-text{
+    margin-bottom: 3px;
+}
+
+.orderDataInfo__email-content{
+    padding: 2px 9px;
+    min-width: 160px;
+    min-height: 22px;
+}
+
+.orderDataInfo__tel-text{
+    margin-bottom: 3px;
+}
+
+.orderDataInfo__tel-content{
+    padding: 2px 9px;
+    min-width: 160px;
+    min-height: 22px;
+}
+
+.orderDataInfo__geo{
+    display: flex;
+    gap: 25px;
+    flex: 1;
+    margin: 0 24px 0 51px;
+}
+
+.orderDataInfo__geo-minicol{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.orderDataInfo__channel,
+.orderDataInfo__storage,
+.orderDataInfo__project{
+    min-width: 150px;
+    min-height: 19px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.orderDataInfo__channel-content,
+.orderDataInfo__storage-content,
+.orderDataInfo__project-content{
+    padding: 2px 9px;
+}
+
+.orderDataInfo__geo-bigcol{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.orderDataInfo__address,
+.orderDataInfo__comment,
+.orderDataInfo__note{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.orderDataInfo__address-content{
+    height: 97px;
+    padding: 5px 7px;
+    white-space: normal;
+}
+
+.orderDataInfo__writing{
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.orderDataInfo__comment-content,
+.orderDataInfo__note-content{
+    height: 83px;
+    padding: 5px 7px;
+    white-space: normal;
+}
+
+.field__wrapper {
+    width: 100%;
+    position: relative;
+    margin: 15px 0;
+    text-align: center;
+  }
+   
+  .field__file {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+  }
+   
+  .field__file-wrapper {
+    width: 100%;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+  }
+   
+  .field__file-fake {
+    height: 40px;
+    width: calc(100% - 80px);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    padding: 0 15px;
+    border: 1px solid #c7c7c7;
+    border-radius: 3px 0 0 3px;
+    border-right: none;
+  }
+   
+  .field__file-button {
+    width: 80px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    border-radius: 0 3px 3px 0;
+    cursor: pointer;
+  }
+
+.orderData__tableSettins{
+    display: flex;
+    justify-content: end;
+}
+
+.OrderData__tableSettins-btn{
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+}

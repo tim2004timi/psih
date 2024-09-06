@@ -1,4 +1,4 @@
-.products__header{
+.productsArchive__header {
     padding: 20px 0;
     display: flex;
     justify-content: space-between;
@@ -6,14 +6,20 @@
     position: relative;
 }
 
-.products__btn-container{
+.productsArchive__btn-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 362px
+    width: 493px;
 }
 
-.productsTable-btn__container{
+.products__btn-separator{
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 25px;
+    width: 1px;
+}
+
+.productsArchiveTable-btn__container{
     display: flex;
     align-items: center;
     gap: 18px;
@@ -22,27 +28,27 @@
     transform: translateX(-50%);
 }
 
-.productsTable-btn__counter{
+.productsArchiveTable-btn__counter{
     background-color: rgba(0, 0, 0, 1);
     border-radius: 7px;
     color: #fff;
     padding: 3px 10px;
 }
 
-.productsTable-btn{
+.productsArchiveTable-btn{
     background-color: transparent;
     border: none;
     cursor: pointer;
     height: 24px;
 }
 
-.products__settings-btn{
+.productsArchive__settings-btn {
     cursor: pointer;
     background-color: transparent;
     border: none;
 }
 
-.products__settings{
+.productsArchive__settings {
     position: absolute;
     right: 28px;
     top: 24px;
@@ -53,25 +59,25 @@
     backdrop-filter: blur(8px);
 }
 
-.products__settings-container{
+.productsArchive__settings-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.products__settings-item{
+.productsArchive__settings-item {
     display: flex;
     align-items: center;
     justify-content: end;
     gap: 9px;
 }
 
-.products__settings-content{
+.productsArchive__settings-content {
     font-size: 13px;
     line-height: 16px;
 }
 
-.products__settings-input {
+.productsArchive__settings-input {
     position: relative;
     display: inline-block;
     vertical-align: middle;
@@ -121,11 +127,11 @@
     transform: rotate(45deg);
 }
 
-.filter{
+.filter {
     position: absolute;
 }
 
-.filter__content{
+.filter__content {
     display: flex;
     flex-direction: column;
     background-color: rgba(0, 0, 0, 0.1);
@@ -135,28 +141,28 @@
     backdrop-filter: blur(10px);
 }
 
-.closeBtn__container{
+.closeBtn__container {
     display: flex;
     justify-content: end;
 }
 
-.filter__container{
+.filter__container {
     display: flex;
     margin-bottom: 16px;
     gap: 39px;
 }
 
-.filter__container + .filter__container{
+.filter__container + .filter__container {
     margin-bottom: 27px;
 }
 
-.filter__item{
+.filter__item {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-.filter__input{
+.filter__input {
     border: 1px solid rgba(0, 0, 0, 0.3);
     width: 150px;
     height: 29px;
@@ -165,18 +171,18 @@
     background-color: #fff;
 }
 
-.filter__input--pokupatel{
+.filter__input--pokupatel {
     width: 323px;
     cursor: text;
     /* overflow-x: scroll;
     overflow-y: hidden; */
 }
 
-.filter__input--zakaz{
+.filter__input--zakaz {
     cursor: text;
 }
 
-.filter__select{
+.filter__select {
     border: 1px solid rgba(0, 0, 0, 0.3);
     width: 150px;
     height: 29px;
@@ -185,36 +191,36 @@
     background-color: #fff;
 }
 
-.filter-btn-container{
+.filter-btn-container {
     display: flex;
     justify-content: end;
     gap: 21px;
 }
 
-.productTable{
+.productTable {
     display: flex;
 }
 
-.productTable__nav{
+.productTable__nav {
     display: flex;
     flex-direction: column;
     gap: 22px;
     width: 165px;
 }
 
-.productTable__nav-header{
+.productTable__nav-header {
     color: rgba(0, 0, 0, 0.5);
     text-align: center;
     padding-top: 8px;
 }
 
-.productTable__nav-container{
+.productTable__nav-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.productTable__nav-btn{
+.productTable__nav-btn {
     border: 1px solid transparent;
     border-radius: 7px;
     background-color: transparent;
@@ -223,22 +229,22 @@
     font-size: 16px;
 }
 
-.productTable__nav-btn:hover{
+.productTable__nav-btn:hover {
     border: 1px solid rgba(0, 0, 0, 1);
 }
 
-.productTable__nav-btn--selected{
+.productTable__nav-btn--selected {
     border: 1px solid rgba(0, 0, 0, 1);
 }
 
-.productTable__nav-add{
+.productTable__nav-add {
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 5px;
 }
 
-.productTable__nav-addBtn::before{
+.productTable__nav-addBtn::before {
     content: '+';
     display: flex;
     justify-content: center;
@@ -252,12 +258,12 @@
     cursor: pointer;
 }
 
-.productTable__table{
+.productTable__table {
     flex-grow: 0;
     min-height: 100px; 
 }
 
-.products-column-header{
+.productsArchive-column-header {
     color: rgba(0, 0, 0, 0.5);
     text-align: center;
     font-weight: normal;
@@ -266,45 +272,46 @@
     padding-top: 8px;
 }
 
-.products-column-header:first-child{
+.productsArchive-column-header:first-child {
     border-left: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.products-column{
+.productsArchive-column {
     text-align: center;
     padding: 4.5px 20px;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.products-column:first-child{
+.productsArchive-column:first-child {
     border-left: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.products-column-container{
+.productsArchive-column-container {
     padding: 2px 0;
+    color: rgba(0, 0, 0, 0.5);
 }
 
-.column-name{
+.column-name {
     width: 282px;
 }
 
-.column-name__container{
+.column-name__container {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.product-colums-selected{
+.productsArchive-colums-selected {
     border: 1px solid #000;
     border-radius: 7px;
 }
 
-.column-name__container-img{
+.column-name__container-img {
     width: 28px;
     height: 21px;
 }
 
-.column-name__img{
+.column-name__img {
     width: 100%;
     height: 100%;
 }
@@ -313,18 +320,18 @@
     transform: scale(10) translate(20px, 0);
 }
 
-.column-article{
+.column-article {
     width: 183px;
 }
 
-.column-price{
+.column-price {
     width: 183px;
 }
 
-.column-remains{
+.column-remains {
     width: 183px;
 }
 
-.column-archive{
+.column-archive {
     width: 121px;
 }

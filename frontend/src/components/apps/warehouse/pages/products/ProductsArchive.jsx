@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import './Products.css';
+import './ProductsArchive.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg'
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
@@ -14,7 +14,7 @@ import editor from '../../../../../assets/img/editor-btn.png';
 import deleteTable from '../../../../../assets/img/delete-table.png';
 
 
-const Products = () => {
+const ProductsArchive = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const filterRef = useRef(null);
 
@@ -82,11 +82,11 @@ const Products = () => {
 
     const columnConfig = {
         'название': {
-            className: 'products-column column-name',
+            className: 'productsArchive-column column-name',
             content: (row) => {
                 let isChecked = true
                 return row.name ? (
-                    <div className={`products-column-container column-name__container ${isChecked ? 'product-colums-selected' : ''}`}>
+                    <div className={`productsArchive-column-container column-name__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.name}
                         <div className={`column-name__container-img`}>
                             <img className='column-name__img' src={row.img} alt="img" />
@@ -96,43 +96,43 @@ const Products = () => {
             }
         },
         'артикул': {
-            className: 'products-column column-article',
+            className: 'productsArchive-column column-article',
             content: (row) => {
                 let isChecked = true
                 return row.article ? (
-                    <div className={`products-column-container column-article__container ${isChecked ? 'product-colums-selected' : ''}`}>
+                    <div className={`productsArchive-column-container column-article__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.article}
                     </div>
                 ) : null;
             }
         },
         'цена': {
-            className: 'products-column column-price',
+            className: 'productsArchive-column column-price',
             content: (row) => {
                 let isChecked = true
                 return row.price ? (
-                    <div className={`products-column-container column-price__container ${isChecked ? 'product-colums-selected' : ''}`}>
+                    <div className={`productsArchive-column-container column-price__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.price + ' ₽'}
                     </div>
                 ) : null;
             }
         },
         'остаток': {
-            className: 'products-column column-remains',
+            className: 'productsArchive-column column-remains',
             content: (row) => {
                 let isChecked = true
                 return row.remains ? (
-                    <div className={`products-column-container column-remains__container ${isChecked ? 'product-colums-selected' : ''}`}>
+                    <div className={`productsArchive-column-container column-remains__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.remains + ' шт.'}
                     </div>
                 ) : null;
             }
         },
         'в архив': {
-            className: 'products-column column-archive',
+            className: 'productsArchive-column column-archive',
             content: (row) => {
                 return row.archive ? (
-                    <div className={`products-column-container column-archive__container`}>
+                    <div className={`productsArchive-column-container column-archive__container`}>
                         {row.archive}
                         {/* true or false
                         if true*/}
@@ -161,7 +161,7 @@ const Products = () => {
 
     const renderHeaders = () => {
         return selectedColumns.map((column, index) => (
-            <th key={index} className='products-column-header'>{column}</th>
+            <th key={index} className='productsArchive-column-header'>{column}</th>
         ));
     };
 
@@ -200,41 +200,41 @@ const Products = () => {
 
     return(
         <div>
-            <div className="products__header">
-                <div className="products__btn-container">
+            <div className="productsArchive__header">
+                <div className="productsArchive__btn-container">
                     <PopularButton text={'Фильтр'} isHover={true} onClick={openFilter} />
                     <Link to="/newproducts">
                         <PopularButton img={plus} text={'Товар'} isHover={true}/>
                     </Link>
                     <div className="products__btn-separator"></div>
-                    <Link to="/productsarchive">
-                        <PopularButton text={'архив'} isHover={true}/>
+                    <Link to="/products">
+                        <PopularButton text={'действующие товары'} isHover={true}/>
                     </Link>
                 </div>    
-                <div className="productsTable-btn__container">
-                    <div className="productsTable-btn__counter">{}</div>
-                    <button className='productsTable-btn orderTable-btn__szhatie'>
-                        <img className='productsTable-btn__img' src={szhatie} alt="szhatie" />
+                <div className="productsArchiveTable-btn__container">
+                    <div className="productsArchiveTable-btn__counter">{}</div>
+                    <button className='productsArchiveTable-btn orderTable-btn__szhatie'>
+                        <img className='productsArchiveTable-btn__img' src={szhatie} alt="szhatie" />
                     </button>
-                    <button className='productsTable-btn orderTable-btn__editor'>
-                        <img className='productsTable-btn__img' src={editor} alt="editor" />
+                    <button className='productsArchiveTable-btn orderTable-btn__editor'>
+                        <img className='productsArchiveTable-btn__img' src={editor} alt="editor" />
                     </button>
-                    <button className='productsTable-btn orderTable-btn__deleteTable'>
-                        <img className='productsTable-btn__img' src={deleteTable} alt="deleteTable" />
+                    <button className='productsArchiveTable-btn orderTable-btn__deleteTable'>
+                        <img className='productsArchiveTable-btn__img' src={deleteTable} alt="deleteTable" />
                     </button>
                 </div>
-                <button className='products__settings-btn' ref={columnsListBtnRef} onClick={() => {setShowColumnList(!showColumnList)}}>
+                <button className='productsArchive__settings-btn' ref={columnsListBtnRef} onClick={() => {setShowColumnList(!showColumnList)}}>
                     <img src={settings} alt="settings" />
                 </button>
                 {showColumnList && (
-                    <div className='products__settings' ref={columnsListRef}>
+                    <div className='productsArchive__settings' ref={columnsListRef}>
                         {columns.map((column, index) => (
-                            <div key={index} className='products__settings-container'>
-                                <label className='products__settings-item'>
-                                    <div className="products__settings-content">
+                            <div key={index} className='productsArchive__settings-container'>
+                                <label className='productsArchive__settings-item'>
+                                    <div className="productsArchive__settings-content">
                                         {column}
                                     </div>
-                                    <div className="products__settings-input">
+                                    <div className="productsArchive__settings-input">
                                         <input
                                             type="checkbox"
                                             className="custom-checkbox"
@@ -318,4 +318,4 @@ const Products = () => {
     )
 }
 
-export default Products
+export default ProductsArchive;

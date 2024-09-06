@@ -3,9 +3,15 @@ import '../../../../../node_modules/react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip'
 import axios from "axios";
 import './OrderTable.css';
+import { getOrders, patchOrder } from '../../../../API/ordersAPI';
 import SelectionArea from '../../../selectionArea/SelectionArea';
-const OrderTable = ({ selectedColumns, childValue }) => {
+import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setIds } from './../../../stm/idsSlice';
+
+const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
     const [data, setData] = useState([]);
+    const dispatch = useDispatch();
     const [checkboxStates, setCheckboxStates] = useState({});
     const [showStatusList, setShowStatusList] = useState(false);
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
@@ -15,13 +21,17 @@ const OrderTable = ({ selectedColumns, childValue }) => {
     const [handleCheckboxCount, handleIdList, handleStatusList] = childValue;
 
     const handleCheckboxChange = (rowId, event) => {
+        // console.log('handleCheckboxChange')
+        event.stopPropagation();
         setLastSelectedIndex(rowId);
     
         let countChange = 0;
     
         setCheckboxStates(prevState => {
+            // console.log('setCheckboxStates')
             let upFlag;
             const newState = { ...prevState };
+            // console.log(newState);
     
             if (event.shiftKey) {
                 const start = Math.min(lastSelectedIndex, rowId);
@@ -50,6 +60,7 @@ const OrderTable = ({ selectedColumns, childValue }) => {
                 }
 
             } else {
+                // console.log('here'); 
                 const wasChecked = newState[rowId] || false;
                 newState[rowId] = !wasChecked;
                 countChange += newState[rowId] ? 1 : -1;
@@ -62,13 +73,19 @@ const OrderTable = ({ selectedColumns, childValue }) => {
     };
     
     useEffect(() => {
-        handleCheckboxCount(Math.floor(activeCheckboxCount/2));
+        handleCheckboxCount(Math.floor(activeCheckboxCount));
     }, [activeCheckboxCount]);
+
+    // useEffect(() => {
+    //     // console.log(Object.keys(selectedFilterItems).length);
+    //     console.log(selectedFilterItems);
+    // }, [selectedFilterItems]);
 
     async function fetchData() {
         try {
-            const response = await axios.get('http://87.242.85.68:8000/orders/');
+            const response = await getOrders();
             setData(response.data);
+            // console.log(response.data)
             initialCheckboxStates = response.data.reduce((acc, row) => {
                 acc[row.id] = false;
                 return acc;
@@ -76,6 +93,7 @@ const OrderTable = ({ selectedColumns, childValue }) => {
             setCheckboxStates(initialCheckboxStates);
             const ids = response.data.map(row => row.id);
             handleIdList(ids);
+            dispatch(setIds(ids));
             const statuses = new Set(response.data.map(row => row.status));
             setUniqueStatuses(statuses);
             handleStatusList(Array.from(statuses))
@@ -99,7 +117,7 @@ const OrderTable = ({ selectedColumns, childValue }) => {
         return () => {
             document.removeEventListener('click', handleDocumentClick);
         };
-    }, []);
+    }, [dispatch]);
 
     const getStatusStyle = (status) => {
         switch (status) {
@@ -114,7 +132,7 @@ const OrderTable = ({ selectedColumns, childValue }) => {
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
-            await axios.patch(`http://87.242.85.68:8000/orders/?order_id=${orderId}`, { status: newStatus });
+            const response = await patchOrder(orderId, 'status', newStatus);
             setData(prevData => prevData.map(order => order.id === orderId ? { ...order, status: newStatus } : order));
             setShowStatusList(prev => ({ ...prev, [orderId]: false }));
 
@@ -147,20 +165,22 @@ const OrderTable = ({ selectedColumns, childValue }) => {
             content: (row) => {
                 const isChecked = checkboxStates[row.id] || false;
                 return (
-                    <div className={`column-number__container ${isChecked ? 'highlighted-cell' : ''}`}>
-                        <div className="column-number-input__container">
-                            <input
-                                type="checkbox"
-                                className="column-number-input"
-                                checked={isChecked}
-                                onClick={(event) => handleCheckboxChange(row.id, event)}
-                                readOnly
-                            />
+                    <Link to={`/orders/${row.id}`}>
+                        <div className={`column-number__container ${isChecked ? 'highlighted-cell' : ''}`}>
+                            <div className="column-number-input__container">
+                                <input
+                                    type="checkbox"
+                                    className="column-number-input"
+                                    checked={isChecked}
+                                    onClick={(event) => handleCheckboxChange(row.id, event)}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="column-number-content__container">
+                                {row.id}
+                            </div>
                         </div>
-                        <div className="column-number-content__container">
-                            {row.id}
-                        </div>
-                    </div>
+                    </Link>
                 );
             }
         },
@@ -372,20 +392,32 @@ const OrderTable = ({ selectedColumns, childValue }) => {
     };
 
     const renderRows = () => {
-        return data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-                {selectedColumns.map((column, colIndex) => {
-                    const className = columnConfig[column]?.className;
-                    return (
-                        <td 
-                            key={colIndex} 
-                            className={className}>
-                            {columnConfig[column]?.content(row)}
-                        </td>
-                    );
-                })}
-            </tr>
-        ));
+        return data
+            .filter(row => {
+                if (Object.keys(selectedFilterItems).length === 0) {
+                    return true; 
+                }
+    
+                const idMatches = selectedFilterItems.id.length === 0 || selectedFilterItems.id.includes(row.id);
+                const statusMatches = selectedFilterItems.status.length === 0 || selectedFilterItems.status.includes(row.status);
+                const nameMatches = selectedFilterItems.full_name.length === 0 || selectedFilterItems.full_name.includes(row.full_name);
+    
+                return idMatches && statusMatches && nameMatches;
+            })
+            .map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                    {selectedColumns.map((column, colIndex) => {
+                        const className = columnConfig[column]?.className;
+                        return (
+                            <td 
+                                key={colIndex} 
+                                className={className}>
+                                {columnConfig[column]?.content(row)}
+                            </td>
+                        );
+                    })}
+                </tr>
+            ));
     };
     
     return (
