@@ -1,0 +1,194 @@
+.Neworder__header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.Neworder__separator{
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+}
+
+.selectOrder {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.selectOrder-container {
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    padding: 5px 36px 5px 16px;
+    position: relative;
+    width: fit-content;
+}
+
+
+.selectOrder-btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 3px;
+}
+
+.selectOrder__arrow{
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    position: relative;
+}
+
+.selectOrder__arrow-btn{
+    top: 0.5rem;
+    position: absolute;
+    width: 8px;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.selectOrder__arrow-btn:first-of-type{
+    left: 3px;
+    transform: rotate(45deg);
+}
+
+.selectOrder__arrow-btn:last-of-type{
+    right: -2px;
+    transform: rotate(-45deg);
+}
+
+.selectOrder__arrow-active .selectOrder__arrow-btn:first-of-type{
+    transform: rotate(-45deg);
+}
+
+.selectOrder__arrow-active .selectOrder__arrow-btn:last-of-type{
+    transform: rotate(45deg);
+}
+
+.selectOrder-list {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 22px 20px;
+    position: absolute;
+    top: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 7px;
+    width: 100%;
+    color: #000;
+    z-index: 10;
+}
+
+.selectOrder-list__content{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.selectOrder-list__item{
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.delete-btn__btn{
+    background-color: transparent;
+    border-radius: 7px;
+    padding: 5px 21px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.delete-btn__btn:hover{
+    background: linear-gradient(243.12deg, #FF0004 3.55%, #AF484A 119.41%);
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.deleteOverlay{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.deleteContent{
+    width: 428px;
+    height: 191px;
+    background-color: rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 7px;
+    padding-top: 52px;
+    padding-bottom: 19px;
+}
+
+.deleteContent__title{
+    font-size: 32px;
+    line-height: 38.73px;
+    padding-bottom: 53px;
+}
+
+.deleteContent__btn-container{
+    display: flex;
+    gap: 17px;
+}
+
+.deleteContent__btn-cancel{
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 3px 21px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.deleteContent__btn-delete{
+    border: none;
+    padding: 3px 21px;
+    border-radius: 7px;
+    cursor: pointer;
+    background: linear-gradient(243.12deg, #FF0004 3.55%, #AF484A 119.41%);
+    color: #fff;
+}
+
+.Neworder__info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0 80px;
+}
+
+.Neworder__info-container{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.Neworder__info-item{
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 7px;
+    padding: 5px 15px;
+}

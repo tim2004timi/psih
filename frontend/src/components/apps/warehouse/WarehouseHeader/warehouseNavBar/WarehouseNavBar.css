@@ -1,0 +1,27 @@
+.WarehouseNavBar__container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    line-height: 19px;
+    width: 466px;
+    padding: 15px 0;
+}
+
+.WarehouseNavBar__container-li{
+    border: 1px solid #fff;
+    border-radius: 7px;
+}
+
+.WarehouseNavBar__container-li_active{
+    border: 1px solid #000000;
+}
+
+.WarehouseNavBar__container-li:hover{
+    border: 1px solid #000000;
+}
+
+.WarehouseNavBar__container-link{
+    display: block;
+    padding: 5px 20px;
+}
