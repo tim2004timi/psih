@@ -91,7 +91,10 @@ const Order = () => {
             <div className="Neworder__header">
                 <div className="back-btn">
                     <Link to={'/orders'}>
-                        <PopularButton img={back} />
+                        {/* <PopularButton img={back} /> */}
+                        <button className="back-btn__btn">
+                            <div className="back-btn__arrow"></div>
+                        </button>
                     </Link>
                 </div>
                 <div className="selectOrder">

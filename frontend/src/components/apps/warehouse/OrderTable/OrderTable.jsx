@@ -159,6 +159,15 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
         )
     }
 
+    function formatDateTime(dateConst) {
+        const date = new Date(dateConst)
+        const year = date.getFullYear(); 
+        const month = date.getMonth() + 1;
+        const day = date.getDate()
+
+        return `${day}.${month}.${year}`
+    }
+
     const columnConfig = {
         '№': {
             className: 'column-class column-number', 
@@ -189,11 +198,12 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
             className: 'column-class column-date', 
             content: (row) => {
                 const isChecked = checkboxStates[row.id] || false;
+                const date = formatDateTime(row.order_date)
                 return (
-                    row.date 
+                    row.order_date 
                         ? 
                             <div className={`column-date__container ${isChecked ? 'highlighted-cell' : ''}`}>
-                                {row.date}
+                                {date}
                             </div> 
                         :
                             null

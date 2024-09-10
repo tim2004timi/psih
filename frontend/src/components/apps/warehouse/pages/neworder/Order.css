@@ -13,6 +13,60 @@
     left: 0;
 }
 
+.back-btn__btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 10px 17px;
+    background-size: cover;
+    background-position: center;
+}
+
+.back-btn__btn:hover{
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.back-btn__arrow {
+    background: rgba(0, 0, 0, 0.5);
+    height: 1px;
+    width: 21px;
+    margin: 0 auto;
+    position: relative;
+    cursor: pointer;
+}
+
+.back-btn__btn:hover .back-btn__arrow {
+    background: rgba(0, 0, 0, 1);
+}
+
+.back-btn__arrow:before,
+.back-btn__arrow:after {
+    content: "";
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    height: 1px;
+    width: 7px;
+}
+
+.back-btn__arrow:before {
+    left: -1px;
+    bottom: -2.3px;
+    transform: rotate(45deg);
+}
+
+.back-btn__arrow:after {
+    left: -1px;
+    top: -2px;
+    transform: rotate(-45deg);
+}
+
+.back-btn__btn:hover .back-btn__arrow:before,
+.back-btn__btn:hover .back-btn__arrow:after {
+    background: rgba(0, 0, 0, 1);
+}
+
 .selectOrder {
     position: relative;
     width: 100%;
