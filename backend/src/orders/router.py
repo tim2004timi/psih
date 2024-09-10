@@ -57,10 +57,10 @@ async def delete_order_by_id(
 
 
 @router.delete(
-    path="/multiple/", response_model=List[Order], description="Delete orders by ids"
+    path="/multiple/", response_model=None, description="Delete orders by ids"
 )
 async def delete_orders_by_id_multiple(
-    session: AsyncSession = Depends(db_manager.session_dependency),
-    order: Order = Depends(dependencies.order_by_id_dependency),
+    order_ids: List[int],
+    session: AsyncSession = Depends(db_manager.session_dependency)
 ):
-    return await service.delete_order(session=session, order=order)
+    return await service.delete_orders(session=session, order_ids=order_ids)

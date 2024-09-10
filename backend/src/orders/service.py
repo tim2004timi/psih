@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import select, desc, Result
+from sqlalchemy import select, desc, Result, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import OrderCreate, OrderUpdatePartial
@@ -39,3 +39,10 @@ async def delete_order(session: AsyncSession, order: Order) -> Order:
     await session.delete(order)
     await session.commit()
     return order
+
+
+async def delete_orders(session: AsyncSession, order_ids: List[int]) -> None:
+    stmt = delete(Order).where(Order.id.in_(order_ids))
+
+    await session.execute(stmt)
+    await session.commit()
