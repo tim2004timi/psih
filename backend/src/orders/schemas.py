@@ -41,3 +41,4 @@ class Order(OrderBase):
     id: int
     messages: str | None
     summ: int
+    order_date: datetime
