@@ -21,14 +21,14 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
     const [handleCheckboxCount, handleIdList, handleStatusList] = childValue;
 
     const handleCheckboxChange = (rowId, event) => {
-        // console.log('handleCheckboxChange')
+        console.log('handleCheckboxChange')
         event.stopPropagation();
         setLastSelectedIndex(rowId);
     
         let countChange = 0;
     
         setCheckboxStates(prevState => {
-            // console.log('setCheckboxStates')
+            console.log('setCheckboxStates')
             let upFlag;
             const newState = { ...prevState };
             // console.log(newState);
@@ -159,6 +159,15 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
         )
     }
 
+    function formatDateTime(dateConst) {
+        const date = new Date(dateConst)
+        const year = date.getFullYear(); 
+        const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+
+        return `${day}.${month}.${year}`
+    }
+
     const columnConfig = {
         '№': {
             className: 'column-class column-number', 
@@ -189,11 +198,12 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
             className: 'column-class column-date', 
             content: (row) => {
                 const isChecked = checkboxStates[row.id] || false;
+                const date = formatDateTime(row.order_date)
                 return (
-                    row.date 
+                    row.order_date 
                         ? 
                             <div className={`column-date__container ${isChecked ? 'highlighted-cell' : ''}`}>
-                                {row.date}
+                                {date}
                             </div> 
                         :
                             null
