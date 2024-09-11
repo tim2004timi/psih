@@ -22,10 +22,11 @@ class Product(Base):
     price: Mapped[float] = mapped_column(nullable=False)
     discount_price: Mapped[float] = mapped_column(nullable=False)
     category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'))
-    group: Mapped[str] = mapped_column(nullable=True, default=None)
     article: Mapped[str] = mapped_column(nullable=False)
     measure: Mapped[str] = mapped_column(nullable=False)
-    size: Mapped[str] = mapped_column(nullabele=False)
+    size: Mapped[str] = mapped_column(nullable=False)
 
     # Связь с категорией
     category = relationship('ProductCategory', back_populates='products')
+
+    # photos
