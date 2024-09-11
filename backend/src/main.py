@@ -4,12 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
-# from .users.router import router as router_users
-# from .profiles.router import router as router_profiles
-# from .reactions.router import router as router_reactions
-# from .chats.router import router as router_chats
-
 from .orders.router import router as orders_router
+from .products.router import router as products_router
 
 from .database import Base
 
@@ -67,6 +63,6 @@ app.add_middleware(LogPostPatchRequestsMiddleware)
 app.include_router(orders_router)
 
 
-@app.get("/")
-async def get():
-    return "Hello, world!"
+# @app.get("/")
+# async def get():
+#     return "Hello, world!"
