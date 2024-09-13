@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,7 +52,7 @@ async def delete_product_category_by_id(
 
 
 @router.get(
-    path="/",
+    path="/all/",
     response_model=List[Product],
     description="Get all products",
 )
@@ -60,6 +60,28 @@ async def get_all_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
     return await service.get_products(session=session)
+
+
+@router.get(
+    path="/archived/",
+    response_model=List[Product],
+    description="Get archived products",
+)
+async def get_archived_products(
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.get_products(session=session, archived=True)
+
+
+@router.get(
+    path="/not-archived/",
+    response_model=List[Product],
+    description="Get not archived products",
+)
+async def get_not_archived_products(
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.get_products(session=session, archived=False)
 
 
 @router.post(path="/", response_model=Product | None, description="Create new product")

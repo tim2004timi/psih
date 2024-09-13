@@ -47,7 +47,7 @@ class LogPostPatchRequestsMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastAPI(title="Psih Clothes")
+app = FastAPI(title="Psih Clothes", prefix="/api")
 
 
 app.add_middleware(

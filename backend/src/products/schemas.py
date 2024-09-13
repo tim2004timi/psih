@@ -36,6 +36,7 @@ class ProductBase(BaseModel):
     article: str
     measure: str
     size: str
+    archived: bool
 
 
 class ProductCreate(ProductBase):
@@ -58,6 +59,7 @@ class ProductUpdatePartial(ProductBase):
     article: str | None = None
     measure: str | None = None
     size: str | None = None
+    archived: bool | None = None
 
 
 class Product(ProductBase):

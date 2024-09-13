@@ -24,7 +24,8 @@ async def get_product_category_by_id(session: AsyncSession, product_category_id:
     return await session.get(ProductCategory, product_category_id)
 
 
-async def create_product_category(session: AsyncSession, product_category_create: ProductCategoryCreate) -> ProductCategory:
+async def create_product_category(session: AsyncSession,
+                                  product_category_create: ProductCategoryCreate) -> ProductCategory:
     try:
         product_category = ProductCategory(**product_category_create.model_dump())
         session.add(product_category)
@@ -53,8 +54,11 @@ async def get_product_categories_with_products(session: AsyncSession) -> List[Pr
     return list(product_categories)
 
 
-async def get_products(session: AsyncSession) -> List[Product]:
-    stmt = select(Product).options(selectinload(Product.category))
+async def get_products(session: AsyncSession, archived: bool | None = None) -> List[Product]:
+    if archived is not None:
+        stmt = select(Product).options(selectinload(Product.category)).where(Product.archived == archived)
+    else:
+        stmt = select(Product).options(selectinload(Product.category))
     result: Result = await session.execute(stmt)
     products = result.scalars().all()
     return list(products)
