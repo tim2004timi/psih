@@ -63,17 +63,6 @@ async def get_all_products(
 
 
 @router.get(
-    path="/archived/",
-    response_model=List[Product],
-    description="Get archived products",
-)
-async def get_archived_products(
-    session: AsyncSession = Depends(db_manager.session_dependency),
-):
-    return await service.get_products(session=session, archived=True)
-
-
-@router.get(
     path="/not-archived/",
     response_model=List[Product],
     description="Get not archived products",
@@ -82,6 +71,17 @@ async def get_not_archived_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
     return await service.get_products(session=session, archived=False)
+
+
+@router.get(
+    path="/archived/",
+    response_model=List[Product],
+    description="Get archived products",
+)
+async def get_archived_products(
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.get_products(session=session, archived=True)
 
 
 @router.post(path="/", response_model=Product | None, description="Create new product")

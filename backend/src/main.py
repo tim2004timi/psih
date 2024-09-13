@@ -1,6 +1,6 @@
 import json
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -47,7 +47,8 @@ class LogPostPatchRequestsMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastAPI(title="Psih Clothes", prefix="/api")
+app = FastAPI(title="Psih Clothes")
+main_router = APIRouter(prefix="/api")
 
 
 app.add_middleware(
@@ -60,8 +61,9 @@ app.add_middleware(
 
 app.add_middleware(LogPostPatchRequestsMiddleware)
 
-app.include_router(orders_router)
-app.include_router(products_router)
+main_router.include_router(orders_router)
+main_router.include_router(products_router)
+app.include_router(main_router)
 
 
 # @app.get("/")
