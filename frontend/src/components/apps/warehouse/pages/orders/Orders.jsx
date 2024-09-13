@@ -12,6 +12,7 @@ import deleteTable from '../../../../../assets/img/delete-table.png';
 import { Link } from 'react-router-dom';
 import OrderTable from '../../OrderTable/OrderTable';
 import FilterDropDownList from '../../../../filterDropDownList/FilterDropDownList';
+import { deleteOrders } from '../../../../../API/ordersAPI';
 
 const Orders = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -22,6 +23,8 @@ const Orders = () => {
     const columnsListRef = useRef(null);
     const columnsListBtnRef = useRef(null);
 
+    const [isFetchData, setIsFetchData] = useState(false);
+
     const [idList, setIdList] = useState([]);
     const [selectedIds, setSelectedIds] = useState([]);
 
@@ -29,6 +32,7 @@ const Orders = () => {
     const [selectedStatus, setSelectedStatus] = useState([]);
 
     const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
+    const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
     const [selectedFilterItems, setSelectedFilterItems] = useState({});
 
     const [isClearFDDlistSelectedItems, setIsClearFDDlistSelectedItems] = useState(false);
@@ -37,9 +41,14 @@ const Orders = () => {
 
     const columns = ['№', 'дата', 'покупатель', 'статус', 'сообщения', 'тег', 'сумма', 'канал продаж', 'адрес доставки', 'доставка', 'заметки', 'комментарий', 'телефон', 'почта'];
 
-    const handleCheckboxCount = (value) => {
-        setActiveCheckboxCount(value);
+    const handleCheckboxCount = (checkboxCount, idsCount) => {
+        setActiveCheckboxCount(checkboxCount);
+        setActiveCheckboxIds(idsCount);
     };
+
+    // useEffect(() => {
+    //     console.log(activeCheckboxIds);
+    // }, [activeCheckboxIds]);
 
     const handleIdList = (ids) => {
         setIdList(ids);
@@ -47,6 +56,10 @@ const Orders = () => {
 
     const handleStatusList = (status) => {
         setStatusList(status);
+    }
+
+    const handleFetchData = () => {
+        setIsFetchData(false);
     }
 
     const openFilter = () => {
@@ -135,6 +148,14 @@ const Orders = () => {
         }
     }, [selectedIds]);
 
+    async function deleteSelectedOrders(idArr) {
+        try {
+            const response = await deleteOrders(idArr);
+        } catch(e) {
+            console.log(e);
+        }
+    };
+
     return (
         <div>
             <div className="orders__header">
@@ -152,8 +173,11 @@ const Orders = () => {
                     <button className='orderTable-btn orderTable-btn__editor'>
                         <img className='orderTable-btn__img' src={editor} alt="editor" />
                     </button>
-                    <button className='orderTable-btn orderTable-btn__deleteTable'>
-                        <img className='orderTable-btn__img' src={deleteTable} alt="deleteTable" />
+                    <button className='orderTable-btn orderTable-btn__deleteTable' onClick={() => {
+                        deleteSelectedOrders(activeCheckboxIds)
+                        setIsFetchData(true)
+                    }}>
+                        <img className='orderTable-btn__img' src={deleteTable} alt="deleteTable"/>
                     </button>
                 </div>
                 <button className='orderTable__settings-btn' ref={columnsListBtnRef} onClick={() => {setShowColumnList(!showColumnList)}}>
@@ -231,7 +255,7 @@ const Orders = () => {
                 </div>
             }
             <div className="separator"></div>
-            <OrderTable selectedColumns={selectedColumns} childValue={[handleCheckboxCount, handleIdList, handleStatusList]} selectedFilterItems={selectedFilterItems}/>
+            <OrderTable selectedColumns={selectedColumns} childValue={[handleCheckboxCount, handleIdList, handleStatusList, handleFetchData]} selectedFilterItems={selectedFilterItems} isFetchData={isFetchData}/>
         </div>
     )
 }

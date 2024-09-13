@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setIds } from './../../../stm/idsSlice';
 
-const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
+const OrderTable = ({ selectedColumns, childValue, selectedFilterItems, isFetchData }) => {
     const [data, setData] = useState([]);
     const dispatch = useDispatch();
     const [checkboxStates, setCheckboxStates] = useState({});
@@ -17,18 +17,19 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
     let initialCheckboxStates;
     const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
+    const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
     const [uniqueStatuses, setUniqueStatuses] = useState(new Set());
-    const [handleCheckboxCount, handleIdList, handleStatusList] = childValue;
+    const [handleCheckboxCount, handleIdList, handleStatusList, handleFetchData] = childValue;
 
     const handleCheckboxChange = (rowId, event) => {
-        console.log('handleCheckboxChange')
+        // console.log('handleCheckboxChange')
         event.stopPropagation();
         setLastSelectedIndex(rowId);
     
         let countChange = 0;
     
         setCheckboxStates(prevState => {
-            console.log('setCheckboxStates')
+            // console.log('setCheckboxStates')
             let upFlag;
             const newState = { ...prevState };
             // console.log(newState);
@@ -48,6 +49,7 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
                         if (newState[i] !== undefined) {
                             newState[i] = !newState[i];
                             countChange += newState[i] ? 1 : -1;
+                            setActiveCheckboxIds(prevState => [...prevState, i]);
                         }
                     }
                 } else {
@@ -55,6 +57,7 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
                         if (newState[i] !== undefined) {
                             newState[i] = !newState[i];
                             countChange += newState[i] ? 1 : -1;
+                            setActiveCheckboxIds(prevState => [...prevState, i]);
                         }
                     }
                 }
@@ -64,6 +67,7 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
                 const wasChecked = newState[rowId] || false;
                 newState[rowId] = !wasChecked;
                 countChange += newState[rowId] ? 1 : -1;
+                setActiveCheckboxIds(prevState => [...prevState, rowId]);
             }
     
             return newState;
@@ -73,13 +77,18 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems }) => {
     };
     
     useEffect(() => {
-        handleCheckboxCount(Math.floor(activeCheckboxCount));
+        handleCheckboxCount(Math.floor(activeCheckboxCount), activeCheckboxIds.filter((item, index) => activeCheckboxIds.indexOf(item) === index));
+        // console.log(activeCheckboxIds.filter((item, index) => activeCheckboxIds.indexOf(item) === index))
     }, [activeCheckboxCount]);
 
-    // useEffect(() => {
-    //     // console.log(Object.keys(selectedFilterItems).length);
-    //     console.log(selectedFilterItems);
-    // }, [selectedFilterItems]);
+    useEffect(() => {
+
+        if (isFetchData) {
+            fetchData()
+            handleFetchData();
+        }
+
+    }, [isFetchData]);
 
     async function fetchData() {
         try {
