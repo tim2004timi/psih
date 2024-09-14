@@ -99,6 +99,7 @@ const Products = () => {
     async function fetchProductsNA() {
         try {
             const response = await getProductsNA();
+            // console.log(response.data[0].remaining)
             setProducts(response.data);
         } catch(e) {
             console.error(e)
@@ -117,12 +118,13 @@ const Products = () => {
 
     useEffect(() => {
         filterProductsByCategories(categories[0])
-    }, [categories])
+    }, [categories, products])
 
    async function toArchive(id, key, newValue) {
         try {
             let response = await patchProduct(id, key, newValue);
             console.log(response.data)
+            fetchProductsNA()
         } catch(e) {
             console.error(e)
         }
@@ -158,22 +160,22 @@ const Products = () => {
             className: 'products-column column-price',
             content: (row) => {
                 let isChecked = true
-                return row.price ? (
+                return (
                     <div className={`products-column-container column-price__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.price + ' ₽'}
                     </div>
-                ) : null;
+                );
             }
         },
         'остаток': {
             className: 'products-column column-remains',
             content: (row) => {
                 let isChecked = true
-                return row.remains ? (
+                return (
                     <div className={`products-column-container column-remains__container ${isChecked ? 'product-colums-selected' : ''}`}>
-                        {row.remains + ' шт.'}
+                        {row.remaining + ' ' + row.measure}
                     </div>
-                ) : null;
+                );
             }
         },
         'в архив': {

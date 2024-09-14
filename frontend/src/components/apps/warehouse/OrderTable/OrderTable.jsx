@@ -273,7 +273,7 @@ const OrderTable = ({ selectedColumns, childValue, selectedFilterItems, isFetchD
                 const isChecked = checkboxStates[row.id] || false;
                 return (
                     <div className={`column-summ__container ${isChecked ? 'highlighted-cell' : ''}`}>
-                        {row.summ}
+                        {row.summ + ' ₽'}
                     </div> 
                 );
             }
