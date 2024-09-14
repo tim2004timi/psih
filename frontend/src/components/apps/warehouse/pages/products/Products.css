@@ -221,10 +221,12 @@
     cursor: pointer;
     padding: 3px 27px;
     font-size: 16px;
+    transition: all 0.7s ease-in;
 }
 
 .productTable__nav-btn:hover{
     border: 1px solid rgba(0, 0, 0, 1);
+    transition: all 0.1s;
 }
 
 .productTable__nav-btn--selected{
@@ -311,6 +313,8 @@
 
 .column-name__container-img:hover .column-name__img {
     transform: scale(10) translate(20px, 0);
+    border: 1px solid rgba(0, 0, 0);
+    border-radius: 7px;
 }
 
 .column-article{
@@ -327,4 +331,24 @@
 
 .column-archive{
     width: 121px;
+}
+
+.column-archive__btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.column-archive__img--hover{
+    display: none;
+}
+
+.column-archive__btn:hover .column-archive__img--hover{
+    display: block;
+    transform: rotate(180deg);
+    transition: all 0.3s;
+}
+
+.column-archive__btn:hover .column-archive__img{
+    display: none;
 }

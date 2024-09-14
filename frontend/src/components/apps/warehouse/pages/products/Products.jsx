@@ -8,11 +8,12 @@ import plus from '../../../../../assets/img/plus_zakaz.svg'
 import close from '../../../../../assets/img/close_filter.png'
 import { Link } from 'react-router-dom';
 import FilterDropDownList from '../../../../filterDropDownList/FilterDropDownList';
-import smuta from '../../../../../assets/img/tshirts-img.png'
 import szhatie from '../../../../../assets/img/szhatie-strok.png';
 import editor from '../../../../../assets/img/editor-btn.png';
 import deleteTable from '../../../../../assets/img/delete-table.png';
-
+import archiveBtn from '../../../../../assets/img/toArchive-btn.png';
+import archiveBtnHover from '../../../../../assets/img/fromArchive-btn.png';
+import { getCategories, getProductsNA, patchProduct } from '../../../../../API/productsApi';
 
 const Products = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -23,6 +24,11 @@ const Products = () => {
     const columnsListRef = useRef(null);
     const columnsListBtnRef = useRef(null);
     const columns = ['название', 'артикул', 'цена', 'остаток', 'в архив'];
+
+    const [categories, setCategories] = useState([]);
+
+    const [products, setProducts] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     const handleColumnSelect = (column) => {
         if (selectedColumns.includes(column)) {
@@ -80,6 +86,48 @@ const Products = () => {
         };
     }, [isFilterOpen, showColumnList]);
 
+    async function fetchCategories() {
+        try {
+            const response = await getCategories();
+            const newCategories = response.data.map(obj => obj.name);
+            setCategories(prevCategories => [...new Set([...prevCategories, ...newCategories])]);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function fetchProductsNA() {
+        try {
+            const response = await getProductsNA();
+            setProducts(response.data);
+        } catch(e) {
+            console.error(e)
+        }
+    }
+
+    const filterProductsByCategories = (category) => {
+        const newProducts = products.filter(product => product.category.name === category);
+        setFilteredProducts(newProducts);
+    }
+
+    useEffect(() => {
+        fetchCategories()
+        fetchProductsNA()
+    }, [])
+
+    useEffect(() => {
+        filterProductsByCategories(categories[0])
+    }, [categories])
+
+   async function toArchive(id, key, newValue) {
+        try {
+            let response = await patchProduct(id, key, newValue);
+            console.log(response.data)
+        } catch(e) {
+            console.error(e)
+        }
+   }
+    
     const columnConfig = {
         'название': {
             className: 'products-column column-name',
@@ -131,33 +179,23 @@ const Products = () => {
         'в архив': {
             className: 'products-column column-archive',
             content: (row) => {
-                return row.archive ? (
+                return !row.archived ? (
                     <div className={`products-column-container column-archive__container`}>
-                        {row.archive}
-                        {/* true or false
-                        if true*/}
+                        <button className="column-archive__btn" onClick={() => toArchive(row.id, 'archived', true)}>
+                            <img src={archiveBtn} alt="archive-btn" className="column-archive__img" />
+                            <img src={archiveBtnHover} alt="archive-btn" className="column-archive__img--hover" />
+                        </button>
                     </div>
                 ) : null;
             }
         }
     }
 
-    const dataMMoc = [
-        {
-            name: 'black "smuta"',
-            img: smuta,
-            article: 1,
-            price: 2790,
-            remains: 10
-        },
-        {
-            name: 'black "smuta"',
-            img: smuta,
-            article: 1,
-            price: 2790,
-            remains: 10
-        },
-    ]
+    const renderCategoriesBtn = () => {
+        return categories.map((category, index) => (
+            <button key={index} className="productTable__nav-btn" onClick={() => filterProductsByCategories(category)}>{category}</button>
+        ));
+    };
 
     const renderHeaders = () => {
         return selectedColumns.map((column, index) => (
@@ -165,11 +203,8 @@ const Products = () => {
         ));
     };
 
-    //данные по тавару вызывать через функцию, которая будет зависить от того, какой товар выбран. Например, renderRows(t-shirts) => getData(t-shirts)
-
     const renderRows = () => {
-        // return data
-        return dataMMoc
+        return filteredProducts
             // .filter(row => {
             //     if (Object.keys(selectedFilterItems).length === 0) {
             //         return true; 
@@ -291,11 +326,7 @@ const Products = () => {
                 <div className="productTable__nav">
                     <p className="productTable__nav-header">категории</p>
                     <div className="productTable__nav-container">
-                        <button className="productTable__nav-btn">Футболки</button>
-                        <button className="productTable__nav-btn">Кепки</button>
-                        <button className="productTable__nav-btn">Худи</button>
-                        <button className="productTable__nav-btn">Лонги</button>
-                        <button className="productTable__nav-btn">Носки</button>
+                        {renderCategoriesBtn()}
                         <div className="productTable__nav-add">
                             <span className="productTable__nav-addBtn" onClick={() => console.log('=')}></span>
                         </div>

@@ -88,6 +88,7 @@
     border-radius: 7px;
     width: 150px;
     color: #000;
+    backdrop-filter: blur(10px);
 }
 
 .filterdropdownlist-list__content{

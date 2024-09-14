@@ -57,34 +57,34 @@ const Order = () => {
         deleteOverlayRef.current.style.display = 'none';
     }
 
-    const handleSelectOrderSelection = (selected) => {
-        setSelectedOrder(selected);
-    };
+    // const handleSelectOrderSelection = (selected) => {
+    //     setSelectedOrder(selected);
+    // };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setFormData({
+    //         ...formData,
+    //         [name]: value
+    //     });
+    // };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://87.242.85.68:8000/orders/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-            const result = await response.json();
-            console.log('Success:', result);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await fetch('http://87.242.85.68:8000/orders/', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify(formData)
+    //         });
+    //         const result = await response.json();
+    //         console.log('Success:', result);
+    //     } catch (error) {
+    //         console.error('Error:', error);
+    //     }
+    // };
 
     return ( 
         <div>
