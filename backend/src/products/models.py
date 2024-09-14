@@ -21,11 +21,13 @@ class Product(Base):
     cost_price: Mapped[float] = mapped_column(nullable=False)
     price: Mapped[float] = mapped_column(nullable=False)
     discount_price: Mapped[float] = mapped_column(nullable=False)
-    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'))
     article: Mapped[str] = mapped_column(nullable=False)  # TODO: Сделать уникальным
-    measure: Mapped[str] = mapped_column(nullable=False)
+    measure: Mapped[str] = mapped_column(nullable=True, default="шт.")
     size: Mapped[str] = mapped_column(nullable=False)
+    remaining: Mapped[int] = mapped_column(nullable=True, default=0)
     archived: Mapped[bool] = mapped_column(nullable=True, default=False)
+
+    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'))
 
     # Связь с категорией
     category = relationship('ProductCategory', back_populates='products')

@@ -6,7 +6,7 @@ from datetime import datetime
 
 class OrderBase(BaseModel):
     full_name: str
-    status: str | None = None
+    status: str | None = "в обработке"
     tag: str | None = None
     channel: str | None = None
     address: str

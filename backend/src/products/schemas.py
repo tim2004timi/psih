@@ -34,9 +34,10 @@ class ProductBase(BaseModel):
     discount_price: float
     category_id: int
     article: str
-    measure: str
+    measure: str | None = "шт."
     size: str
-    archived: bool
+    remaining: int | None = 0
+    archived: bool | None = False
 
 
 class ProductCreate(ProductBase):
@@ -55,10 +56,10 @@ class ProductUpdatePartial(ProductBase):
     price: float | None = None
     discount_price: float | None = None
     category_id: int | None = None
-    group: str | None = None
     article: str | None = None
     measure: str | None = None
     size: str | None = None
+    remaining: int | None = None
     archived: bool | None = None
 
 
