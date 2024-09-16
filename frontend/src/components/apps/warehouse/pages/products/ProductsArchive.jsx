@@ -119,7 +119,7 @@ const ProductsArchive = () => {
         filterProductsByCategories(categories[0])
     }, [categories, products])
 
-   async function toArchive(id, key, newValue) {
+    async function toArchive(id, key, newValue) {
         try {
             let response = await patchProduct(id, key, newValue);
             // console.log(response.data)
@@ -127,7 +127,7 @@ const ProductsArchive = () => {
         } catch(e) {
             console.error(e)
         }
-   }
+    }
 
     const columnConfig = {
         'название': {

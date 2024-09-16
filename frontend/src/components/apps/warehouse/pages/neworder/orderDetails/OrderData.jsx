@@ -53,7 +53,7 @@ const OrderData = () => {
 
     const updateOrderInfo = async (key, value) => {
         try {
-            await patchOrder(id, key, value);
+            await patchProduct(id, key, value);
         } catch (error) {
             console.error(error);
         }
@@ -95,6 +95,7 @@ const OrderData = () => {
                         startItem={id ? orderInfo.status : 'статус заказа'}
                         rowId={orderInfo.id}
                         statusObj={id ? null : handleStatusObj}
+                        currentPage='orders'
                     />
                     <DropDownList
                         statusList={false}
@@ -104,6 +105,7 @@ const OrderData = () => {
                         tagClass={true}
                         rowId={orderInfo.id}
                         tagObj={id ? null : handleTagObj}
+                        currentPage='orders'                        
                     />
                 </div>
                 <div className='orderData__header-settings'>

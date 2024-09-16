@@ -3,8 +3,9 @@ import './DropDownList.css';
 import { Link } from 'react-router-dom';
 import { patchOrder } from '../../API/ordersAPI';
 
-const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusList, rowId, tagClass, statusObj, tagObj }) => {
-    const [selectedItem, setSelectedItem] = useState(startItem || 'новый заказ');
+const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusList, rowId, tagClass, statusObj, tagObj, currentPage }) => {
+    const localStartItem = currentPage === 'orders' ? 'новый заказ' : 'новый товар';
+    const [selectedItem, setSelectedItem] = useState(startItem || localStartItem);
     const containerRef = useRef(null);
     const listRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
     }, [isOpen]);
 
     const handleSelection = (item) => {
-        setSelectedItem(item);
+        setSelectedItem(currentPage === 'orders' ? item : item.name);
         setIsOpen(false)
     };
 
@@ -91,12 +92,12 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
                             {items.map(item => (
                                 isItemLink ? (
                                     <Link
-                                        key={item}
-                                        to={`/orders/${item}`}
+                                        key={`${currentPage === 'orders' ? item : item.id}`}
+                                        to={`${currentPage === 'orders' ? `/orders/${item}` : `/products/${item.id}`}`}
                                         className={`dropdownlist-list__item`}
                                         onClick={() => handleSelection(item)}
                                     >
-                                        {item}
+                                        {`${currentPage === 'orders' ? item : item.name}`}
                                     </Link>
                                 ) : (
                                     <button

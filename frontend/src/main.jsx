@@ -16,9 +16,10 @@ import Products from "./components/apps/warehouse/pages/products/Products.jsx";
 import Remains from "./components/apps/warehouse/pages/remains/Remains.jsx";
 import Parties from "./components/apps/warehouse/pages/parties/Parties.jsx";
 import Order from "./components/apps/warehouse/pages/neworder/Order.jsx"
-import Newproducts from './components/apps/warehouse/pages/newproducts/Newproducts.jsx';
+import Product from './components/apps/warehouse/pages/product/Product.jsx';
 import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx';
 import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
+import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
 
 const router = createBrowserRouter([
   {
@@ -66,12 +67,22 @@ const router = createBrowserRouter([
         element: <Products />,
       },
       {
-        path: "productsarchive",
-        element: <ProductsArchive />,
+        path: "products/:id",
+        element: <Product />,
+        children: [
+          {
+            path: "",
+            element: <Navigate to="productdata" replace />,
+          },
+          {
+            path: "productdata",
+            element: <ProductData />,
+          }
+        ]
       },
       {
-        path: "newproducts",
-        element: <Newproducts />,
+        path: "productsarchive",
+        element: <ProductsArchive />,
       },
       {
         path: "remains",
