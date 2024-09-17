@@ -3,7 +3,7 @@ import './Products.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg';
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
-import settings from '../../../../../assets/img/table__settings.png';
+import settings from '../../../../../assets/img/table-settings.svg';
 import plus from '../../../../../assets/img/plus_zakaz.svg';
 import close from '../../../../../assets/img/close_filter.png';
 import { Link } from 'react-router-dom';
@@ -304,7 +304,7 @@ const Products = () => {
         <div className="products__btn-container">
           <PopularButton text={'Фильтр'} isHover={true} onClick={openFilter} />
           <Link to="/newproducts">
-            <PopularButton img={plus} text={'Товар'} isHover={true} />
+            <PopularButton text={'+ Товар'} isHover={true} />
           </Link>
           <div className="products__btn-separator"></div>
           <Link to="/productsarchive">
@@ -397,22 +397,24 @@ const Products = () => {
             </div>
             {isCategoriesSettingsOpen && (
               <div className="categories-settings" ref={categoriesSettingsRef}>
-                <div className="categories-settings__close">
-                  <button className="categories-settings__close-btn" onClick={() => setIsCategoriesSettingsOpen(false)}>
-                    <img src={categoreisClose} alt="close" className="categories-settings__close-img" />
-                  </button>
-                </div>
-                <div className="categories-settings__input">
-                  <p className="categories-settings__input-text">Добавить категорию</p>
-                  <input type="text" className="categories-settings__input-input" ref={categoriesSettingsInputRef} />
-                </div>
-                <div className="categories-settings__btn">
-                  {renderCategoriesSettingsBtn()}
-                </div>
-                <div className="categories-settings-add">
-                  <button className="categories-settings-add__btn" onClick={() => {
-                    createCategoryName(categoriesSettingsInputRef.current.value);
-                  }}>Добавить</button>
+                <div className="categories-settings-content">
+                  <div className="categories-settings__close">
+                      <button className="categories-settings__close-btn" onClick={() => setIsCategoriesSettingsOpen(false)}>
+                        <img src={categoreisClose} alt="close" className="categories-settings__close-img" />
+                      </button>
+                    </div>
+                    <div className="categories-settings__input">
+                      <p className="categories-settings__input-text">Добавить категорию</p>
+                      <input type="text" className="categories-settings__input-input" ref={categoriesSettingsInputRef} />
+                    </div>
+                    <div className="categories-settings__btn">
+                      {renderCategoriesSettingsBtn()}
+                    </div>
+                    <div className="categories-settings-add">
+                      <button className="categories-settings-add__btn" onClick={() => {
+                        createCategoryName(categoriesSettingsInputRef.current.value);
+                      }}>Добавить</button>
+                  </div>
                 </div>
               </div>
             )}

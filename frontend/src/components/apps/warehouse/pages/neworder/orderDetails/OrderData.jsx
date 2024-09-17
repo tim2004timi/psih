@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import './OrderData.css';
 import DropDownList from '../../../../../dropDownList/DropDownList';
 import { createOrder, getOrderById, patchOrder } from '../../../../../../API/ordersAPI';
-import settings from '../../../../../../assets/img/table__settings.png';
+import settings from '../../../../../../assets/img/table-settings.svg';
 
 const OrderData = () => {
     const { id } = useParams();

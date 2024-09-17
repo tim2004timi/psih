@@ -1,0 +1,5 @@
+.WarehouseHeader__container{
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+}

@@ -43,6 +43,24 @@
     border: none;
 }
 
+.orderTable__settings-img{
+ 
+}
+
+/* .orderTable__settings-img--hover{
+    display: none;
+    width: 30px;
+    height: 30px;
+    transform: rotate(90deg);
+}
+
+.orderTable__settings-btn:hover .orderTable__settings-img{
+    display: none;
+}
+.orderTable__settings-btn:hover .orderTable__settings-img--hover{
+    display: block; 
+} */
+
 .orderTable__settings{
     position: absolute;
     right: 28px;

@@ -21,6 +21,7 @@
     width: 602px;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     padding: 45px 19px 0 50px;
+    min-height: 571px;
 }
 
 .product-img__container {
@@ -121,7 +122,7 @@
 
 .product__navbar-link{
     border: 1px solid rgba(0, 0, 0, 0.3);
-    color: rgba(0, 0, 0, 0.3);
+    color: rgba(0, 0, 0, 1);
     border-radius: 7px;
     cursor: pointer;
     width: calc(33.3%);
@@ -129,4 +130,12 @@
     text-align: center;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+.product__navbar-link:hover{
+    background-color: rgba(230, 230, 230, 1);
+}
+
+.product__navbar-link.active{
+    border: 1px solid rgba(0, 0, 0);
 }

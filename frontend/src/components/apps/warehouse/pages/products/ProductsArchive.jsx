@@ -3,7 +3,7 @@ import './ProductsArchive.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg'
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
-import settings from '../../../../../assets/img/table__settings.png'
+import settings from '../../../../../assets/img/table-settings.svg';
 import plus from '../../../../../assets/img/plus_zakaz.svg'
 import close from '../../../../../assets/img/close_filter.png'
 import { Link } from 'react-router-dom';
@@ -240,7 +240,7 @@ const ProductsArchive = () => {
                 <div className="productsArchive__btn-container">
                     <PopularButton text={'Фильтр'} isHover={true} onClick={openFilter} />
                     <Link to="/newproducts">
-                        <PopularButton img={plus} text={'Товар'} isHover={true}/>
+                        <PopularButton text={'+ Товар'} isHover={true}/>
                     </Link>
                     <div className="products__btn-separator"></div>
                     <Link to="/products">

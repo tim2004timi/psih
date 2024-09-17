@@ -3,7 +3,8 @@ import './Orders.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg';
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
-import settings from '../../../../../assets/img/table__settings.png';
+import settings from '../../../../../assets/img/table-settings.svg';
+import settingsHover from '../../../../../assets/img/settings-hover.png';
 import plus from '../../../../../assets/img/plus_zakaz.svg';
 import close from '../../../../../assets/img/close_filter.png';
 import szhatie from '../../../../../assets/img/szhatie-strok.png';
@@ -162,7 +163,7 @@ const Orders = () => {
                 <div className="orders__btn-container">
                     <PopularButton text={'Фильтр'} isHover={true} onClick={openFilter} />
                     <Link to="/orders/neworder">
-                        <PopularButton img={plus} text={'Заказ'} isHover={true}/>
+                        <PopularButton text={'+ Заказ'} isHover={true}/>
                     </Link>
                 </div>  
                 <div className="orderTable-btn__container">
@@ -181,7 +182,8 @@ const Orders = () => {
                     </button>
                 </div>
                 <button className='orderTable__settings-btn' ref={columnsListBtnRef} onClick={() => {setShowColumnList(!showColumnList)}}>
-                    <img src={settings} alt="settings" />
+                    <img className='orderTable__settings-img' src={settings} alt="settings" />
+                    {/* <img className='orderTable__settings-img--hover' src={settingsHover} alt="settings" /> */}
                 </button>
                 {showColumnList && (
                     <div className='orderTable__settings' ref={columnsListRef}>

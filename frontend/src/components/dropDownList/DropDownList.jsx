@@ -21,6 +21,12 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
         setIsOpen(false)
     };
 
+    useEffect(() => {
+        if (startItem) {
+            setSelectedItem(startItem);
+        }
+    }, [startItem]);
+
     const updateOrderField = async (field, newValue) => {
         if (startItem !== `статус заказа` && field === 'status') {
             console.log('статус')

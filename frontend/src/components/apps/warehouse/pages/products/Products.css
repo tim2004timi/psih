@@ -123,6 +123,7 @@
 
 .filter{
     position: absolute;
+    top: 201px;
 }
 
 .filter__content{
@@ -213,6 +214,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding-right: 14px;
 }
 
 .productTable__nav-btn{
@@ -257,12 +259,14 @@
 
 .categories-settings{
     position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.categories-settings-content{
     width: 507px;
     background-color: rgba(0, 0, 0, 0.15);
     padding: 22px 30px;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%);
     border-radius: 7px;
     backdrop-filter: blur(10px);
 }
@@ -337,6 +341,11 @@
     cursor: pointer;
     padding: 5px 20px;
     border-radius: 7px;
+}
+
+.categories-settings-add__btn:hover{
+    background-color: rgba(0, 0, 0);
+    color: #fff;
 }
 
 .productTable__table{

@@ -38,56 +38,58 @@
     max-width: 238px;
 }
 
-.column-number__container{
+.column-number__container {
     display: flex;
     align-items: center;
     border: 1px solid transparent;
     border-radius: 7px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: 28px;
+
 }
 
-/* .column-number-input__container{
+.column-number-input__container {
     position: relative;
     display: inline-block;
     vertical-align: middle;
-} */
-
-.column-number-input {
-    /* position: absolute;
-    opacity: 0; */
-    cursor: pointer;
-    /* height: 0;
-    width: 0; */
 }
 
-/* .column-number-input__custom {
+.column-number-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.column-number-input__custom {
     position: absolute;
     top: -8px;
-    left: 0;
-    height: 15px;
-    width: 15px;
+    left: 11px;
+    height: 17px;
+    width: 17px;
     background-color: transparent; 
     border: 1px solid black; 
     border-radius: 5px;
     cursor: pointer;
-} */
+}
 
-/* .column-number-input:checked ~ .column-number-input__custom {
+.column-number-input:checked ~ .column-number-input__custom {
     background-color: black; 
-} */
+}
 
-/* .column-number-input__custom::after {
+.column-number-input__custom::after {
     content: "";
     position: absolute;
     display: none;
-} */
+}
 
-/* .column-number-input:checked ~ .column-number-input__custom::after {
+.column-number-input:checked ~ .column-number-input__custom::after {
     display: block;
-} */
+}
 
-/* .column-number-input__custom::after {
+.column-number-input__custom::after {
     left: 5px;
     top: 1px;
     width: 5px;
@@ -95,11 +97,12 @@
     border: solid white; 
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
-} */
+}
 
-.column-number-content__container{
+.column-number-content__container {
     flex-grow: 1;
     height: 100%;
+    padding-left: 25px;
 }
 
 .column-date{
@@ -107,6 +110,14 @@
     max-width: 261px;
     /* border: 1px solid #000;
     border-radius: 7px; */
+}
+
+.column-date__container{
+    border: 1px solid transparent;
+    border-radius: 7px;
+    padding: 5px 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .column-full_name{
@@ -119,6 +130,7 @@
     border-radius: 7px;
     padding: 5px 10px;
     white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .column-status{
@@ -209,6 +221,8 @@
     border: 1px solid transparent;
     border-radius: 7px;
     padding: 5px 5px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .column-address{
@@ -223,6 +237,7 @@
     padding: 5px 5px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .column-storage{
@@ -233,6 +248,8 @@
     border: 1px solid transparent;
     border-radius: 7px;
     padding: 5px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .column-note{
@@ -281,6 +298,8 @@
     border: 1px solid transparent;
     border-radius: 7px;
     padding: 5px 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .highlighted-cell{
