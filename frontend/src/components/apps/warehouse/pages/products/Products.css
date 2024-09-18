@@ -122,8 +122,15 @@
 }
 
 .filter{
-    position: absolute;
+    /* position: absolute;
     top: 201px;
+    width: calc(100% - 100px); */
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 129px;
+    left: 0;
 }
 
 .filter__content{
@@ -132,7 +139,7 @@
     background-color: rgba(0, 0, 0, 0.1);
     border-radius: 7px;
     padding: 37px 22px;
-    width: 568px;
+    width: 100%;
     backdrop-filter: blur(10px);
 }
 

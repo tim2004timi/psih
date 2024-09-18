@@ -282,7 +282,7 @@ const OrderTable = ({
       className: "column-class column-status",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.status ? (
+        return row.status && (
           <div>
             <button
               className={`column-status__container ${
@@ -299,7 +299,7 @@ const OrderTable = ({
             </button>
             {showStatusList[row.id] && renderStatusList(row)}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -311,11 +311,11 @@ const OrderTable = ({
     'тег': {
       className: "column-class column-tag",
       content: (row) =>
-        row.tag != "null" ? (
+        row.tag != null && (
           <div className="column-tag__container">
             <div className="column-status__tag">{row.tag}</div>
           </div>
-        ) : null,
+        ),
     },
 
     'сумма': {

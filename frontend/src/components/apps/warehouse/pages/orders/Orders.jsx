@@ -212,46 +212,51 @@ const Orders = () => {
             {isFilterOpen &&  
                 <div className="filter" ref={filterRef}>
                     <div className="filter__content">
-                        <div className="closeBtn__container">
-                            <HeaderButton onClick={closeFilter} img={close}/>
-                        </div>
-                        <div className="filter__container">
-                            <div className="filter__item">
-                                <p className="filter__text">Дата</p>
-                                <input className='filter__input filter__input--date' type="date" />
+                        <div className="filter__content-wrapper">
+                            <div className="filter__search">
+                                <div className="filter__search-container">
+                                    <div className="filter__search-img-container">
+                                        <img src={search} alt="search" className="filter__search-img" />
+                                    </div>
+                                    <input type="text" className="filter__search-input" placeholder='Поиск по системе'/>
+                                </div>
                             </div>
-                            <div className="filter__item">
-                                <p className="filter__text">Покупатель</p>
-                                <input className='filter__input filter__input--pokupatel' type="text" ref={inputPokupatelRef}/>
+                            <div className="filter__container">
+                                <div className="filter__item">
+                                    <p className="filter__text">Дата</p>
+                                    <input className='filter__input filter__input--date' type="date" />
+                                </div>
+                                <div className="filter__item">
+                                    <p className="filter__text">Покупатель</p>
+                                    <input className='filter__input filter__input--pokupatel' type="text" ref={inputPokupatelRef}/>
+                                </div>
+                                <div className="filter__item">
+                                    <p className="filter__text">Номер заказа</p>
+                                    <FilterDropDownList 
+                                        items={idList}
+                                        onSelect={handleSelectedIids}
+                                        isClear={isClearFDDlistSelectedItems}
+                                        isClearDone={isClearDone}
+                                    />
+                                </div>
+                                <div className="filter__item">
+                                    <p className="filter__text">Статус</p>
+                                    <FilterDropDownList 
+                                        items={statusList} 
+                                        onSelect={handleSelectedStatus} 
+                                        isClear={isClearFDDlistSelectedItems}
+                                        isClearDone={isClearDone}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className="filter__container">
-                            <div className="filter__item">
-                                <p className="filter__text">Номер заказа</p>
-                                <FilterDropDownList 
-                                    items={idList}
-                                    onSelect={handleSelectedIids}
-                                    isClear={isClearFDDlistSelectedItems}
-                                    isClearDone={isClearDone}
-                                />
+                            <div className="filter-btn-container">
+                                <PopularButton text={'Очистить всё'} isHover={true} onClick={() => clearSelectedItems()}/>
+                                <PopularButton text={'Применить'} isHover={true} onClick={() =>{
+                                    clearSelectedItems();
+                                    handleFilterSelection();
+                                    setIsFilterOpen(false);
+                                }}/>
                             </div>
-                            <div className="filter__item">
-                                <p className="filter__text">Статус</p>
-                                <FilterDropDownList 
-                                    items={statusList} 
-                                    onSelect={handleSelectedStatus} 
-                                    isClear={isClearFDDlistSelectedItems}
-                                    isClearDone={isClearDone}
-                                />
-                            </div>
-                        </div>
-                        <div className="filter-btn-container">
-                            <PopularButton text={'Очистить всё'} isHover={true} onClick={() => clearSelectedItems()}/>
-                            <PopularButton text={'Применить'} isHover={true} onClick={() =>{
-                                clearSelectedItems();
-                                handleFilterSelection();
-                                setIsFilterOpen(false);
-                            }}/>
                         </div>
                     </div>
                 </div>
