@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import './ProductsArchive.css';
+// import './ProductsArchive.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg'
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
