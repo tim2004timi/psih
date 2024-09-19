@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './OrderData.css';
 import DropDownList from '../../../../../dropDownList/DropDownList';
 import { createOrder, getOrderById, patchOrder } from '../../../../../../API/ordersAPI';
 import settings from '../../../../../../assets/img/table-settings.svg';
+import InputMask from 'react-input-mask';
 
 const OrderData = () => {
     const { id } = useParams();
@@ -15,12 +16,12 @@ const OrderData = () => {
     const [tagObj, setTagObj] = useState({});
     const [localPhone, setLocalPhone] = useState('')
     const navigate = useNavigate();
+    const phoneInputRef = useRef(null);
 
     const getOrderData = async (id) => {
         try {
             const response = await getOrderById(id);
             setOrderInfo(response.data);
-            setLocalPhone(formatPhoneNumber(response.data.phone_number || ''))
             setIsLoading(false);
         } catch (error) {
             setIsLoading(true);
@@ -35,22 +36,9 @@ const OrderData = () => {
         }
     }, [id]);
 
-    useEffect(() => {
-        const formattedPhoneNumber = formatPhoneNumber(orderInfo.phone_number)
-        // console.log(formattedPhoneNumber)
-        setOrderInfo((prev) => ({ ...prev, 'phone_number': formattedPhoneNumber }));
-        // console.log(orderInfo.phone_number)
-    }, [orderInfo])
-
     const handleChange = (e, field) => {
         const value = e.target.value;
-
-        if (field === 'phone_number') {
-            const formattedPhoneNumber = formatPhoneNumber(value);
-            setLocalPhone(formattedPhoneNumber);
-        } else {
-            setOrderInfo((prev) => ({ ...prev, [field]: value }));
-        }
+        setOrderInfo((prev) => ({ ...prev, [field]: value }));
 
         if (id === undefined) {
             setEditableFields((prev) => ({ ...prev, [field]: value }));
@@ -58,31 +46,6 @@ const OrderData = () => {
         }
 
         updateOrderInfo(field, value);
-    };
-
-    const formatPhoneNumber = (value) => {
-        if (!value) return value;
-
-        const phoneNumber = value.replace(/[^\d]/g, '');
-        const phoneNumberLength = phoneNumber.length;
-
-        if (phoneNumberLength < 4) return phoneNumber;
-
-        if (phoneNumberLength < 7) {
-            switch(phoneNumber[0]){
-                case('+'):
-                    return `${phoneNumber.slice(0, 2)} ${phoneNumber.slice(2, 5)} ${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8, 10)}-${phoneNumber.slice(10, 13)}}`;
-            }
-            return `+7 (${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
-        }
-        // console.log(phoneNumber)
-
-        switch(phoneNumber[0]){
-            case('+'):
-                return `${phoneNumber.slice(0, 2)} ${phoneNumber.slice(2, 5)} ${phoneNumber.slice(5, 8)}-${phoneNumber.slice(8, 10)}-${phoneNumber.slice(10, 13)}}`;
-        }
-
-        // return `+7 (${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 8)}-${phoneNumber.slice(8, 10)}`;
     };
 
     const handleFileChange = (e, index) => {
@@ -140,7 +103,7 @@ const OrderData = () => {
                     <DropDownList
                         statusList={false}
                         isItemLink={false}
-                        startItem={id ? orderInfo.tag : 'тег'}
+                        startItem={id ? orderInfo.tag === null ? 'нет' : orderInfo.tag : 'тег'}
                         items={['бартер', 'нет']}
                         tagClass={true}
                         rowId={orderInfo.id}
@@ -179,10 +142,12 @@ const OrderData = () => {
                     <div className="orderDataInfo__tel">
                         <p className="orderDataInfo__tel-text orderDataInfo-text">Телефон</p>
                         <div className="orderDataInfo__tel-content orderDataInfo-item">
-                            <input
-                                className='orderDataInfo__input'
-                                value={localPhone}
+                            <InputMask
+                                mask="+7 (999) 999-99-99"
+                                value={orderInfo.phone_number}
                                 onChange={(e) => handleChange(e, 'phone_number')}
+                                className='orderDataInfo__input'
+                                ref={phoneInputRef}
                             />
                         </div>
                     </div>

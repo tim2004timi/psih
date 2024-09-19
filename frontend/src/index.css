@@ -27,6 +27,16 @@ body {
 	font-family: 'IBM', sans-serif;
 	color: #000000;
 }
+body::-webkit-scrollbar {
+	width: 7px;               /* ширина scrollbar */
+}
+body::-webkit-scrollbar-track {
+	background: transparent;        /* цвет дорожки */
+}
+body::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.3);    /* цвет плашки */
+	border-radius: 7px;       /* закругления плашки */
+}
 .container {
 	margin: 0 auto;
 	padding: 0 10px;
@@ -74,4 +84,11 @@ html {
 button {
 	font-family: 'IBM', sans-serif;
 }
-
+.separator{
+    position: absolute;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 1px;
+    left: 0;
+	z-index: 2;
+}

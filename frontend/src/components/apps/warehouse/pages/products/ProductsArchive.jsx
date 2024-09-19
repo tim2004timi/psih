@@ -81,6 +81,12 @@ const ProductsArchive = () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         }
 
+        if(isFilterOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };

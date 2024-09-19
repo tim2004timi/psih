@@ -38,8 +38,13 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
             }
         } else if (startItem !== 'тег' && field === 'tag') {
             try {
-                const response = await patchOrder(rowId, field, newValue);
-                setSelectedItem(response.data[field]);
+                if (newValue !== 'нет'){
+                    const response = await patchOrder(rowId, field, newValue);
+                    setSelectedItem(response.data[field]);
+                } else {
+                    const response = await patchOrder(rowId, field, null);
+                    setSelectedItem('нет');
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -47,7 +52,11 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
             if (field === 'status') {
                 statusObj({ [field]: newValue });
             } else if (field === 'tag') {
-                tagObj({ [field]: newValue });
+                if (newValue !== 'нет'){
+                    tagObj({ [field]: newValue });
+                } else {
+                    tagObj({ [field]: null });
+                }
             }
             setSelectedItem(newValue);
         }

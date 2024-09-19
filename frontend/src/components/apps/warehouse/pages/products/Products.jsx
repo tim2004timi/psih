@@ -95,16 +95,22 @@ const Products = () => {
   };
 
   useEffect(() => {
-    if (isFilterOpen || showColumnList || isCategoriesSettingsOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
+    if (isFilterOpen || showColumnList) {
+        document.addEventListener('mousedown', handleOutsideClick);
     } else {
-      document.removeEventListener('mousedown', handleOutsideClick);
+        document.removeEventListener('mousedown', handleOutsideClick);
+    }
+
+    if(isFilterOpen) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
+        document.removeEventListener('mousedown', handleOutsideClick);
     };
-  }, [isFilterOpen, showColumnList, isCategoriesSettingsOpen]);
+  }, [isFilterOpen, showColumnList]);
 
   async function fetchCategories() {
     try {

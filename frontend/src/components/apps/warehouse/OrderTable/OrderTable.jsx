@@ -24,8 +24,14 @@ const OrderTable = ({
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
   const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
   const [uniqueStatuses, setUniqueStatuses] = useState(new Set());
-  const [handleCheckboxCount, handleIdList, handleStatusList, handleFetchData] =
-    childValue;
+  const [uniqueTags, setTagsStatuses] = useState(new Set());
+  const [
+    handleCheckboxCount,
+    handleIdList,
+    handleStatusList,
+    handleFetchData,
+    handleTagList,
+  ] = childValue;
 
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
@@ -114,6 +120,9 @@ const OrderTable = ({
       const statuses = new Set(response.data.map((row) => row.status));
       setUniqueStatuses(statuses);
       handleStatusList(Array.from(statuses));
+      const tags = new Set(response.data.map((row) => row.tag));
+      setTagsStatuses(tags);
+      handleTagList(Array.from(tags));
     } catch (error) {
       console.error(error);
     }
@@ -213,35 +222,37 @@ const OrderTable = ({
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
+          <div className="column-number__link-container">
             <Link to={`/orders/${row.id}`}>
-                <div
+              <div
                 className={`column-number__container ${
-                    isChecked ? "highlighted-cell" : ""
+                  isChecked ? "highlighted-cell" : ""
                 }`}
-                >
+              >
                 <div className={`column-number-input__container`}>
-                    <input
+                  <input
                     type="checkbox"
                     className="column-number-input"
                     checked={isChecked}
                     readOnly
-                    />
-                    <span
+                  />
+                  <span
                     className="column-number-input__custom"
                     onClick={(event) => {
-                        handleCheckboxChange(row.id, event);
-                        event.preventDefault();
+                      handleCheckboxChange(row.id, event);
+                      event.preventDefault();
                     }}
-                    ></span>
+                  ></span>
                 </div>
-                <div className="column-number-content__container">{row.id}</div>
-                </div>
+                <p className="column-number-content__container">{row.id}</p>
+              </div>
             </Link>
+          </div> 
         );
       },
     },
 
-    'дата': {
+    дата: {
       className: "column-class column-date",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -260,7 +271,7 @@ const OrderTable = ({
       },
     },
 
-    'покупатель': {
+    покупатель: {
       className: "column-class column-full_name",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -278,47 +289,57 @@ const OrderTable = ({
       },
     },
 
-    'статус': {
+    статус: {
       className: "column-class column-status",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.status && (
-          <div>
-            <button
-              className={`column-status__container ${
-                isChecked ? "highlighted-cell" : ""
-              } ${getStatusStyle(row.status)}`}
-              onClick={() =>
-                setShowStatusList((prev) => ({
-                  ...prev,
-                  [row.id]: !prev[row.id],
-                }))
-              }
-            >
-              {row.status}
-            </button>
-            {showStatusList[row.id] && renderStatusList(row)}
-          </div>
+        return (
+          row.status && (
+            <div>
+              <button
+                className={`column-status__container ${
+                  isChecked ? "highlighted-cell" : ""
+                } ${getStatusStyle(row.status)}`}
+                onClick={() =>
+                  setShowStatusList((prev) => ({
+                    ...prev,
+                    [row.id]: !prev[row.id],
+                  }))
+                }
+              >
+                {row.status}
+              </button>
+              {showStatusList[row.id] && renderStatusList(row)}
+            </div>
+          )
         );
       },
     },
 
-    'сообщения': {
+    сообщения: {
       className: "column-class column-messages",
       content: (row) => row.messages,
     },
 
-    'тег': {
+    тег: {
       className: "column-class column-tag",
-      content: (row) =>
-        row.tag != null && (
-          <div className="column-tag__container">
-            <div className="column-status__tag">{row.tag}</div>
-          </div>
-        ),
+      content: (row) => {
+        const isChecked = checkboxStates[row.id] || false;
+        return (
+          row.tag != null && (
+            <div
+              className={`column-tag__container ${
+                isChecked ? "highlighted-cell" : ""
+              }`}
+            >
+              {row.tag}
+            </div>
+          )
+        );
+      },
     },
 
-    'сумма': {
+    сумма: {
       className: "column-class column-summ",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -370,7 +391,7 @@ const OrderTable = ({
       },
     },
 
-    'доставка': {
+    доставка: {
       className: "column-class column-storage",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -388,7 +409,7 @@ const OrderTable = ({
       },
     },
 
-    'заметки': {
+    заметки: {
       className: "column-class column-note",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -406,7 +427,7 @@ const OrderTable = ({
       },
     },
 
-    'комментарий': {
+    комментарий: {
       className: "column-class column-comment",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -424,7 +445,7 @@ const OrderTable = ({
       },
     },
 
-    'телефон': {
+    телефон: {
       className: "column-class column-phone_number",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -433,6 +454,8 @@ const OrderTable = ({
             className={`column-phone_number__container ${
               isChecked ? "highlighted-cell" : ""
             }`}
+            data-tooltip-id="phone_number-tooltip"
+            data-tooltip-content={row.phone_number}
           >
             {row.phone_number}
           </div>
@@ -440,7 +463,7 @@ const OrderTable = ({
       },
     },
 
-    'почта': {
+    почта: {
       className: "column-class column-email",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
@@ -483,11 +506,14 @@ const OrderTable = ({
         const nameMatches =
           selectedFilterItems.full_name.length === 0 ||
           selectedFilterItems.full_name.includes(row.full_name);
+        const tagMatches =
+          selectedFilterItems.tag.length === 0 ||
+          selectedFilterItems.tag.includes(row.tag);
 
-        return idMatches && statusMatches && nameMatches;
+        return idMatches && statusMatches && nameMatches && tagMatches;
       })
       .map((row, rowIndex) => (
-        <tr key={rowIndex}>
+        <tr key={rowIndex} className="table-row">
           {selectedColumns.map((column, colIndex) => {
             const className = columnConfig[column]?.className;
             return (
@@ -504,14 +530,14 @@ const OrderTable = ({
     <>
       {/* <SelectionArea > */}
       <table className="table">
-        <thead>
+        <thead className="table-header">
           <tr>{renderHeaders()}</tr>
         </thead>
         <tbody>{renderRows()}</tbody>
       </table>
       <Tooltip id="full_name-tooltip" />
-      <Tooltip id="phone_number-tooltip" />
-      <Tooltip id='storage-tooltip' />
+      {/* <Tooltip id="phone_number-tooltip" /> */}
+      <Tooltip id="storage-tooltip" />
       <Tooltip id="address-tooltip" />
       <Tooltip id="note-tooltip" />
       <Tooltip id="comment-tooltip" />

@@ -1,9 +1,16 @@
+.orders__header-container{
+    position: sticky;
+    top: 129px;
+    background-color: rgba(255, 255, 255, 1);
+    z-index: 3;
+    height: 62px;
+}
+
 .orders__header{
-    padding: 20px 0;
+    padding: 15px 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: relative;
 }
 
 .orders__btn-container{
@@ -12,6 +19,22 @@
     justify-content: space-between;
     width: 220px;
     position: relative;
+}
+
+.orders__btn-filter{
+    border: 1px solid #0000004D;
+    padding: 5px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 16px;
+    line-height: 19px;
+}
+
+.orders__btn-filter:hover{
+    color: #fff;
+    background: rgba(0, 0, 0, 1);
+    transition: all 0.3s;
 }
 
 .orderTable-btn__container{
@@ -144,8 +167,8 @@
     height: 100%;
     width: 100%;
     position: fixed;
-    z-index: 1;
-    top: 201px;
+    z-index: 4;
+    top: 191px;
     left: 0;
     background-color: #00000026;
     backdrop-filter: blur(10px);
@@ -176,6 +199,7 @@
 .filter__search{
     display: flex;
     align-items: center;
+    margin-bottom: 30px;
 }
 
 
@@ -198,11 +222,8 @@
 .filter__container{
     display: flex;
     margin-bottom: 16px;
-    gap: 39px;
-}
-
-.filter__container + .filter__container{
-    margin-bottom: 27px;
+    gap: 26px;
+    margin-bottom: 96px;
 }
 
 .filter__item{
@@ -224,11 +245,13 @@
 
 .filter__input--date{
     border-radius: 7px;
+    width: 165px;
 }
 
 .filter__input--pokupatel{
     overflow-x: scroll;
     overflow-y: hidden;
+    width: 356px;
 }
 
 .filter__content-container{
@@ -438,4 +461,5 @@
     display: flex;
     justify-content: end;
     gap: 21px;
+    margin-left: auto;
 }

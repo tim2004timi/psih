@@ -7,7 +7,9 @@ const Warehouse = () => {
     return (
     <div>
         <HeaderApp />
+        <div className="separator"></div>
         <WarehouseHeader />
+        <div className="separator"></div>
         <Outlet />
     </div>
     )
