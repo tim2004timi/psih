@@ -99,11 +99,12 @@ const Order = () => {
                 </div>
                 <div className="selectOrder">
                     <DropDownList
-                        selectedItemText={'заказ - '}
+                        selectedItemText='заказ - '
                         items={filteredIds}
                         isItemLink={true}
                         startItem={selectedOrder}
                         statusList={false}
+                        currentPage='orders'
                     />
                 </div>
                 <div className="delete-btn">

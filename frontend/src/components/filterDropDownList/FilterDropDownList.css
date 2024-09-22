@@ -1,7 +1,7 @@
 .filterdropdownlist__container {
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
-    width: 150px;
+    width: 165px;
     height: 29px;
     position: relative;
     cursor: pointer;
@@ -81,12 +81,13 @@
 }
 
 .filterdropdownlist-list{
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 22px 20px;
     position: absolute;
     top: 52px;
     border-radius: 7px;
-    width: 150px;
+    width: 165px;
     color: #000;
     backdrop-filter: blur(10px);
 }
@@ -112,8 +113,7 @@
     border-radius: 7px;
 }
 
-
-.filterdropdownlist-list__item-selected::before {
+.filterdropdownlist-list__item-last-selected:before {
     content: '';
     width: 100%;
     height: 2px;

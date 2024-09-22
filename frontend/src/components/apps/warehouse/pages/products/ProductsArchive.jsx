@@ -1,9 +1,9 @@
 import React, {useState, useRef, useEffect} from 'react';
-import './ProductsArchive.css';
+// import './ProductsArchive.css';
 import PopularButton from '../../../../popularButton/PopularButton';
 import search from '../../../../../assets/img/search_btn.svg'
 import HeaderButton from '../../../../headerApp/headerButton/HeaderButton';
-import settings from '../../../../../assets/img/table__settings.png'
+import settings from '../../../../../assets/img/table-settings.svg';
 import plus from '../../../../../assets/img/plus_zakaz.svg'
 import close from '../../../../../assets/img/close_filter.png'
 import { Link } from 'react-router-dom';
@@ -13,7 +13,7 @@ import editor from '../../../../../assets/img/editor-btn.png';
 import deleteTable from '../../../../../assets/img/delete-table.png';
 import archiveBtn from '../../../../../assets/img/toArchive-btn.png';
 import archiveBtnHover from '../../../../../assets/img/fromArchive-btn.png';
-import { getCategories, getProductsNA, patchProduct } from '../../../../../API/productsApi';
+import { getCategories, getProductsA, patchProduct } from '../../../../../API/productsApi';
 
 const ProductsArchive = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -81,6 +81,12 @@ const ProductsArchive = () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         }
 
+        if(isFilterOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
@@ -96,9 +102,9 @@ const ProductsArchive = () => {
         }
     }
 
-    async function fetchProductsNA() {
+    async function fetchProductsA() {
         try {
-            const response = await getProductsNA();
+            const response = await getProductsA();
             setProducts(response.data);
         } catch(e) {
             console.error(e)
@@ -112,21 +118,22 @@ const ProductsArchive = () => {
 
     useEffect(() => {
         fetchCategories()
-        fetchProductsNA()
+        fetchProductsA()
     }, [])
 
     useEffect(() => {
         filterProductsByCategories(categories[0])
-    }, [categories])
+    }, [categories, products])
 
-   async function toArchive(id, key, newValue) {
+    async function toArchive(id, key, newValue) {
         try {
             let response = await patchProduct(id, key, newValue);
-            console.log(response.data)
+            // console.log(response.data)
+            fetchProductsA()
         } catch(e) {
             console.error(e)
         }
-   }
+    }
 
     const columnConfig = {
         'название': {
@@ -158,30 +165,30 @@ const ProductsArchive = () => {
             className: 'productsArchive-column column-price',
             content: (row) => {
                 let isChecked = true
-                return row.price ? (
+                return (
                     <div className={`productsArchive-column-container column-price__container ${isChecked ? 'product-colums-selected' : ''}`}>
                         {row.price + ' ₽'}
                     </div>
-                ) : null;
+                );
             }
         },
         'остаток': {
             className: 'productsArchive-column column-remains',
             content: (row) => {
                 let isChecked = true
-                return row.remains ? (
+                return (
                     <div className={`productsArchive-column-container column-remains__container ${isChecked ? 'product-colums-selected' : ''}`}>
-                        {row.remains + ' шт.'}
+                        {row.remaining + ' ' + row.measure}
                     </div>
-                ) : null;
+                );
             }
         },
         'в архив': {
             className: 'products-column column-archive',
             content: (row) => {
-                return !row.archived ? (
+                return row.archived ? (
                     <div className={`products-column-container column-archive__container`}>
-                        <button className="column-archive__btn" onClick={() => toArchive(row.id, 'archived', true)}>
+                        <button className="column-archive__btn" onClick={() => toArchive(row.id, 'archived', false)}>
                             <img src={archiveBtn} alt="archive-btn" className="column-archive__img" />
                             <img src={archiveBtnHover} alt="archive-btn" className="column-archive__img--hover" />
                         </button>
@@ -239,7 +246,7 @@ const ProductsArchive = () => {
                 <div className="productsArchive__btn-container">
                     <PopularButton text={'Фильтр'} isHover={true} onClick={openFilter} />
                     <Link to="/newproducts">
-                        <PopularButton img={plus} text={'Товар'} isHover={true}/>
+                        <PopularButton text={'+ Товар'} isHover={true}/>
                     </Link>
                     <div className="products__btn-separator"></div>
                     <Link to="/products">

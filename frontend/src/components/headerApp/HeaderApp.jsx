@@ -11,14 +11,13 @@ const HeaderApp = () => {
     return ( 
         <div className="header">
             <div className='header-top__container'>
-                <AppNavBar />
                 <div className='logo'>
                     <a className='logo_link'>
                         <img className='logo_img' src={logo} alt="logo" />
                     </a>
                 </div>
+                <AppNavBar />
                 <div className="header-top__btn-container">
-                    <HeaderButton img={search} />
                     <HeaderButton img={notification} />
                     <HeaderButton img={acount} />
                 </div>

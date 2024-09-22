@@ -32,6 +32,12 @@ const AppNavBar = () => {
             <li className={`Appnavbar__container-li`}>
                 <Link className="Appnavbar__container-link" to="">Пользователи</Link>
             </li>
+            <li className={`Appnavbar__container-li`}>
+                <Link className="Appnavbar__container-link" to="">Задачи</Link>
+            </li>
+            <li className={`Appnavbar__container-li`}>
+                <Link className="Appnavbar__container-link" to="">Аналитика</Link>
+            </li>
         </ul>
      );
 }

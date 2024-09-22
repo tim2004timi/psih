@@ -1,12 +1,13 @@
+// store/store.js
 import { configureStore } from '@reduxjs/toolkit';
 import idsReducer from './idsSlice';
-import selectedItemsReducer from './selectedItemsSlice';
+import productsNAReducer from './productsNASlice';
 
 const store = configureStore({
-    reducer: {
-        ids: idsReducer,
-        selectedItems: selectedItemsReducer
-    }
+  reducer: {
+    ids: idsReducer,
+    productsNA: productsNAReducer
+  }
 });
 
 export default store;

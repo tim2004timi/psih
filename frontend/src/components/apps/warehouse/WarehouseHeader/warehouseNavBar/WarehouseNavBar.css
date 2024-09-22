@@ -2,10 +2,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 16px;
-    line-height: 19px;
+    font-size: 14px;
+    line-height: 18px;
     width: 466px;
     padding: 15px 0;
+    height: 59px;
 }
 
 .WarehouseNavBar__container-li{

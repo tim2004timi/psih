@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './OrderData.css';
 import DropDownList from '../../../../../dropDownList/DropDownList';
 import { createOrder, getOrderById, patchOrder } from '../../../../../../API/ordersAPI';
-import settings from '../../../../../../assets/img/table__settings.png';
+import settings from '../../../../../../assets/img/table-settings.svg';
+import InputMask from 'react-input-mask';
 
 const OrderData = () => {
     const { id } = useParams();
@@ -13,7 +14,9 @@ const OrderData = () => {
     const [editableFields, setEditableFields] = useState({});
     const [statusObj, setStatusObj] = useState({});
     const [tagObj, setTagObj] = useState({});
+    const [localPhone, setLocalPhone] = useState('')
     const navigate = useNavigate();
+    const phoneInputRef = useRef(null);
 
     const getOrderData = async (id) => {
         try {
@@ -95,15 +98,17 @@ const OrderData = () => {
                         startItem={id ? orderInfo.status : 'статус заказа'}
                         rowId={orderInfo.id}
                         statusObj={id ? null : handleStatusObj}
+                        currentPage='orders'
                     />
                     <DropDownList
                         statusList={false}
                         isItemLink={false}
-                        startItem={id ? orderInfo.tag : 'тег'}
+                        startItem={id ? orderInfo.tag === null ? 'нет' : orderInfo.tag : 'тег'}
                         items={['бартер', 'нет']}
                         tagClass={true}
                         rowId={orderInfo.id}
                         tagObj={id ? null : handleTagObj}
+                        currentPage='orders'                        
                     />
                 </div>
                 <div className='orderData__header-settings'>
@@ -137,10 +142,12 @@ const OrderData = () => {
                     <div className="orderDataInfo__tel">
                         <p className="orderDataInfo__tel-text orderDataInfo-text">Телефон</p>
                         <div className="orderDataInfo__tel-content orderDataInfo-item">
-                            <input
-                                className='orderDataInfo__input'
-                                value={orderInfo.phone_number || ''}
+                            <InputMask
+                                mask="+7 (999) 999-99-99"
+                                value={orderInfo.phone_number}
                                 onChange={(e) => handleChange(e, 'phone_number')}
+                                className='orderDataInfo__input'
+                                ref={phoneInputRef}
                             />
                         </div>
                     </div>
