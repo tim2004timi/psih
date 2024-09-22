@@ -6,8 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
-from .schemas import ProductCategoryCreate, ProductCategoryWithProducts, ProductCreate, ProductUpdatePartial, \
-    ProductCategory, Product
+from .schemas import (
+    ProductCategoryCreate,
+    ProductCategoryWithProducts,
+    ProductCreate,
+    ProductUpdatePartial,
+    ProductCategory,
+    Product,
+    ProductImage,
+)
 
 
 router = APIRouter(tags=["Products"], prefix="/products")
@@ -35,20 +42,34 @@ async def get_all_product_categories_with_products(
     return await service.get_product_categories_with_products(session=session)
 
 
-@router.post(path="/categories/", response_model=ProductCategory | None, description="Create new product category")
+@router.post(
+    path="/categories/",
+    response_model=ProductCategory | None,
+    description="Create new product category",
+)
 async def create_product_category(
     product_category_create: ProductCategoryCreate,
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
-    return await service.create_product_category(session=session, product_category_create=product_category_create)
+    return await service.create_product_category(
+        session=session, product_category_create=product_category_create
+    )
 
 
-@router.delete(path="/categories/", response_model=ProductCategory, description="Delete product category by id")
+@router.delete(
+    path="/categories/",
+    response_model=ProductCategory,
+    description="Delete product category by id",
+)
 async def delete_product_category_by_id(
     session: AsyncSession = Depends(db_manager.session_dependency),
-    product_category: ProductCategory = Depends(dependencies.product_category_by_id_dependency),
+    product_category: ProductCategory = Depends(
+        dependencies.product_category_by_id_dependency
+    ),
 ):
-    return await service.delete_product_category(session=session, product_category=product_category)
+    return await service.delete_product_category(
+        session=session, product_category=product_category
+    )
 
 
 @router.get(
@@ -109,3 +130,18 @@ async def delete_product_by_id(
     product: Product = Depends(dependencies.product_by_id_dependency),
 ):
     return await service.delete_product(session=session, product=product)
+
+
+@router.post(
+    "/{product_id}/upload-image/",
+    response_model=ProductImage,
+    description="Upload product image",
+)
+async def upload_product_image(
+    product_id: int,
+    file: UploadFile = File(...),
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.upload_product_image(
+        product_id=product_id, file=file, session=session
+    )

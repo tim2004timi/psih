@@ -15,14 +15,18 @@ async def get_admin_by_username(session: AsyncSession, username: str) -> Admin:
 
 async def create_admin(session: AsyncSession, admin: schemas.AdminCreate) -> Admin:
     hashed_password = security.get_password_hash(admin.password)
-    db_admin = Admin(username=admin.username, hashed_password=hashed_password, email=admin.email)
+    db_admin = Admin(
+        username=admin.username, hashed_password=hashed_password, email=admin.email
+    )
     session.add(db_admin)
     await session.commit()
     await session.refresh(db_admin)
     return db_admin
 
 
-async def authenticate_admin(session: AsyncSession, username: str, password: str) -> Admin | None:
+async def authenticate_admin(
+    session: AsyncSession, username: str, password: str
+) -> Admin | None:
     admin = await get_admin_by_username(session=session, username=username)
     if not admin:
         return None
