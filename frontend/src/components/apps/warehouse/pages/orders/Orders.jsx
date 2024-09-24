@@ -54,9 +54,9 @@ const Orders = () => {
         setActiveCheckboxIds(idsCount);
     };
 
-    useEffect(() => {
-        console.log(document.body.innerText);
-    }, [columns]);
+    // useEffect(() => {
+    //     console.log(document.body.innerText);
+    // }, [columns]);
 
     const handleIdList = (ids) => {
         setIdList(ids);
@@ -190,7 +190,7 @@ const Orders = () => {
     };
 
     return (
-        <div>
+        <>
             <div className='orders__header-container'>
                 <div className="orders__header">
                     <div className="orders__btn-container">
@@ -308,7 +308,7 @@ const Orders = () => {
             }
             <div className="separator"></div>
             <OrderTable selectedColumns={selectedColumns} childValue={[handleCheckboxCount, handleIdList, handleStatusList, handleFetchData, handleTagList]} selectedFilterItems={selectedFilterItems} isFetchData={isFetchData}/>
-        </div>
+        </>
     )
 }
 

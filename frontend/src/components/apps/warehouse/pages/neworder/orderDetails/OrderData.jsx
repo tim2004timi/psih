@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import './OrderData.css';
 import DropDownList from '../../../../../dropDownList/DropDownList';
 import { createOrder, getOrderById, patchOrder } from '../../../../../../API/ordersAPI';
 import settings from '../../../../../../assets/img/table-settings.svg';
 import InputMask from 'react-input-mask';
+import { formatDateTime } from '../../../../../../API/formateDateTime';
 
 const OrderData = () => {
     const { id } = useParams();
@@ -17,12 +18,16 @@ const OrderData = () => {
     const [localPhone, setLocalPhone] = useState('')
     const navigate = useNavigate();
     const phoneInputRef = useRef(null);
+    const { ordersDate, setOrdersDate } = useOutletContext();
+    const [unformateDate, setUnformateDate] = useState('')
 
     const getOrderData = async (id) => {
         try {
             const response = await getOrderById(id);
             setOrderInfo(response.data);
             setIsLoading(false);
+            setUnformateDate(response.data.order_date)
+            setOrdersDate(formatDateTime(response.data.order_date))
         } catch (error) {
             setIsLoading(true);
         }

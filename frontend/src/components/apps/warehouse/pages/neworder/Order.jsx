@@ -11,33 +11,32 @@ import DropDownList from '../../../../dropDownList/DropDownList';
 const Order = () => {
     const { id } = useParams();
     const ids = useSelector(state => state.ids);
-    const [formData, setFormData] = useState({
-        full_name: '',
-        status: '',
-        tag: '',
-        channel: '',
-        address: '',
-        task: '',
-        note: '',
-        comment: '',
-        storage: '',
-        project: '',
-        phone_number: '',
-        email: ''
-    });
+    // const [formData, setFormData] = useState({
+    //     full_name: '',
+    //     status: '',
+    //     tag: '',
+    //     channel: '',
+    //     address: '',
+    //     task: '',
+    //     note: '',
+    //     comment: '',
+    //     storage: '',
+    //     project: '',
+    //     phone_number: '',
+    //     email: ''
+    // });
 
     const [selectedOrder, setSelectedOrder] = useState(id ? id : '');
+    const [ordersDate, setOrdersDate] = useState('')
     const filteredIds = ids.filter(item => item !== id);
     const containerRef = useRef(null);
     const listRef = useRef(null);
     const deleteOverlayRef = useRef(null);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (containerRef.current && listRef.current) {
-    //         listRef.current.style.width = `${containerRef.current.offsetWidth}px`;
-    //     }
-    // }, []);
+    useEffect(() => {
+        console.log(ordersDate)
+    }, [ordersDate]);
 
     async function deleteOrderData(id) {
         try {
@@ -97,15 +96,20 @@ const Order = () => {
                         </button>
                     </Link>
                 </div>
-                <div className="selectOrder">
-                    <DropDownList
-                        selectedItemText='заказ - '
-                        items={filteredIds}
-                        isItemLink={true}
-                        startItem={selectedOrder}
-                        statusList={false}
-                        currentPage='orders'
-                    />
+                <div className="Neworder__header-info">
+                    <div className="selectOrder">
+                        <DropDownList
+                            selectedItemText='заказ - '
+                            items={filteredIds}
+                            isItemLink={true}
+                            startItem={selectedOrder}
+                            statusList={false}
+                            currentPage='orders'
+                        />
+                    </div>
+                    <p className="Neworder__header-date">
+                        {ordersDate}
+                    </p>
                 </div>
                 <div className="delete-btn">
                     <button className="delete-btn__btn" onClick={() => openDeleteOverlay()}>Удалить</button>
@@ -121,7 +125,7 @@ const Order = () => {
                 </div>
             </div>
             <div className="Neworder__separator"></div>
-            <Outlet />
+            <Outlet context={{ ordersDate, setOrdersDate }}/>
         </div>
     );
 }
