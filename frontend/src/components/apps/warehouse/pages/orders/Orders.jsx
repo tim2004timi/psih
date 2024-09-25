@@ -45,6 +45,8 @@ const Orders = () => {
 
     const inputPokupatelRef = useRef(null);
 
+    const inputDateOrderRef = useRef(null);
+
     const orderTableBtnContainerRef = useRef(null);
 
     const columns = ['№', 'дата', 'покупатель', 'статус', 'сообщения', 'тег', 'сумма', 'канал продаж', 'адрес доставки', 'доставка', 'заметки', 'комментарий', 'телефон', 'почта'];
@@ -54,9 +56,9 @@ const Orders = () => {
         setActiveCheckboxIds(idsCount);
     };
 
-    useEffect(() => {
-        console.log(document.body.innerText);
-    }, [columns]);
+    // useEffect(() => {
+    //     console.log(inputDateOrderRef.current.value);
+    // }, [inputDateOrderRef]);
 
     const handleIdList = (ids) => {
         setIdList(ids);
@@ -79,7 +81,7 @@ const Orders = () => {
     };
 
     const handleFilterSelection = () => {
-        setSelectedFilterItems({ id: selectedIds, status: selectedStatus, full_name: inputPokupatelRef.current.value, tag: selectedTag });
+        setSelectedFilterItems({ id: selectedIds, order_date: inputDateOrderRef.current.value, status: selectedStatus, full_name: inputPokupatelRef.current.value, tag: selectedTag });
     }    
 
     const handleOutsideClick = (event) => {
@@ -189,8 +191,23 @@ const Orders = () => {
         }
     };
 
+    const highlightText = (searchTerm) => {
+        const allElements = document.querySelectorAll('*');
+
+        // Удаляем предыдущие выделения
+        allElements.forEach(el => el.classList.remove('highlighted-text'));
+
+        if (searchTerm) {
+            for (let el of allElements) {
+                if (el.textContent.toLowerCase() == searchTerm.toLowerCase()) {
+                    el.classList.add('highlighted-text');
+                }
+            }
+        }
+    };
+
     return (
-        <div>
+        <div id='orders'>
             <div className='orders__header-container'>
                 <div className="orders__header">
                     <div className="orders__btn-container">
@@ -253,7 +270,19 @@ const Orders = () => {
                                     <div className="filter__search-img-container">
                                         <img src={search} alt="search" className="filter__search-img" />
                                     </div>
-                                    <input type="text" className="filter__search-input" placeholder='Поиск по системе'/>
+                                    {/* <input type="text" className="filter__search-input" placeholder='Поиск по системе' /> */}
+                                    <input 
+                                        type="text" 
+                                        placeholder="Поиск..." 
+                                        // value={searchTerm} 
+                                        onChange={(e) => highlightText(e.target.value)} 
+                                    />
+                                    {/* <button onClick={
+                                        () => {
+                                            highlightText()
+                                            setIsFilterOpen(false)
+                                        }
+                                    }>Найти</button> */}
                                     {/* <SearchableContent /> */}
                                 </div>
                             </div>
@@ -269,7 +298,7 @@ const Orders = () => {
                                 </div>
                                 <div className="filter__item">
                                     <p className="filter__text">Дата</p>
-                                    <input className='filter__input filter__input--date' type="date" />
+                                    <input className='filter__input filter__input--date' type="date" ref={inputDateOrderRef}/>
                                 </div>
                                 <div className="filter__item">
                                     <p className="filter__text">Покупатель</p>
@@ -300,6 +329,7 @@ const Orders = () => {
                                     clearSelectedItems();
                                     handleFilterSelection();
                                     setIsFilterOpen(false);
+                                    // console.log(inputDateOrderRef.current.value);
                                 }}/>
                             </div>
                         </div>

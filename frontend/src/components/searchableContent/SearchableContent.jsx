@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 
 const SearchableContent = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const content = 
-        "Это пример текста на странице. Вы можете искать слова в этом тексте./n Попробуйте найти слово 'поиск' или любое другое слово."
-    ;
+    const content = document.body.innerText;
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);

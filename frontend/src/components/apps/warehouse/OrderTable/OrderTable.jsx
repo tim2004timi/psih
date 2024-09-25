@@ -216,6 +216,17 @@ const OrderTable = ({
     return `${day}.${month}.${year}`;
   }
 
+  function formatDateToISO(dateString) {
+    // Разбираем строку на день, месяц и год
+    const [day, month, year] = dateString.split('.');
+
+    // Создаем объект Date
+    const date = new Date(`${year}-${month}-${day}`);
+
+    // Возвращаем дату в формате ISO
+    return date.toISOString();
+}
+
   const columnConfig = {
     "№": {
       className: "column-class column-number",
@@ -490,11 +501,22 @@ const OrderTable = ({
     ));
   };
 
+  // useEffect(() => {
+  //   console.log(selectedFilterItems.order_date)
+  //   // console.log(row.order_date)
+  // }, [selectedFilterItems]);
+
   const renderRows = () => {
     return data
       .filter((row) => {
         if (Object.keys(selectedFilterItems).length === 0) {
           return true;
+        }
+
+        let date
+
+        if (selectedFilterItems.order_date.length !== 0) {
+          date = formatDateTime(selectedFilterItems.order_date);
         }
 
         const idMatches =
@@ -510,6 +532,15 @@ const OrderTable = ({
           selectedFilterItems.tag.length === 0 ||
           selectedFilterItems.tag.includes(row.tag);
 
+        if (selectedFilterItems.order_date.length !== 0) {
+          const filterDate = new Date(selectedFilterItems.order_date);
+          const rowDate = new Date(row.order_date);
+
+          const dateMatches = formatDateTime(filterDate) === formatDateTime(rowDate);
+
+          return idMatches && statusMatches && nameMatches && tagMatches && dateMatches;
+        }
+    
         return idMatches && statusMatches && nameMatches && tagMatches;
       })
       .map((row, rowIndex) => (
