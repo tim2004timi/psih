@@ -6,14 +6,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
-from src.orders.schemas import Order, OrderCreate, OrderUpdatePartial
+from src.orders.schemas import (
+    Order,
+    OrderCreate,
+    OrderUpdatePartial,
+    OrderWithoutProducts,
+)
 
 router = APIRouter(tags=["Orders"], prefix="/orders")
 
 
 @router.get(
     path="/",
-    response_model=List[Order],
+    response_model=List[OrderWithoutProducts],
     description="Get all orders with all information",
 )
 async def get_all_orders(
@@ -48,7 +53,9 @@ async def update_order(
     )
 
 
-@router.delete(path="/", response_model=Order, description="Delete order by id")
+@router.delete(
+    path="/", response_model=OrderWithoutProducts, description="Delete order by id"
+)
 async def delete_order_by_id(
     session: AsyncSession = Depends(db_manager.session_dependency),
     order: Order = Depends(dependencies.order_by_id_dependency),
@@ -60,7 +67,6 @@ async def delete_order_by_id(
     path="/multiple/", response_model=None, description="Delete orders by ids"
 )
 async def delete_orders_by_id_multiple(
-    order_ids: List[int],
-    session: AsyncSession = Depends(db_manager.session_dependency)
+    order_ids: List[int], session: AsyncSession = Depends(db_manager.session_dependency)
 ):
     return await service.delete_orders(session=session, order_ids=order_ids)

@@ -23,6 +23,7 @@
     position: absolute;
     top: 5px;
     right: 3px;
+
 }
 
 .dropdownlist__arrow{
@@ -71,6 +72,8 @@
     width: 100%;
     color: #000;
     z-index: 10;
+    backdrop-filter: blur(10px);
+
 }
 
 .dropdownlist-list-tagClass{

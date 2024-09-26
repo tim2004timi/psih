@@ -1,28 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useOutletContext } from 'react-router-dom';
 import './OrderData.css';
 import DropDownList from '../../../../../dropDownList/DropDownList';
 import { createOrder, getOrderById, patchOrder } from '../../../../../../API/ordersAPI';
 import settings from '../../../../../../assets/img/table-settings.svg';
 import InputMask from 'react-input-mask';
+import { formatDateTime } from '../../../../../../API/formateDateTime';
 
 const OrderData = () => {
     const { id } = useParams();
     const [orderInfo, setOrderInfo] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([[], []]);
-    const [editableFields, setEditableFields] = useState({});
     const [statusObj, setStatusObj] = useState({});
     const [tagObj, setTagObj] = useState({});
     const [localPhone, setLocalPhone] = useState('')
     const navigate = useNavigate();
     const phoneInputRef = useRef(null);
+    const { ordersDate, setOrdersDate } = useOutletContext();
+    const [unformateDate, setUnformateDate] = useState('')
 
     const getOrderData = async (id) => {
         try {
             const response = await getOrderById(id);
             setOrderInfo(response.data);
             setIsLoading(false);
+            setUnformateDate(response.data.order_date)
+            setOrdersDate(formatDateTime(response.data.order_date))
         } catch (error) {
             setIsLoading(true);
         }
@@ -40,10 +44,10 @@ const OrderData = () => {
         const value = e.target.value;
         setOrderInfo((prev) => ({ ...prev, [field]: value }));
 
-        if (id === undefined) {
-            setEditableFields((prev) => ({ ...prev, [field]: value }));
-            return;
-        }
+        // if (id === undefined) {
+        //     setEditableFields((prev) => ({ ...prev, [field]: value }));
+        //     return;
+        // }
 
         updateOrderInfo(field, value);
     };
@@ -62,15 +66,15 @@ const OrderData = () => {
         }
     };
 
-    const createOrderData = async () => {
-        const finalFields = { ...editableFields, ...statusObj, ...tagObj };
-        try {
-            const response = await createOrder(finalFields);
-            console.log(response.data);
-        } catch (error) {
-            console.error(error);
-        }
-    };
+    // const createOrderData = async () => {
+    //     const finalFields = { ...editableFields, ...statusObj, ...tagObj };
+    //     try {
+    //         const response = await createOrder(finalFields);
+    //         console.log(response.data);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
 
     const handleStatusObj = (obj) => {
         setStatusObj(obj);
@@ -97,7 +101,7 @@ const OrderData = () => {
                         statusList={true}
                         startItem={id ? orderInfo.status : 'статус заказа'}
                         rowId={orderInfo.id}
-                        statusObj={id ? null : handleStatusObj}
+                        // statusObj={id ? null : handleStatusObj}
                         currentPage='orders'
                     />
                     <DropDownList
@@ -107,7 +111,7 @@ const OrderData = () => {
                         items={['бартер', 'нет']}
                         tagClass={true}
                         rowId={orderInfo.id}
-                        tagObj={id ? null : handleTagObj}
+                        // tagObj={id ? null : handleTagObj}
                         currentPage='orders'                        
                     />
                 </div>
@@ -242,7 +246,7 @@ const OrderData = () => {
                     ))}
                 </div>
             </div>
-            {
+            {/* {
             id == undefined 
                 ? 
                 <button onClick={() => {
@@ -253,7 +257,7 @@ const OrderData = () => {
                 </button>
                 : 
                 null
-            }
+            } */}
             <div className='orderData__tableSettins'>
                 <button className='OrderData__tableSettins-btn'>
                     <img src={settings} alt="settings" />

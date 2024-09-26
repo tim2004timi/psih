@@ -43,6 +43,7 @@
 .column-class{
     font-size: 13px;
     line-height: 16px;
+    vertical-align: middle;
 }
 
 .column-number{
@@ -113,7 +114,7 @@
     transform: rotate(45deg);
 }
 
-.column-number-content__container {
+.column-number-link{
     flex-grow: 1;
     height: 100%;
     padding-left: 25px;

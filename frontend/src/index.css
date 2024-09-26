@@ -84,6 +84,239 @@ html {
 button {
 	font-family: 'IBM', sans-serif;
 }
+
+.warehouse-page__header{
+    position: sticky;
+    top: 129px;
+    background-color: rgba(255, 255, 255, 1);
+    z-index: 3;
+    height: 62px;
+    
+}
+
+.warehouse-page__header-container{
+    padding: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.warehouse-page__btn-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.warehouse-page__btn-filter{
+    border: 1px solid #0000004D;
+    padding: 5px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+    font-size: 16px;
+    line-height: 19px;
+}
+
+.warehouse-page__btn-filter:hover{
+    color: #fff;
+    background: rgba(0, 0, 0, 1);
+    transition: all 0.3s;
+}
+
+.search{
+    display: flex;
+    align-items: center;
+    border: 1px ;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    height: 31px;
+    padding: 6px;
+}
+
+.search__btn{
+    cursor: pointer;
+}
+
+.search__btn-button{
+    background-color: transparent;
+    border: none;    
+    padding: 0;
+    cursor: pointer;
+}
+
+.search__btn-img{
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.searchable-content{
+    display: none;
+    align-items: center;
+    gap: 9px;
+    padding-left: 6px;
+
+}
+
+.searchable-content__separator{
+    width: 1px;
+    height: 29px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.searchable-content__input{
+    border: none;
+    height: 31px;
+    background-color: transparent;
+    font-size: 14px;
+}
+
+.searchable-content__wrapper{
+    display: flex;
+    align-items: center;
+}
+
+.searchable-content__btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 25px;
+    height: 20px;
+}
+
+.searchable-content__btn:last-child{
+    width: 20px;
+}
+
+.searchable-content__img--close{
+    width: 12px;
+    height: 12px;
+}
+
+.warehouse-table-btn__container{
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.warehouse-table-btn__counter{
+    background-color: rgba(0, 0, 0, 1);
+    border-radius: 7px;
+    color: #fff;
+    padding: 3px 10px;
+}
+
+.warehouse-table-btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 24px;
+}
+
+.warehouse-table__settings-btn{
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+/* .orderTable__settings-img--hover{
+    display: none;
+    width: 30px;
+    height: 30px;
+    transform: rotate(90deg);
+}
+
+.orderTable__settings-btn:hover .orderTable__settings-img{
+    display: none;
+}
+.orderTable__settings-btn:hover .orderTable__settings-img--hover{
+    display: block; 
+} */
+
+.warehouse-table__settings{
+    position: absolute;
+    right: 28px;
+    top: 24px;
+    border-radius: 7px;
+    padding: 17px 35px 20px 14px;
+    background-color: rgba(0, 0, 0, 0.15);
+    z-index: 3;
+    backdrop-filter: blur(8px);
+}
+
+.warehouse-table__settings-container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.warehouse-table__settings-item{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 9px;
+}
+
+.warehouse-table__settings-content{
+    font-size: 13px;
+    line-height: 16px;
+}
+
+.warehouse-table__settings-input{
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.custom-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkbox-custom {
+    position: absolute;
+    top: -9px;
+    left: 0;
+    height: 15px;
+    width: 15px;
+    background-color: transparent; 
+    border: 1px solid black; 
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.custom-checkbox:checked ~ .checkbox-custom {
+    background-color: black; 
+}
+
+.checkbox-custom::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox:checked ~ .checkbox-custom::after {
+    display: block;
+}
+
+.checkbox-custom::after {
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 10px;
+    border: solid white; 
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
 .separator{
     position: absolute;
     width: 100%;
@@ -91,4 +324,103 @@ button {
     height: 1px;
     left: 0;
 	z-index: 2;
+}
+
+.filter{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 4;
+    top: 191px;
+    left: 0;
+    background-color: #00000026;
+    backdrop-filter: blur(10px);
+    padding-top: 20px;
+}
+
+.filter__content{
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border-radius: 7px;
+    width: calc(100% - 100px);
+    position: relative;
+    margin: 0 auto;
+    height: auto;
+}
+
+.filter__content-wrapper{
+    width: 1120px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 64px 0 58px;
+}
+
+.filter__search{
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+
+.filter__search-container{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter__search-img{
+    width: 19px;
+    height: 19px;
+}
+
+.filter__search-input{
+    border: none;
+    font-size: 14px;
+}
+
+.filter__container{
+    display: flex;
+    margin-bottom: 16px;
+    gap: 26px;
+    margin-bottom: 96px;
+    flex-wrap: wrap;
+}
+
+.filter__item{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+}
+
+.filter__input{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    width: 150px;
+    height: 29px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: #fff;
+    padding: 0 10px;
+}
+
+.filter__input--date{
+    border-radius: 7px;
+    width: 165px;
+}
+
+.filter__input--pokupatel{
+    overflow-x: scroll;
+    overflow-y: hidden;
+    width: 356px;
+}
+
+.filter-btn-container{
+    display: flex;
+    justify-content: end;
+    gap: 21px;
+    margin-left: auto;
 }

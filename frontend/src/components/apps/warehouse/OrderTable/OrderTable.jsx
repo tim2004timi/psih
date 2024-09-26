@@ -8,6 +8,7 @@ import SelectionArea from "../../../selectionArea/SelectionArea";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setIds } from "./../../../stm/idsSlice";
+import { formatDateTime } from "../../../../API/formateDateTime";
 
 const OrderTable = ({
   selectedColumns,
@@ -204,61 +205,38 @@ const OrderTable = ({
     );
   };
 
-  function formatDateTime(dateConst) {
-    const date = new Date(dateConst);
-    const year = date.getFullYear();
-    const month =
-      date.getMonth() + 1 < 10
-        ? `0${date.getMonth() + 1}`
-        : date.getMonth() + 1;
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-
-    return `${day}.${month}.${year}`;
-  }
-
-  function formatDateToISO(dateString) {
-    // Разбираем строку на день, месяц и год
-    const [day, month, year] = dateString.split('.');
-
-    // Создаем объект Date
-    const date = new Date(`${year}-${month}-${day}`);
-
-    // Возвращаем дату в формате ISO
-    return date.toISOString();
-}
-
   const columnConfig = {
     "№": {
       className: "column-class column-number",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
-          <div className="column-number__link-container">
-            <Link to={`/orders/${row.id}`}>
-              <div
-                className={`column-number__container ${
-                  isChecked ? "highlighted-cell" : ""
-                }`}
-              >
-                <div className={`column-number-input__container`}>
-                  <input
-                    type="checkbox"
-                    className="column-number-input"
-                    checked={isChecked}
-                    readOnly
-                  />
-                  <span
-                    className="column-number-input__custom"
-                    onClick={(event) => {
-                      handleCheckboxChange(row.id, event);
-                      event.preventDefault();
-                    }}
-                  ></span>
-                </div>
-                <p className="column-number-content__container">{row.id}</p>
-              </div>
-            </Link>
-          </div> 
+          <div
+            className={`column-number__container ${
+              isChecked ? "highlighted-cell" : ""
+            }`}
+          >
+            <div className={`column-number-input__container`}>
+              <input
+                type="checkbox"
+                className="column-number-input"
+                checked={isChecked}
+                readOnly
+              />
+              <span
+                className="column-number-input__custom"
+                onClick={(event) => {
+                  handleCheckboxChange(row.id, event);
+                  event.preventDefault();
+                }}
+              ></span>
+            </div>
+            <div className="column-number-link">
+              <Link className="column-number-link-link" to={`/orders/${row.id}`}>
+                {row.id}
+              </Link>
+            </div>
+          </div>
         );
       },
     },
@@ -513,7 +491,7 @@ const OrderTable = ({
           return true;
         }
 
-        let date
+        let date;
 
         if (selectedFilterItems.order_date.length !== 0) {
           date = formatDateTime(selectedFilterItems.order_date);
@@ -536,11 +514,18 @@ const OrderTable = ({
           const filterDate = new Date(selectedFilterItems.order_date);
           const rowDate = new Date(row.order_date);
 
-          const dateMatches = formatDateTime(filterDate) === formatDateTime(rowDate);
+          const dateMatches =
+            formatDateTime(filterDate) === formatDateTime(rowDate);
 
-          return idMatches && statusMatches && nameMatches && tagMatches && dateMatches;
+          return (
+            idMatches &&
+            statusMatches &&
+            nameMatches &&
+            tagMatches &&
+            dateMatches
+          );
         }
-    
+
         return idMatches && statusMatches && nameMatches && tagMatches;
       })
       .map((row, rowIndex) => (
