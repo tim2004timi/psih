@@ -35,6 +35,7 @@ async def get_all_product_categories(
     path="/categories/full/",
     response_model=List[ProductCategoryWithProducts],
     description="Get all product categories with their products",
+    deprecated=True,
 )
 async def get_all_product_categories_with_products(
     session: AsyncSession = Depends(db_manager.session_dependency),

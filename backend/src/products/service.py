@@ -17,7 +17,7 @@ from .schemas import (
 )
 from .models import Product, ProductCategory, ProductImage
 from .utils import create_auto_article
-from ..loadfiles import upload_file
+from ..utils import upload_file
 
 
 async def get_product_categories(session: AsyncSession) -> List[ProductCategory]:
@@ -75,10 +75,15 @@ async def get_products(
         stmt = (
             select(Product)
             .options(selectinload(Product.category))
+            .options(selectinload(Product.images))
             .where(Product.archived == archived)
         )
     else:
-        stmt = select(Product).options(selectinload(Product.category))
+        stmt = (
+            select(Product)
+            .options(selectinload(Product.category))
+            .options(selectinload(Product.images))
+        )
     result: Result = await session.execute(stmt)
     products = result.scalars().all()
     return list(products)
@@ -154,9 +159,9 @@ async def upload_product_image(
     session: AsyncSession, product_id: int, file: UploadFile
 ) -> ProductImage:
     product = await get_product_by_id(session=session, product_id=product_id)
-    unique_filename = await upload_file(file=file, dir_name="products")
+    url = await upload_file(file=file, dir_name="products")
 
-    image = ProductImage(filename=unique_filename, product_id=product.id)
+    image = ProductImage(url=url, product_id=product.id)
     session.add(image)
     await session.commit()
     await session.refresh(image)

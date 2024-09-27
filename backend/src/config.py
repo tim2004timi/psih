@@ -15,4 +15,4 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-UPLOAD_DIR = "./upload"
+UPLOAD_DIR = "./static/uploads"

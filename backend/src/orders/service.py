@@ -22,7 +22,10 @@ async def get_order_by_id(session: AsyncSession, order_id: int) -> Order | None:
         .options(
             selectinload(Order.products_in_order)
             .selectinload(ProductInOrder.product)
-            .selectinload(Product.category)
+            .selectinload(Product.category),  # Загрузка категории
+            selectinload(Order.products_in_order)
+            .selectinload(ProductInOrder.product)
+            .selectinload(Product.images),  # Загрузка изображений
         )
         .where(Order.id == order_id)
     )
@@ -50,16 +53,31 @@ async def update_order(
     session: AsyncSession, order: Order, order_update: OrderUpdatePartial
 ) -> Order:
     for name, value in order_update.model_dump(exclude_unset=True).items():
-        products_in_order = value
-        if name == "products_in_order":
+        if name == "products_in_order" and value:
+            products_in_order = value
+
+            await delete_products_in_order(session=session, order=order)
+
             for product_in_order in products_in_order:
+                print(product_in_order)
                 product_in_order = ProductInOrder(
-                    order_id=order.id, **product_in_order_create.model_dump()
+                    order_id=order.id,
+                    product_id=product_in_order["product_id"],
+                    amount=product_in_order["amount"],
                 )  # TODO: доделать (спросить логику редактирования у влада)
-        session.add(product_in_order)
-        setattr(order, name, value)
+                session.add(product_in_order)
+        else:
+            setattr(order, name, value)
     await session.commit()
-    return order
+    await session.refresh(order)
+    return await get_order_by_id(session=session, order_id=order.id)
+
+
+async def delete_products_in_order(session: AsyncSession, order):
+    stmt = delete(ProductInOrder).where(ProductInOrder.id == order.id)
+    await session.execute(stmt)
+    await session.commit()
+    order.products_in_order = []
 
 
 async def delete_order(session: AsyncSession, order: Order) -> Order:
