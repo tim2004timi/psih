@@ -3,6 +3,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 0;
+    position: relative;
 }
 
 .Neworder__separator{
@@ -67,9 +68,16 @@
     background: rgba(0, 0, 0, 1);
 }
 
+.Neworder__header-info{
+    display: flex;
+    gap: 33px;
+    align-items: center;
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+}
+
 .selectOrder {
-    position: relative;
-    width: 100%;
     display: flex;
     justify-content: center;
 }

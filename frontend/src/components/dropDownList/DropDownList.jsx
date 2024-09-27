@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import { patchOrder } from '../../API/ordersAPI';
 
 const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusList, rowId, tagClass, statusObj, tagObj, currentPage }) => {
-    const localStartItem = currentPage === 'orders' ? 'новый заказ' : 'новый товар';
-    const [selectedItem, setSelectedItem] = useState(startItem || localStartItem);
+    const [selectedItem, setSelectedItem] = useState(startItem);
     const containerRef = useRef(null);
     const listRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +28,6 @@ const DropDownList = ({ selectedItemText, items, isItemLink, startItem, statusLi
 
     const updateOrderField = async (field, newValue) => {
         if (startItem !== `статус заказа` && field === 'status') {
-            console.log('статус')
             try {
                 const response = await patchOrder(rowId, field, newValue);
                 setSelectedItem(response.data[field]);
