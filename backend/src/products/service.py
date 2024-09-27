@@ -90,7 +90,14 @@ async def get_products(
 
 
 async def get_product_by_id(session: AsyncSession, product_id: int) -> Product:
-    product = await session.get(Product, product_id)
+    stmt = (
+        select(Product)
+        .options(selectinload(Product.category))
+        .options(selectinload(Product.images))
+        .where(Product.id == product_id)
+    )
+    result: Result = await session.execute(stmt)
+    product = result.scalars().one_or_none()
     if product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -117,12 +124,9 @@ async def create_product(
         await session.commit()
         await session.refresh(product)
 
-        result: Result = await session.execute(
-            select(Product)
-            .options(selectinload(Product.category))
-            .where(Product.id == product.id)
+        product_with_category = await get_product_by_id(
+            session=session, product_id=product.id
         )
-        product_with_category = result.scalars().first()
 
         return product_with_category
 
