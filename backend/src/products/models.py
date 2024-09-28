@@ -33,10 +33,12 @@ class Product(Base):
     category: Mapped["ProductCategory"] = relationship(back_populates="products")
 
     products_in_order: Mapped[List["ProductInOrder"]] = relationship(
-        back_populates="product"
+        back_populates="product", cascade="all, delete-orphan"
     )
 
-    images: Mapped[List["ProductImage"]] = relationship(back_populates="product")
+    images: Mapped[List["ProductImage"]] = relationship(
+        back_populates="product", cascade="all, delete-orphan"
+    )
 
 
 class ProductImage(Base):

@@ -177,3 +177,10 @@ async def upload_product_image(
     await session.refresh(image)
 
     return image
+
+
+async def delete_products(session: AsyncSession, product_ids: List[int]) -> None:
+    stmt = delete(Product).where(Product.id.in_(product_ids))
+
+    await session.execute(stmt)
+    await session.commit()
