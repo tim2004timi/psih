@@ -16,12 +16,6 @@ async def product_category_by_id_dependency(
     product_category = await service.get_product_category_by_id(
         session=session, product_category_id=product_category_id
     )
-
-    if product_category is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Категория с ID ({product_category_id}) не найдена",
-        )
     return product_category
 
 

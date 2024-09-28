@@ -30,7 +30,13 @@ async def get_product_categories(session: AsyncSession) -> List[ProductCategory]
 async def get_product_category_by_id(
     session: AsyncSession, product_category_id: int
 ) -> ProductCategory:
-    return await session.get(ProductCategory, product_category_id)
+    product_category = await session.get(ProductCategory, product_category_id)
+    if product_category is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Категория с ID ({product_category_id}) не найдена",
+        )
+    return product_category
 
 
 async def create_product_category(
