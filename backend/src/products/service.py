@@ -14,6 +14,7 @@ from .schemas import (
     ProductCategoryWithProducts,
     ProductCreate,
     ProductUpdatePartial,
+    ProductCategoryUpdatePartial,
 )
 from .models import Product, ProductCategory, ProductImage
 from .utils import create_auto_article
@@ -54,6 +55,18 @@ async def create_product_category(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Категория с именем '{product_category_create.name}' уже существует",
         )
+
+
+async def update_product_category(
+    session: AsyncSession,
+    product_category: ProductCategory,
+    product_category_update: ProductCategoryUpdatePartial,
+) -> ProductCategory:
+    for name, value in product_category_update.model_dump(exclude_unset=True).items():
+        setattr(product_category, name, value)
+    await session.commit()
+
+    return product_category
 
 
 async def delete_product_category(

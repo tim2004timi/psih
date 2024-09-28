@@ -69,14 +69,6 @@ app.add_middleware(
 
 # app.add_middleware(LogPostPatchRequestsMiddleware)
 
-
-@main_router.get(
-    path="/hello-alya/", description="Аля, нажми сюда!", name="Аля, нажми сюда!"
-)
-async def hi_alya():
-    return "Привет, Аля!"
-
-
 main_router.include_router(categories_router)
 main_router.include_router(products_router)
 main_router.include_router(orders_router)

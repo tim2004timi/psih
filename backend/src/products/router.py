@@ -12,6 +12,7 @@ from .schemas import (
     ProductCreate,
     ProductUpdatePartial,
     ProductCategory,
+    ProductCategoryUpdatePartial,
     Product,
     ProductImage,
 )
@@ -47,7 +48,7 @@ async def get_all_product_categories_with_products(
 
 @categories_router.post(
     path="/categories/",
-    response_model=ProductCategory | None,
+    response_model=ProductCategory,
     description="Create new product category",
 )
 async def create_product_category(
@@ -56,6 +57,25 @@ async def create_product_category(
 ):
     return await service.create_product_category(
         session=session, product_category_create=product_category_create
+    )
+
+
+@categories_router.patch(
+    path="/categories/",
+    response_model=ProductCategory,
+    description="Update partial product category",
+)
+async def update_product_category(
+    product_category_update: ProductCategoryUpdatePartial,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+    product_category: ProductCategory = Depends(
+        dependencies.product_category_by_id_dependency
+    ),
+):
+    return await service.update_product_category(
+        session=session,
+        product_category_update=product_category_update,
+        product_category=product_category,
     )
 
 
