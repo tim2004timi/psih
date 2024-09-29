@@ -96,6 +96,18 @@ async def delete_product_category_by_id(
 
 
 @products_router.get(
+    path="/",
+    response_model=Product,
+    description="Get product by id",
+)
+async def get_product_by_id(
+    session: AsyncSession = Depends(db_manager.session_dependency),
+    product: Product = Depends(dependencies.product_by_id_dependency),
+):
+    return product
+
+
+@products_router.get(
     path="/all/",
     response_model=List[Product],
     description="Get all products",
