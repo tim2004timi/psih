@@ -15,6 +15,10 @@ class ProductCategoryCreate(ProductCategoryBase):
     pass
 
 
+class ProductCategoryUpdatePartial(ProductCategoryBase):
+    pass
+
+
 class ProductCategory(ProductCategoryBase):
     model_config = ConfigDict(from_attributes=True)
 
@@ -95,7 +99,7 @@ class Product(ProductBase):
 
     id: int
     category: ProductCategory
-    # images  # TODO: доделать
+    images: List["ProductImage"]
 
 
 class ProductInOrderBase(BaseModel):
@@ -123,7 +127,7 @@ class ProductImage(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    filename: str
+    url: str
 
 
 from ..orders.schemas import Order

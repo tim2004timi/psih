@@ -1,13 +1,16 @@
 import json
+import os
 
 from fastapi import FastAPI, Request, APIRouter
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from .orders.router import router as orders_router
-from .products.router import router as products_router
+from .products.router import products_router, categories_router
 
 from .database import Base
+from .config import UPLOAD_DIR
 
 
 # class LogPostPatchRequestsMiddleware(BaseHTTPMiddleware):
@@ -50,6 +53,11 @@ from .database import Base
 app = FastAPI(title="Psih Clothes")
 main_router = APIRouter(prefix="/api")
 
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+# Маршрут для отдачи статических файлов
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,11 +69,8 @@ app.add_middleware(
 
 # app.add_middleware(LogPostPatchRequestsMiddleware)
 
-main_router.include_router(orders_router)
+main_router.include_router(categories_router)
 main_router.include_router(products_router)
+main_router.include_router(orders_router)
+
 app.include_router(main_router)
-
-
-# @app.get("/")
-# async def get():
-#     return "Hello, world!"
