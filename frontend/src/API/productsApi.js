@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export const serverUrl = 'http://87.242.85.68:8000/';
+
 export async function getCategories() {
         try {
             let response = await axios.get('http://87.242.85.68:8000/api/products/categories/');
@@ -62,3 +64,13 @@ export async function deleteProduct(productId) {
         throw(e)
     }
 }
+
+export async function getProductById(productId) {
+    try {
+        let response = await axios.get(`http://87.242.85.68:8000/api/products/?product_id=${productId}`);
+        console.log(response)
+    } catch(e) {
+        throw(e)
+    }
+}
+

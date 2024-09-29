@@ -34,7 +34,8 @@
     border-radius: 7px;
     border: 1px solid transparent;
     cursor: pointer;
-    width: 175px;
+    width: calc(100% / 3);
+    height: 129px;
     display: flex;
     justify-content: center;
 }

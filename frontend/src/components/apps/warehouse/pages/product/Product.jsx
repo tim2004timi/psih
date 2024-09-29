@@ -13,8 +13,11 @@ import {
   getProductsNA,
   deleteProduct,
   patchProduct,
+  getProductById,
+  serverUrl
 } from "../../../../../API/productsApi";
 import tshirts from "../../../../../assets/img/tshirts.svg";
+import getFullImageUrl from "../../../../../API/getFullImgUrl";
 
 const Product = () => {
   const { id } = useParams();
@@ -30,7 +33,9 @@ const Product = () => {
   async function fetchProductsNA() {
     try {
       const response = await getProductsNA();
+      // console.log(response.data);
       setProducts(response.data);
+
       setIsLoading(false);
     } catch (e) {
       console.error(e);
@@ -92,22 +97,42 @@ const Product = () => {
     deleteOverlayRef.current.style.display = "none";
   };
 
-  const renderImg = () => {
-    const images = Array.from({ length: 6 }); // Создаем массив из 6 элементов
+  const renderImgDragAndDrop = () => {
+    return (
+      <form className="img-dragAndDrop">
+        <div className="img-dragAndDrop__upload-zone">
+          <p className="img-dragAndDrop__upload-zone-plus">+</p>
+        </div>
+      </form>
+    );
+  };
 
+  const renderImg = (imgArr) => {
     return (
       <div className="product-img__container">
-        {images.map((_, index) => (
-          <div key={index} className="product__img-item">
+        {imgArr.map((image) => (
+          <div key={image.id} className="product__img-item">
             <button className="product__img-btn">
               <div className="product__img-btn--minus"></div>
             </button>
-            <img src={tshirts} alt="img" className="product__img-img" />
+            <img src={getFullImageUrl(serverUrl, image.url)} alt="img" className="product__img-img" />
           </div>
         ))}
       </div>
     );
+  }
+
+  const renderImgContent = () => {
+    if (currentProduct && currentProduct.images && currentProduct.images.length > 0) {
+      return renderImg(currentProduct.images);
+    } else {
+      return renderImgDragAndDrop();
+    }
   };
+
+  useEffect(() => {
+    renderImgContent();
+  }, [currentProduct]);
 
   if (isLoading) {
     return <div>Загрузка...</div>;
@@ -169,7 +194,12 @@ const Product = () => {
       </div>
       <div className="product__separator"></div>
       <div className="product__content">
-        <div className="product-img__content">{renderImg()}</div>
+        <div className="product-img__content">
+          {renderImgContent()}
+          <div className="product-img__content-load">
+            <input type="file" className="product-img__content-input" />
+          </div>
+        </div>
         <div className="product__content-info">
           <div className="product__name">
             <input
