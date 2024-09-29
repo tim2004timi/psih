@@ -32,3 +32,12 @@ async def upload_file(file: UploadFile, dir_name: str) -> str:
         url = file_path[2:]
 
     return url
+
+
+async def delete_file(file_path: str) -> bool:
+    file_path = "./" + file_path
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return True
+    else:
+        return False
