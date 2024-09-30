@@ -18,7 +18,7 @@ from .schemas import (
 )
 from .models import Product, ProductCategory, ProductImage
 from .utils import create_auto_article
-from ..utils import upload_file
+from ..utils import upload_file, delete_file
 
 
 async def get_product_categories(session: AsyncSession) -> List[ProductCategory]:
@@ -190,6 +190,25 @@ async def upload_product_image(
     await session.refresh(image)
 
     return image
+
+
+async def delete_product_image_by_id(session: AsyncSession, image_id: int):
+    image = await session.get(ProductImage, image_id)
+    if not image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Изображение с id({image_id}) не найдено",
+        )
+    try:
+        response = await delete_file(file_path=image.url)
+        await session.delete(image)
+        await session.commit()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Не удалось удалить изображение",
+        )
 
 
 async def delete_products(session: AsyncSession, product_ids: List[int]) -> None:

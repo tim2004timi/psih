@@ -188,6 +188,14 @@ async def upload_product_image(
     )
 
 
+@products_router.delete(path="/images/", description="Delete product image by id")
+async def delete_product_image_by_id(
+    image_id: int,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.delete_product_image_by_id(session=session, image_id=image_id)
+
+
 @products_router.delete(
     path="/multiple/", response_model=None, description="Delete products by ids"
 )
