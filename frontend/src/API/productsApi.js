@@ -74,3 +74,32 @@ export async function getProductById(productId) {
     }
 }
 
+export async function uploadProductImg(productId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      const response = await axios.post(
+        `http://87.242.85.68:8000/api/products/${productId}/upload-image/`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      console.log(response);
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+export async function deleteProductImg(productId) {
+    try {
+        let response = await axios.delete(`http://87.242.85.68:8000/api/products/images/?image_id=${productId}`);
+        console.log(response)
+    } catch(e) {
+        throw(e)
+    }
+}

@@ -20,9 +20,12 @@ import {
   patchProduct,
   deleteCategory,
   createCategory,
+  serverUrl,
 } from "../../../../../API/productsApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setProductsNA } from "../../../../stm/productsNASlice";
+import getFullImageUrl from "../../../../../API/getFullImgUrl";
+import ProductTable from "../../productTable/ProductTable";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -43,12 +46,11 @@ const Products = () => {
     "артикул",
     "цена",
     "остаток",
-    "в архив",
   ]);
   const [showColumnList, setShowColumnList] = useState(false);
   const columnsListRef = useRef(null);
   const columnsListBtnRef = useRef(null);
-  const columns = ["название", "артикул", "цена", "остаток", "в архив"];
+  const columns = ["название", "артикул", "цена", "остаток"];
 
   const [isNewProduct, setIsNewProduct] = useState(false);
 
@@ -60,6 +62,8 @@ const Products = () => {
 
   const [isCategoriesSettingsOpen, setIsCategoriesSettingsOpen] =
     useState(false);
+
+  const [isShowArchive, setIsShowArchive] = useState(false);
 
   const categoriesSettingsInputRef = useRef(null);
   const categoriesSettingsRef = useRef(null);
@@ -149,8 +153,12 @@ const Products = () => {
   };
 
   useEffect(() => {
-    setActiveCheckboxCount(Math.floor(activeCheckboxCount))
-    setActiveCheckboxIds(activeCheckboxIds.filter((item, index) => activeCheckboxIds.indexOf(item) === index))
+    setActiveCheckboxCount(Math.floor(activeCheckboxCount));
+    setActiveCheckboxIds(
+      activeCheckboxIds.filter(
+        (item, index) => activeCheckboxIds.indexOf(item) === index
+      )
+    );
   }, [activeCheckboxCount]);
 
   const showFilter = () => {
@@ -215,15 +223,15 @@ const Products = () => {
     };
   }, [isFilterOpen, showColumnList]);
 
-  useEffect(() => {
-        
-    if (activeCheckboxCount > 0) {
-        warehouseTableBtnContainerRef.current.style.display = 'flex';
-    } else {
-        warehouseTableBtnContainerRef.current.style.display = 'none';
-    }
+  // useEffect(() => {
 
-  }, [activeCheckboxCount])
+  //   if (activeCheckboxCount > 0) {
+  //       warehouseTableBtnContainerRef.current.style.display = 'flex';
+  //   } else {
+  //       warehouseTableBtnContainerRef.current.style.display = 'none';
+  //   }
+
+  // }, [activeCheckboxCount])
 
   async function fetchCategories() {
     try {
@@ -349,7 +357,13 @@ const Products = () => {
             <div className="column-number__content">
               <Link to={`/products/${row.id}`}>{row.name}</Link>
               <div className={`column-name__container-img`}>
-                <img className="column-name__img" src={row.img} alt="img" />
+                {row.images.length !== 0 ? (
+                  <img
+                    className="column-name__img"
+                    src={getFullImageUrl(serverUrl, row.images[0].url)}
+                    alt="img"
+                  />
+                ) : null}
               </div>
             </div>
           </div>
@@ -503,7 +517,7 @@ const Products = () => {
               Фильтр
             </button>
             <PopularButton text={"+ Товар"} isHover={true} />
-            {isNewProduct && 
+            {isNewProduct && (
               <div className="new-product">
                 <div className="new-product__img">
                   <div className="new-product__save-btn">
@@ -514,17 +528,20 @@ const Products = () => {
                       <p className="new-product__upload-zone-plus">+</p>
                     </div>
                     <div className="new-product__form-load-btn">
-                      <input type="file" className="new-product__form-load-input" />
+                      <input
+                        type="file"
+                        className="new-product__form-load-input"
+                      />
                     </div>
                   </form>
                 </div>
-                
               </div>
-            }
+            )}
             <div className="products-header-vert-separator"></div>
-            <Link>
-              <PopularButton text={"Архив"} isHover={true} />
-            </Link>
+            <PopularButton text={"Архив"} isHover={true} />
+            {isShowArchive && (
+              <ProductTable />
+            )}
           </div>
           <div
             className="warehouse-table-btn__container"
@@ -533,15 +550,20 @@ const Products = () => {
             <div className="warehouse-table-btn__counter">
               {activeCheckboxCount}
             </div>
-            <button className="warehouse-table-btn warehouse-table-btn__szhatie">
+            <button
+              className="column-archive__btn"
+              onClick={() => toArchive(row.id, "archived", true)}
+            >
               <img
-                className="warehouse-table-btn__img"
-                src={szhatie}
-                alt="szhatie"
+                src={archiveBtn}
+                alt="archive-btn"
+                className="column-archive__img"
               />
-            </button>
-            <button className="warehouse-table-btn  warehouse-table-btn__editor">
-              <img className="orderTable-btn__img" src={editor} alt="editor" />
+              <img
+                src={archiveBtnHover}
+                alt="archive-btn"
+                className="column-archive__img--hover"
+              />
             </button>
             <button
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
@@ -631,32 +653,23 @@ const Products = () => {
               <div className="filter__container">
                 <div className="filter__item">
                   <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList
-                    
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList
-                    
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList
-                    
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Статус</p>
-                  <FilterDropDownList
-                   
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Тег</p>
-                  <FilterDropDownList
-                  />
+                  <FilterDropDownList />
                 </div>
               </div>
               <div className="filter-btn-container">

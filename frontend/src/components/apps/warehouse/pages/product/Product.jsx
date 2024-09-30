@@ -13,8 +13,9 @@ import {
   getProductsNA,
   deleteProduct,
   patchProduct,
-  getProductById,
-  serverUrl
+  uploadProductImg,
+  serverUrl,
+  deleteProductImg,
 } from "../../../../../API/productsApi";
 import tshirts from "../../../../../assets/img/tshirts.svg";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
@@ -29,6 +30,8 @@ const Product = () => {
   const [selectedNavBarProduct, setSelectedNavBarProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
+  const fileInputRef = useRef(null);
+  const [productsImages, setProductsImages] = useState([]);
 
   async function fetchProductsNA() {
     try {
@@ -51,6 +54,7 @@ const Product = () => {
     if (products.length > 0) {
       const product = products.find((product) => product.id == id);
       setCurrentProduct(product);
+      setProductsImages(product.images)
     }
   }, [products, id]);
 
@@ -97,6 +101,62 @@ const Product = () => {
     deleteOverlayRef.current.style.display = "none";
   };
 
+  const handleClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const removeImg = async (id) => {
+    try {
+      const response = await deleteProductImg(id);
+      setProductsImages((prevImages) => prevImages.filter((img) => img.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files);
+    console.log(files);
+  
+    const imagePromises = files.map(async (file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        reader.onerror = (error) => {
+          reject(error);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  
+    try {
+      const uploadPromises = files.map(async (file) => {
+        try {
+          const response = await uploadProductImg(id, file);
+          setProductsImages((prevImages) => [...prevImages, response]);
+        } catch (error) {
+          console.error("Ошибка при загрузке файла:", error);
+        }
+      });
+  
+      await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Ошибка при чтении или загрузке файлов:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (currentProduct && currentProduct.images) {
+      setProductsImages(currentProduct.images);
+    }
+  }, [currentProduct]);
+  
+  useEffect(() => {
+    renderImgContent();
+  }, [productsImages]);
+
   const renderImgDragAndDrop = () => {
     return (
       <form className="img-dragAndDrop">
@@ -112,27 +172,32 @@ const Product = () => {
       <div className="product-img__container">
         {imgArr.map((image) => (
           <div key={image.id} className="product__img-item">
-            <button className="product__img-btn">
+            <button
+              className="product__img-btn"
+              onClick={() => {
+                removeImg(image.id);
+              }}
+            >
               <div className="product__img-btn--minus"></div>
             </button>
-            <img src={getFullImageUrl(serverUrl, image.url)} alt="img" className="product__img-img" />
+            <img
+              src={getFullImageUrl(serverUrl, image.url)}
+              alt="img"
+              className="product__img-img"
+            />
           </div>
         ))}
       </div>
     );
-  }
+  };
 
   const renderImgContent = () => {
-    if (currentProduct && currentProduct.images && currentProduct.images.length > 0) {
-      return renderImg(currentProduct.images);
+    if (productsImages && productsImages.length > 0) {
+      return renderImg(productsImages);
     } else {
       return renderImgDragAndDrop();
     }
   };
-
-  useEffect(() => {
-    renderImgContent();
-  }, [currentProduct]);
 
   if (isLoading) {
     return <div>Загрузка...</div>;
@@ -196,8 +261,17 @@ const Product = () => {
       <div className="product__content">
         <div className="product-img__content">
           {renderImgContent()}
+          {/* {renderUploadedImg(currentProduct.images)} */}
           <div className="product-img__content-load">
-            <input type="file" className="product-img__content-input" />
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleFileChange}
+              multiple
+              accept="image/*"
+            />
+            <button onClick={handleClick}>Загрузить изображения</button>
           </div>
         </div>
         <div className="product__content-info">
