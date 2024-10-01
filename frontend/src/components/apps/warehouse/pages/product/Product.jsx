@@ -54,7 +54,7 @@ const Product = () => {
     if (products.length > 0) {
       const product = products.find((product) => product.id == id);
       setCurrentProduct(product);
-      console.log(product);
+      // console.log(product);
       setProductsImages(product.images)
     }
   }, [products, id]);

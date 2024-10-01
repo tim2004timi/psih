@@ -245,7 +245,7 @@ const ProductTable = () => {
       },
     },
     артикул: {
-      className: "products-table column-pt-article",
+      className: "products-table-column column-pt-article",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return row.article ? (
@@ -275,7 +275,7 @@ const ProductTable = () => {
       },
     },
     остаток: {
-      className: "products-table-column column-pt-product-remains",
+      className: "products-table-column column-pt-remains",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (

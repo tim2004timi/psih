@@ -29,6 +29,32 @@
     padding: 4px 29px;
   }
   
+  .product-table__navbar-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;     
+  }
+
+  .product-table__navbar-add{
+    width: 23px;
+    height: 23px;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+  }
+
+  .product-table__navbar-addBtn::before{
+    content: '+';
+    width: 15px;
+    height: 15px;
+    display: block;
+    top: 2px;
+    left: 6px;
+    color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+  }
+  
   .product-table__content {
     background-color: rgba(255, 255, 255, 0.5);
     padding: 16px 56px 0 0;
@@ -75,4 +101,38 @@
     justify-content: center;
     padding: 12px 0 12px;
   }
+
+  .product-table__table{
+    width: 100%;
+  }
   
+  .product-table__column-header{
+    padding: 8px 0 24px;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+
+  .product-table__column-header:last-child,
+  .products-table-column:last-child{
+    border-right: none;
+  }
+
+  .products-table-column{
+    padding: 8px 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+  }
+
+  .column-pt-name{
+    width: 35%;
+  }
+
+  .column-pt-article{
+    width: 22%;
+  }
+
+  .column-pt-price{
+    width: 22%;
+  }
+
+  .column-pt-remains{
+    width: 21%;
+  }
