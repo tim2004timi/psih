@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy import select, desc, Result, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from starlette import status
+from fastapi import HTTPException
 
 from .schemas import OrderCreate, OrderUpdatePartial
 from ..orders.models import Order
@@ -16,7 +18,7 @@ async def get_orders(session: AsyncSession) -> List[Order]:
     return list(orders)
 
 
-async def get_order_by_id(session: AsyncSession, order_id: int) -> Order | None:
+async def get_order_by_id(session: AsyncSession, order_id: int) -> Order:
     stmt = (
         select(Order)
         .options(
@@ -31,6 +33,12 @@ async def get_order_by_id(session: AsyncSession, order_id: int) -> Order | None:
     )
     result: Result = await session.execute(stmt)
     order = result.scalars().one_or_none()
+
+    if order is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Заказ с ID ({order_id}) не найден",
+        )
     return order
 
 

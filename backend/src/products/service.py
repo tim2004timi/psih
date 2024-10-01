@@ -14,10 +14,11 @@ from .schemas import (
     ProductCategoryWithProducts,
     ProductCreate,
     ProductUpdatePartial,
+    ProductCategoryUpdatePartial,
 )
 from .models import Product, ProductCategory, ProductImage
 from .utils import create_auto_article
-from ..utils import upload_file
+from ..utils import upload_file, delete_file
 
 
 async def get_product_categories(session: AsyncSession) -> List[ProductCategory]:
@@ -30,7 +31,13 @@ async def get_product_categories(session: AsyncSession) -> List[ProductCategory]
 async def get_product_category_by_id(
     session: AsyncSession, product_category_id: int
 ) -> ProductCategory:
-    return await session.get(ProductCategory, product_category_id)
+    product_category = await session.get(ProductCategory, product_category_id)
+    if product_category is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Категория с ID ({product_category_id}) не найдена",
+        )
+    return product_category
 
 
 async def create_product_category(
@@ -48,6 +55,18 @@ async def create_product_category(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Категория с именем '{product_category_create.name}' уже существует",
         )
+
+
+async def update_product_category(
+    session: AsyncSession,
+    product_category: ProductCategory,
+    product_category_update: ProductCategoryUpdatePartial,
+) -> ProductCategory:
+    for name, value in product_category_update.model_dump(exclude_unset=True).items():
+        setattr(product_category, name, value)
+    await session.commit()
+
+    return product_category
 
 
 async def delete_product_category(
@@ -90,7 +109,14 @@ async def get_products(
 
 
 async def get_product_by_id(session: AsyncSession, product_id: int) -> Product:
-    product = await session.get(Product, product_id)
+    stmt = (
+        select(Product)
+        .options(selectinload(Product.category))
+        .options(selectinload(Product.images))
+        .where(Product.id == product_id)
+    )
+    result: Result = await session.execute(stmt)
+    product = result.scalars().one_or_none()
     if product is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -117,12 +143,9 @@ async def create_product(
         await session.commit()
         await session.refresh(product)
 
-        result: Result = await session.execute(
-            select(Product)
-            .options(selectinload(Product.category))
-            .where(Product.id == product.id)
+        product_with_category = await get_product_by_id(
+            session=session, product_id=product.id
         )
-        product_with_category = result.scalars().first()
 
         return product_with_category
 
@@ -167,3 +190,29 @@ async def upload_product_image(
     await session.refresh(image)
 
     return image
+
+
+async def delete_product_image_by_id(session: AsyncSession, image_id: int):
+    image = await session.get(ProductImage, image_id)
+    if not image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Изображение с id({image_id}) не найдено",
+        )
+    try:
+        response = await delete_file(file_path=image.url)
+        await session.delete(image)
+        await session.commit()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Не удалось удалить изображение",
+        )
+
+
+async def delete_products(session: AsyncSession, product_ids: List[int]) -> None:
+    stmt = delete(Product).where(Product.id.in_(product_ids))
+
+    await session.execute(stmt)
+    await session.commit()

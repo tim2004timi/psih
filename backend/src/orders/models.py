@@ -29,7 +29,7 @@ class Order(Base):
     # summ: Mapped[int | None] = mapped_column(nullable=True, default=0)
 
     products_in_order: Mapped[list["ProductInOrder"]] = relationship(
-        back_populates="order", cascade="all, delete-orphan"
+        back_populates="order", cascade="all, delete-orphan", passive_deletes=True
     )
     # другая инфа для суммы
     # files

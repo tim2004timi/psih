@@ -33,10 +33,12 @@ class Product(Base):
     category: Mapped["ProductCategory"] = relationship(back_populates="products")
 
     products_in_order: Mapped[List["ProductInOrder"]] = relationship(
-        back_populates="product"
+        back_populates="product", cascade="all, delete-orphan", passive_deletes=True
     )
 
-    images: Mapped[List["ProductImage"]] = relationship(back_populates="product")
+    images: Mapped[List["ProductImage"]] = relationship(
+        back_populates="product", cascade="all, delete-orphan", passive_deletes=True
+    )
 
 
 class ProductImage(Base):
@@ -44,7 +46,9 @@ class ProductImage(Base):
 
     url: Mapped[str]
 
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey("products.id", ondelete="CASCADE")
+    )
     product: Mapped["Product"] = relationship(back_populates="images")
 
 
@@ -53,8 +57,10 @@ class ProductInOrder(Base):
 
     amount: Mapped[int]
 
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product_id: Mapped[int] = mapped_column(
+        ForeignKey("products.id", ondelete="CASCADE")
+    )
     product: Mapped["Product"] = relationship(back_populates="products_in_order")
 
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
+    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
     order: Mapped["Order"] = relationship(back_populates="products_in_order")

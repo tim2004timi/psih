@@ -435,7 +435,7 @@ const Orders = () => {
                     currentPage="orders"
                   />
                 </div>
-                <div className="neworder__wrapper">
+                <form className="neworder__wrapper">
                   <div className="neworder__personalInfo">
                     <div className="neworder__fullName">
                       <p className="neworder__fullName-text neworder-text">
@@ -553,7 +553,7 @@ const Orders = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
             )}
             <div className="search">

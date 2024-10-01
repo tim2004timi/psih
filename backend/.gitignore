@@ -1,6 +1,7 @@
 .idea/
 .venv
 venv/
+static/
 upload/
 **.pyc
 __pycache__

@@ -15,6 +15,10 @@ class ProductCategoryCreate(ProductCategoryBase):
     pass
 
 
+class ProductCategoryUpdatePartial(ProductCategoryBase):
+    pass
+
+
 class ProductCategory(ProductCategoryBase):
     model_config = ConfigDict(from_attributes=True)
 
