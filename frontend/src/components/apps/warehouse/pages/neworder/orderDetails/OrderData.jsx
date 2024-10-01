@@ -83,16 +83,11 @@ const OrderData = () => {
   const handleChange = (e, field) => {
     const value = e.target.value;
     setOrderInfo((prev) => ({ ...prev, [field]: value }));
-
-    // updateOrderInfo(field, value);
   };
 
   const handleUpdate = (e, field) => {
     const value = e.target.value;
-    // setOrderInfo((prev) => ({ ...prev, [field]: value }));
     updateOrderInfo(field, value);
-
-    // console.log('FOCUS last')
   }
 
   const handleFileChange = (e, index) => {

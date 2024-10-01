@@ -54,6 +54,7 @@ const Product = () => {
     if (products.length > 0) {
       const product = products.find((product) => product.id == id);
       setCurrentProduct(product);
+      console.log(product);
       setProductsImages(product.images)
     }
   }, [products, id]);
@@ -261,7 +262,6 @@ const Product = () => {
       <div className="product__content">
         <div className="product-img__content">
           {renderImgContent()}
-          {/* {renderUploadedImg(currentProduct.images)} */}
           <div className="product-img__content-load">
             <input
               type="file"
@@ -271,7 +271,7 @@ const Product = () => {
               multiple
               accept="image/*"
             />
-            <button onClick={handleClick}>Загрузить изображения</button>
+            <button className="product-img__content-load-btn" onClick={handleClick}>Загрузить изображения</button>
           </div>
         </div>
         <div className="product__content-info">
