@@ -285,14 +285,14 @@ const Orders = () => {
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const contentRef = useRef(null);
 
-  useEffect(() => {
-    if (searchTerm) {
-      searchAndHighlight(searchTerm);
-    } else {
-      clearHighlights();
-    }
-    console.log(searchTerm);
-  }, [searchTerm]);
+//   useEffect(() => {
+//     if (searchTerm) {
+//       searchAndHighlight(searchTerm);
+//     } else {
+//       clearHighlights();
+//     }
+//     console.log(searchTerm);
+//   }, [searchTerm]);
 
   const searchAndHighlight = (term) => {
     const content = contentRef.current;
