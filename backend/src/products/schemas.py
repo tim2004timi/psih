@@ -73,18 +73,18 @@ class ProductDelete(BaseModel):
 class ProductUpdatePartial(ProductBase):
     name: str | None = None
     description: str | None = None
-    min_price: float | None = None
-    cost_price: float | None = None
-    price: float | None = None
-    discount_price: float | None = None
+    min_price: float | None = Field(example=100.0)
+    cost_price: float | None = Field(example=100.0)
+    price: float | None = Field(example=100.0)
+    discount_price: float | None = Field(example=100.0)
     category_id: int | None = None
     article: str | None = None
     measure: str | None = Field(
         default=None, description="Описание товара", example="шт."
     )
-    size: str | None = None
+    size: SizeEnum | None = SizeEnum.S.value
     remaining: int | None = None
-    archived: bool | None = None
+    archived: bool | None = False
 
     @field_validator("min_price", "cost_price", "price", "discount_price")
     @classmethod

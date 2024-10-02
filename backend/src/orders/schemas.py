@@ -45,7 +45,7 @@ class OrderCreate(OrderBase):
 class OrderUpdatePartial(OrderBase):
     full_name: str | None = None
     address: str | None = None
-    status: StatusEnum | None = None
+    status: StatusEnum | None = StatusEnum.PROCESSING.value
     products_in_order: List["ProductInOrderCreateWithoutOrder"] = []
 
 

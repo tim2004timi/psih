@@ -3,6 +3,7 @@
 venv/
 static/
 upload/
+certs/
 **.pyc
 __pycache__
 .env
