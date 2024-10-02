@@ -8,12 +8,12 @@
     border-radius: 7px;
     padding: 5px 36px 5px 16px;
     position: relative;
-    width: 171px;
+    width: auto;
     text-align: center;
 }
 
 .dropdownlist__container-selectedItem{
-    width: 125px;
+    width: auto;
 }
 
 .dropdownlist-btn{
@@ -69,7 +69,7 @@
     left: 50%;
     transform: translateX(-50%);
     border-radius: 7px;
-    width: 100%;
+    width: auto;
     color: #000;
     z-index: 10;
     backdrop-filter: blur(10px);

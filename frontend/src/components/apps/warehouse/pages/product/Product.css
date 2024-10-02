@@ -18,10 +18,13 @@
 }
 
 .product-img__content {
-    width: 602px;
+    width: 34%;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     padding: 45px 19px 0 50px;
     min-height: 571px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .product-img__container {
@@ -34,7 +37,8 @@
     border-radius: 7px;
     border: 1px solid transparent;
     cursor: pointer;
-    width: 175px;
+    width: calc(100% / 3);
+    height: 129px;
     display: flex;
     justify-content: center;
 }
@@ -65,8 +69,25 @@
 .product__img-img {
     z-index: -1;
     border-radius: 7px;
-    width: 100%; /* Устанавливаем ширину изображения на 100% */
-    height: auto; /* Автоматически подстраиваем высоту */
+    width: 100%;
+    height: auto;
+}
+
+.product-img__content-load-btn{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+    padding: 4px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.product-img__content-load-btn:hover{
+    background-color: rgba(230, 230, 230, 1);
 }
 
 .product__content-info {
