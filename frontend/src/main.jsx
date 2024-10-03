@@ -16,10 +16,10 @@ import Products from "./components/apps/warehouse/pages/products/Products.jsx";
 import Remains from "./components/apps/warehouse/pages/remains/Remains.jsx";
 import Parties from "./components/apps/warehouse/pages/parties/Parties.jsx";
 import Order from "./components/apps/warehouse/pages/neworder/Order.jsx"
-import Product from './components/apps/warehouse/pages/product/Product.jsx';
 import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx';
 import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
 import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
+import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -68,7 +68,7 @@ const router = createBrowserRouter([
       },
       {
         path: "products/:id",
-        element: <Product />,
+        element: <ProductPage />,
         children: [
           {
             path: "",

@@ -63,6 +63,17 @@
     cursor: text;
 }
 
+.orderDataInfo-item-content{
+    border: 1px solid transparent;
+    border-radius: 7px;
+    cursor: text;
+    transition: all 0.4s ease-in;
+}
+
+.orderDataInfo-item-content:hover{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
 .orderDataInfo__fullName{
     padding: 5px 11px;
 }
@@ -86,8 +97,21 @@
 .orderDataInfo-text{
     color: rgba(0, 0, 0, 0.5);
 }
+
+.orderDataInfo-text-content{
+    color: transparent;
+}
+
+.orderDataInfo-item-content:hover 
+.orderDataInfo-text-content{
+    color: rgba(0, 0, 0, 0.5);
+    transition: all 0.4s ease-in;
+}
+
 .orderDataInfo__email{
     margin-bottom: 17px;
+    display: flex;
+    flex-direction: column;
 }
 
 .orderDataInfo__email-text{

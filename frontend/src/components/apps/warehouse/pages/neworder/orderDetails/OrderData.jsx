@@ -97,7 +97,6 @@ const OrderData = () => {
   };
 
   const updateOrderInfo = async (key, value) => {
-    console.log('=')
     try {
       await patchOrder(id, key, value);
     } catch (error) {
@@ -130,6 +129,14 @@ const OrderData = () => {
       }
 
       setSelectedColumns(newSelectedColumns);
+    }
+  };
+
+  const renderImgContent = () => {
+    if (productsImages && productsImages.length > 0) {
+      return renderImg(productsImages);
+    } else {
+      return renderImgDragAndDrop();
     }
   };
 
@@ -205,7 +212,13 @@ const OrderData = () => {
       <div className="orderDataInfo">
         <div className="orderDataInfo__personalInfo">
           <div className="orderDataInfo__header">
-            <div className="orderDataInfo__fullName orderDataInfo-item">
+            <div
+              className={`orderDataInfo__fullName ${
+                orderInfo.full_name != ""
+                  ? "orderDataInfo-item-content"
+                  : "orderDataInfo-item"
+              }`}
+            >
               <input
                 className="orderDataInfo__input"
                 value={orderInfo.full_name || ""}
@@ -218,10 +231,22 @@ const OrderData = () => {
             </Link>
           </div>
           <div className="orderDataInfo__email">
-            <p className="orderDataInfo__email-text orderDataInfo-text">
+            <p 
+              className={`orderDataInfo__email-text ${
+                // orderInfo.email != ""
+                  // ? "orderDataInfo-text-content"
+                  // : 
+                  "orderDataInfo-text"
+              }`}>
               Email
             </p>
-            <div className="orderDataInfo__email-content orderDataInfo-item">
+            <div 
+              className={`orderDataInfo__email-content ${
+                // orderInfo.email != ""
+                  // ? "orderDataInfo-item-content"
+                  // : 
+                  "orderDataInfo-item"
+              }`}>
               <input
                 className="orderDataInfo__input"
                 value={orderInfo.email || ""}
@@ -333,30 +358,7 @@ const OrderData = () => {
           </div>
         </div>
         <div className="orderDataInfo__files">
-          <p className="orderDataInfo__files-text orderDataInfo-text">Файлы</p>
-          {selectedFiles.map((files, index) => (
-            <div className="field__wrapper" key={index}>
-              <input
-                name="file"
-                type="file"
-                id={`field__file-${index + 2}`}
-                className="field field__file"
-                multiple
-                onChange={(e) => handleFileChange(e, index)}
-              />
-              <label
-                className="field__file-wrapper"
-                htmlFor={`field__file-${index + 2}`}
-              >
-                <div className="field__file-fake">
-                  {files.length > 0
-                    ? `Выбрано файлов: ${files.length}`
-                    : "Файл не выбран"}
-                </div>
-                <div className="field__file-button">Выбрать</div>
-              </label>
-            </div>
-          ))}
+          
         </div>
       </div>
       <div className="orderData__tableSettins">

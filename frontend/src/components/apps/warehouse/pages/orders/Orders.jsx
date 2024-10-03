@@ -3,6 +3,7 @@ import "./Orders.css";
 import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
 import settings from "../../../../../assets/img/table-settings.svg";
+import settingsHover from "../../../../../assets/img/settings_hover.png";
 import up_btn from "../../../../../assets/img/up-btn-search.svg";
 import down_btn from "../../../../../assets/img/down-btn-search.svg";
 import close from "../../../../../assets/img/close_filter.png";
@@ -664,7 +665,7 @@ const Orders = () => {
               src={settings}
               alt="settings"
             />
-            {/* <img className='orderTable__settings-img--hover' src={settingsHover} alt="settings" /> */}
+            <img className='warehouse-table__settings-img--hover' src={settingsHover} alt="settings" />
           </button>
           {showColumnList && (
             <div className="warehouse-table__settings" ref={columnsListRef}>

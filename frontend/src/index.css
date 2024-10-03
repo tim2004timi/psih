@@ -227,19 +227,16 @@ button {
     border: none;
 }
 
-/* .orderTable__settings-img--hover{
+.warehouse-table__settings-img--hover{
     display: none;
-    width: 30px;
-    height: 30px;
-    transform: rotate(90deg);
 }
 
-.orderTable__settings-btn:hover .orderTable__settings-img{
+.warehouse-table__settings-btn:hover .warehouse-table__settings-img{
     display: none;
 }
-.orderTable__settings-btn:hover .orderTable__settings-img--hover{
+.warehouse-table__settings-btn:hover .warehouse-table__settings-img--hover{
     display: block; 
-} */
+}
 
 .warehouse-table__settings{
     position: absolute;
