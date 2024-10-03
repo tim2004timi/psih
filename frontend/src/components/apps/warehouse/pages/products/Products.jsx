@@ -540,7 +540,7 @@ const Products = () => {
             <div className="products-header-vert-separator"></div>
             <PopularButton text={"Архив"} isHover={true} onClick={() => setIsShowArchive(!isShowArchive)}/>
             {isShowArchive && (
-              <ProductTable />
+              <ProductTable showArchive={setIsShowArchive}/>
             )}
           </div>
           <div
