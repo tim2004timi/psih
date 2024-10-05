@@ -47,9 +47,9 @@ export async function getProductsA() {
         }
 }
 
-export async function patchProduct(productId, key, newValue) {
+export async function patchProduct(productId, productData) {
     try {
-        let response = await axios.patch(`http://87.242.85.68:8000/api/products/?product_id=${productId}`, { [key]: newValue });
+        let response = await axios.patch(`http://87.242.85.68:8000/api/products/?product_id=${productId}`, productData);
         return response 
     } catch(e) {
         throw(e)

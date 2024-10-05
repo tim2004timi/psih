@@ -32,7 +32,6 @@ const ProductPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const fileInputRef = useRef(null);
-  const [productsImages, setProductsImages] = useState([]);
 
   async function fetchProductsNA() {
     try {
@@ -56,7 +55,6 @@ const ProductPage = () => {
       const product = products.find((product) => product.id == id);
       setCurrentProduct(product);
       // console.log(product);
-      setProductsImages(product.images)
     }
   }, [products, id]);
 
@@ -87,15 +85,6 @@ const ProductPage = () => {
     deleteOverlayRef.current.style.display = "none";
   };
 
-  useEffect(() => {
-    if (currentProduct && currentProduct.images) {
-      setProductsImages(currentProduct.images);
-    }
-  }, [currentProduct]);
-  
-  useEffect(() => {
-    renderImgContent();
-  }, [productsImages]);
 
   if (isLoading) {
     return <div>Загрузка...</div>;
@@ -156,7 +145,7 @@ const ProductPage = () => {
         </div>
       </div>
       <div className="product__separator"></div>
-      <Product currentProduct={currentProduct} productsImages={productsImages}/>
+      <Product currentProductObj={{currentProduct, setCurrentProduct}}/>
     </>
   );
 };

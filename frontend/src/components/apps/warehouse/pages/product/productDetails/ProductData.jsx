@@ -52,12 +52,16 @@ const ProductData = () => {
     }, []);
 
     const updateProductInfo = async (key, value) => {
+    console.log(key, value)
+
         try {
-            const response = await patchProduct(id, key, value);
+            const updatedProduct = { ...currentProduct, [key]: value };
+            const response = await patchProduct(id, updatedProduct);
             console.log(response.data);
         } catch (error) {
             console.error(error);
         }
+
     };
 
     const renderCategoriesList = () => {
