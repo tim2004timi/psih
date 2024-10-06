@@ -1,4 +1,3 @@
-from pydantic import EmailStr
 from sqlalchemy import DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 from datetime import datetime
@@ -6,13 +5,16 @@ from datetime import datetime
 from ..database import Base
 
 
-# class Admin(Base):
-#     __tablename__ = "admins"
-#
-#     created_at: Mapped[datetime] = mapped_column(
-#         DateTime, nullable=False, default=datetime.utcnow
-#     )
-#
-#     email: Mapped[str] = mapped_column(nullable=False)
-#     username: Mapped[str] = mapped_column(nullable=False)
-#     hashed_password: Mapped[str] = mapped_column(nullable=False)
+class User(Base):
+    __tablename__ = "users"
+
+    username: Mapped[str] = mapped_column(unique=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    hashed_password: Mapped[bytes]
+    admin: Mapped[bool] = mapped_column(default=False)
+    active: Mapped[bool] = mapped_column(default=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, nullable=False, default=datetime.utcnow
+    )
+    # TODO: class one2many roles

@@ -1,13 +1,12 @@
-import json
 import os
 
 from fastapi import FastAPI, Request, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from .orders.router import router as orders_router
 from .products.router import products_router, categories_router
+from .auth.router import router as auth_router
 
 from .database import Base
 from .config import UPLOAD_DIR
@@ -69,6 +68,7 @@ app.add_middleware(
 
 # app.add_middleware(LogPostPatchRequestsMiddleware)
 
+main_router.include_router(auth_router)
 main_router.include_router(categories_router)
 main_router.include_router(products_router)
 main_router.include_router(orders_router)
