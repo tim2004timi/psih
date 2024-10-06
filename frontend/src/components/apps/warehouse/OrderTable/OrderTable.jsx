@@ -210,7 +210,7 @@ const OrderTable = ({
       className: "column-class column-number",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return (
+        return row.id != null && (
           <div
             className={`column-number__container ${
               isChecked ? "highlighted-cell" : ""
@@ -247,7 +247,7 @@ const OrderTable = ({
         const isChecked = checkboxStates[row.id] || false;
         const date = formatDateTime(row.order_date);
         return (
-          row.order_date && (
+          row.order_date != null && (
             <div
               className={`column-date__container ${
                 isChecked ? "highlighted-cell" : ""
@@ -264,7 +264,7 @@ const OrderTable = ({
       className: "column-class column-full_name",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.full_name ? (
+        return row.full_name != null ? (
           <div
             className={`column-full_name__container ${
               isChecked ? "highlighted-cell" : ""
@@ -283,7 +283,7 @@ const OrderTable = ({
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
-          row.status && (
+          row.status != null && (
             <div>
               <button
                 className={`column-status__container ${
@@ -332,7 +332,7 @@ const OrderTable = ({
       className: "column-class column-summ",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return (
+        return row.summ != null && (
           <div
             className={`column-summ__container ${
               isChecked ? "highlighted-cell" : ""
@@ -348,7 +348,7 @@ const OrderTable = ({
       className: "column-class column-channel",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.channel ? (
+        return row.channel != null && (
           <div
             className={`column-channel__container ${
               isChecked ? "highlighted-cell" : ""
@@ -358,7 +358,7 @@ const OrderTable = ({
           >
             {row.channel}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -366,7 +366,7 @@ const OrderTable = ({
       className: "column-class column-address",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.address ? (
+        return row.address != null && (
           <div
             className={`column-address__container ${
               isChecked ? "highlighted-cell" : ""
@@ -376,7 +376,7 @@ const OrderTable = ({
           >
             {row.address}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -384,7 +384,7 @@ const OrderTable = ({
       className: "column-class column-storage",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.storage ? (
+        return row.storage != null && (
           <div
             className={`column-storage__container ${
               isChecked ? "highlighted-cell" : ""
@@ -394,7 +394,7 @@ const OrderTable = ({
           >
             {row.storage}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -402,7 +402,7 @@ const OrderTable = ({
       className: "column-class column-note",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.note ? (
+        return row.note != null && (
           <div
             className={`column-note__container ${
               isChecked ? "highlighted-cell" : ""
@@ -412,7 +412,7 @@ const OrderTable = ({
           >
             {row.note}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -420,7 +420,7 @@ const OrderTable = ({
       className: "column-class column-comment",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.comment ? (
+        return row.comment != null && (
           <div
             className={`column-comment__container ${
               isChecked ? "highlighted-cell" : ""
@@ -430,7 +430,7 @@ const OrderTable = ({
           >
             {row.comment}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -438,7 +438,7 @@ const OrderTable = ({
       className: "column-class column-phone_number",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.phone_number ? (
+        return row.phone_number != null && (
           <div
             className={`column-phone_number__container ${
               isChecked ? "highlighted-cell" : ""
@@ -448,7 +448,7 @@ const OrderTable = ({
           >
             {row.phone_number}
           </div>
-        ) : null;
+        );
       },
     },
 
@@ -456,7 +456,7 @@ const OrderTable = ({
       className: "column-class column-email",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
-        return row.email ? (
+        return row.email != null && (
           <div
             className={`column-email__container ${
               isChecked ? "highlighted-cell" : ""
@@ -466,7 +466,7 @@ const OrderTable = ({
           >
             {row.email}
           </div>
-        ) : null;
+        );
       },
     },
   };

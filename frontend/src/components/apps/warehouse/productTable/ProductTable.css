@@ -92,6 +92,20 @@
     border-radius: 7px;
     padding: 5px 176px;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  .product-table-content__search-img{
+    width: 16px;
+    height: 16px;
+  }
+
+  .product-table-content__close-btn{
+    background-color: transparent;
+    padding: 0;
+    cursor: pointer;
+    border: none;
   }
 
   .product-table__table-btn{

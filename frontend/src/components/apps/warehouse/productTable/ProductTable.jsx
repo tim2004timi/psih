@@ -14,8 +14,10 @@ import {
 } from "../../../../API/productsApi";
 import getFullImageUrl from "../../../../API/getFullImgUrl";
 import './ProductTable.css';
+import search from '../../../../assets/img/search_btn.svg';
+import close from '../../../../assets/img/close_filter.png';
 
-const ProductTable = () => {
+const ProductTable = ({showArchive}) => {
 //   const productsNA = useSelector((state) => state.productsNA.productsNA);
     const [productsNA, setProductsNA] = useState([]);
 
@@ -44,6 +46,9 @@ const ProductTable = () => {
   const categoriesSettingsInputRef = useRef(null);
   const categoriesSettingsRef = useRef(null);
 
+  useEffect(() => {
+    console.log(showArchive)
+  }, [showArchive])
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
     event.stopPropagation();
@@ -415,13 +420,18 @@ const ProductTable = () => {
       <div className="product-table__content">
         <div className="product-table__content-header">
             <div className="product-table-content__search">
-                <button className="product-table-content__search-btn">Поиск</button>
+                <button className="product-table-content__search-btn">
+                  <img src={search} alt="search btn" className="product-table-content__search-img" />
+                  Поиск
+                </button>
             </div>
             <div className="product-table-content__close">
                 <button
                     className="product-table-content__close-btn"
-                    onClick={() => setIsProductTableOpen(false)}
-                ></button>
+                    onClick={() => showArchive(false)}
+                >
+                  <img src={close} alt="close btn" className="product-table-content__close-btn-img" />
+                </button>
             </div>
         </div>
         <div className="product-table__separator"></div>
