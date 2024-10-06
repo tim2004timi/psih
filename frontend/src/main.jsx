@@ -20,6 +20,8 @@ import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/O
 import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
 import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
 import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
+import LoginForm from './components/loginForm/LoginForm.jsx';
+import RegForm from './components/regForm/RegForm.jsx';
 
 const router = createBrowserRouter([
   {
@@ -96,12 +98,20 @@ const router = createBrowserRouter([
   },
   {
     path: "/messager",
-    element: < Messager />,
+    element: <Messager />,
   },
   {
     path: "/crm",
-    element: < Crm />,
-  }
+    element: <Crm />,
+  }, 
+  {
+    path: "/login",
+    element: <LoginForm />,
+  },
+  {
+    path: "/registration",
+    element: <RegForm />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

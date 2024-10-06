@@ -145,7 +145,7 @@ const ProductPage = () => {
         </div>
       </div>
       <div className="product__separator"></div>
-      <Product currentProductObj={{currentProduct, setCurrentProduct}}/>
+      <Product currentProductObj={{currentProduct, setCurrentProduct}} configName='productPageConfig'/>
     </>
   );
 };

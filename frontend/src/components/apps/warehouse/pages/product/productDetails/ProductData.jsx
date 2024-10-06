@@ -91,105 +91,126 @@ const ProductData = () => {
 
     return (
       <div className="product-data">
-        <div className="product-data__price-info">
-          <div className="product-data__group product-data__item">
-            <p className="product-data__group-text product-data__item-text">
-              Группа
-            </p>
-            <button 
-              className="product-data__group-list product-data__item-input" 
-              onClick={() => setIsShowGroupList(!isShowGroupList)}
-            >
-              {groupListSelectedItems}
+        <div className="product-data__modification">
+            <button className="product-data__modification-btn">
+            {/* <img src="" alt="plus-modification" className="product__modification-img" /> */}
+              <span className="product-data__modification-btn--plus">+</span>
+              Создать модификацию
             </button>
-            {isShowGroupList && renderCategoriesList()}
+        </div>
+        <form className="product-data__form">
+          <div className="product-data__price-info">
+            <div className="product-data__group product-data__item">
+              <p className="product-data__group-text product-data__item-text">
+                Группа
+              </p>
+              <button 
+                type="button"
+                className="product-data__group-list product-data__item-input" 
+                onClick={() => setIsShowGroupList(!isShowGroupList)}
+              >
+                {groupListSelectedItems}
+              </button>
+              {isShowGroupList && renderCategoriesList()}
+            </div>
+            <div className="product-data__min-price product-data__item">
+              <p className="product-data__min-price-text product-data__item-text">
+                Минимальная цена
+              </p>
+              <input
+                type="text"
+                className="product-data__min-price-list product-data__item-input"
+                value={product.min_price}
+                onChange={(e) => handleChange(e, 'min_price')}
+                onBlur={(e) => handleUpdate(e, 'min_price')}
+              />
+            </div>
+            <div className="product-data__cost-price product-data__item">
+              <p className="product-data__cost-price-text product-data__item-text">
+                Себестоимость
+              </p>
+              <input
+                type="text"
+                className="product-data__cost-price-list  product-data__item-input"
+                value={product.cost_price}
+                onChange={(e) => handleChange(e, 'cost_price')}
+                onBlur={(e) => handleUpdate(e, 'cost_price')}
+              />
+            </div>
+            <div className="product-data__price product-data__item">
+              <p className="product-data__price-text product-data__item-text">
+                Цена
+              </p>
+              <input
+                type="text"
+                className="product-data__price-list  product-data__item-input"
+                value={product.price}
+                onChange={(e) => handleChange(e, 'price')}
+                onBlur={(e) => handleUpdate(e, 'price')}
+              />
+            </div>
+            <div className="product-data__cost-price product-data__item">
+              <p className="product-data__cost-price-text product-data__item-text">
+                Цена со скидкой
+              </p>
+              <input
+                type="text"
+                className="product-data__cost-price-list product-data__item-input"
+                value={product.discount_price}
+                onChange={(e) => handleChange(e, 'discount_price')}
+                onBlur={(e) => handleChange(e, 'discount_price')}
+              />
+            </div>
           </div>
-          <div className="product-data__min-price product-data__item">
-            <p className="product-data__min-price-text product-data__item-text">
-              Минимальная цена
-            </p>
-            <input
-              type="text"
-              className="product-data__min-price-list product-data__item-input"
-              value={product.min_price}
-              onChange={(e) => handleChange(e, 'min_price')}
-              onBlur={(e) => handleUpdate(e, 'min_price')}
-            />
+          <div className="product-data__personal-info">
+            <div className="product-data__personal-info-container">
+              <div className="product-data__article product-data__item">
+                <p className="product-data__article-text product-data__item-text">
+                  Артикул
+                </p>
+                <input
+                  type="text"
+                  className="product-data__article-list product-data__item-input"
+                  value={product.article}
+                  onChange={(e) => handleChange(e, 'article')}
+                  onBlur={(e) => handleChange(e, 'article')}
+                />
+              </div>
+              <div className="product-data__measure-unit product-data__item">
+                <p className="product-data__measure-unit-text product-data__item-text">
+                  Единица измерения
+                </p>
+                <input
+                  type="text"
+                  className="product-data__measure-unit-list product-data__item-input"
+                  value={product.measure}
+                  onChange={(e) => handleChange(e, 'measure')}
+                  onBlur={(e) => handleChange(e, 'measure')}
+                />
+              </div>
+            </div>
+            <div className="product-data__description">
+              <div className="product-data__description-content">
+                <textarea
+                  className="product-data__description-input product-data__item-input"
+                  value={product.description || "описание"}
+                  onChange={(e) => handleChange(e, 'description')}
+                  onBlur={(e) => handleChange(e, 'description')}
+                />
+              </div>
+            </div>
           </div>
-          <div className="product-data__cost-price product-data__item">
-            <p className="product-data__cost-price-text product-data__item-text">
-              Себестоимость
-            </p>
-            <input
-              type="text"
-              className="product-data__cost-price-list  product-data__item-input"
-              value={product.cost_price}
-              onChange={(e) => handleChange(e, 'cost_price')}
-              onBlur={(e) => handleUpdate(e, 'cost_price')}
-            />
-          </div>
-          <div className="product-data__price product-data__item">
-            <p className="product-data__price-text product-data__item-text">
-              Цена
-            </p>
-            <input
-              type="text"
-              className="product-data__price-list  product-data__item-input"
-              value={product.price}
-              onChange={(e) => handleChange(e, 'price')}
-              onBlur={(e) => handleUpdate(e, 'price')}
-            />
-          </div>
-          <div className="product-data__cost-price product-data__item">
-            <p className="product-data__cost-price-text product-data__item-text">
-              Цена со скидкой
-            </p>
-            <input
-              type="text"
-              className="product-data__cost-price-list product-data__item-input"
-              value={product.discount_price}
-              onChange={(e) => handleChange(e, 'discount_price')}
-              onBlur={(e) => handleChange(e, 'discount_price')}
-            />
+        </form>
+        <div className="product-data__remains">
+          <p className="product-data__remains-text">
+            Остатки
+          </p>
+          <div className="product-data__remains-content">
+            {product.remains + " " + product.measure}
           </div>
         </div>
-        <div className="product-data__personal-info">
-          <div className="product-data__personal-info-container">
-            <div className="product-data__article product-data__item">
-              <p className="product-data__article-text product-data__item-text">
-                Артикул
-              </p>
-              <input
-                type="text"
-                className="product-data__article-list product-data__item-input"
-                value={product.article}
-                onChange={(e) => handleChange(e, 'article')}
-                onBlur={(e) => handleChange(e, 'article')}
-              />
-            </div>
-            <div className="product-data__measure-unit product-data__item">
-              <p className="product-data__measure-unit-text product-data__item-text">
-                Единица измерения
-              </p>
-              <input
-                type="text"
-                className="product-data__measure-unit-list product-data__item-input"
-                value={product.measure}
-                onChange={(e) => handleChange(e, 'measure')}
-                onBlur={(e) => handleChange(e, 'measure')}
-              />
-            </div>
-          </div>
-          <div className="product-data__description">
-            <div className="product-data__description-content">
-              <textarea
-                className="product-data__description-input product-data__item-input"
-                value={product.description || "описание"}
-                onChange={(e) => handleChange(e, 'description')}
-                onBlur={(e) => handleChange(e, 'description')}
-              />
-            </div>
-          </div>
+        <div className="product-data__remains-size">
+          
         </div>
       </div>
     );
