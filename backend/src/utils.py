@@ -3,6 +3,7 @@ import uuid
 import shutil
 from fastapi import UploadFile, File
 from .config import UPLOAD_DIR
+import bcrypt
 
 
 def get_file_path(*path_segments) -> str:
@@ -41,3 +42,21 @@ async def delete_file(file_path: str) -> bool:
         return True
     else:
         return False
+
+
+def hash_password(
+    password: str,
+) -> bytes:
+    salt = bcrypt.gensalt()
+    pwd_bytes: bytes = password.encode()
+    return bcrypt.hashpw(pwd_bytes, salt)
+
+
+def validate_password(
+    password: str,
+    hashed_password: bytes,
+) -> bool:
+    return bcrypt.checkpw(
+        password=password.encode(),
+        hashed_password=hashed_password,
+    )

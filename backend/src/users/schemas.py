@@ -3,17 +3,18 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, ConfigDict
 
 
-class AdminBase(BaseModel):
+class UserBase(BaseModel):
     username: str
     email: EmailStr
 
 
-class AdminCreate(AdminBase):
+class UserCreate(UserBase):
     password: str
 
 
-class Admin(AdminBase):
-    model_config = ConfigDict(from_attributes=True)
-
+class User(UserBase):
     id: int
     created_at: datetime
+    admin: bool
+    active: bool
+    model_config = ConfigDict(from_attributes=True)

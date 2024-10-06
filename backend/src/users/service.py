@@ -1,35 +1,42 @@
+from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
+from starlette import status
+
 from . import models, schemas
-from .models import Admin
-from .. import security
+from .models import User
+from ..utils import hash_password
 
 
-async def get_admin_by_username(session: AsyncSession, username: str) -> Admin:
-    stmt = select(Admin).where(Admin.username == username)
+async def get_user_by_id(session: AsyncSession, user_id: int) -> User:
+    user = await session.get(User, user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Пользователь с ID ({user_id}) не найден",
+        )
+    return user
+
+
+async def get_user_by_username(session: AsyncSession, username: str) -> User:
+    stmt = select(User).where(User.username == username)
     result: Result = await session.execute(stmt)
-    admin = result.scalar_one_or_none()
-    return admin
+    user = result.scalars().one_or_none()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Пользователь с username ({username}) не найден",
+        )
+    return user
 
 
-async def create_admin(session: AsyncSession, admin: schemas.AdminCreate) -> Admin:
-    hashed_password = security.get_password_hash(admin.password)
-    db_admin = Admin(
-        username=admin.username, hashed_password=hashed_password, email=admin.email
+async def create_user(session: AsyncSession, user: schemas.UserCreate) -> User:
+    hashed_password = hash_password(user.password)
+    user = User(
+        username=user.username, hashed_password=hashed_password, email=user.email
     )
-    session.add(db_admin)
+    session.add(user)
     await session.commit()
-    await session.refresh(db_admin)
-    return db_admin
-
-
-async def authenticate_admin(
-    session: AsyncSession, username: str, password: str
-) -> Admin | None:
-    admin = await get_admin_by_username(session=session, username=username)
-    if not admin:
-        return None
-    if not security.verify_password(password, admin.hashed_password):
-        return None
-    return admin
+    await session.refresh(user)
+    return user
