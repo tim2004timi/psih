@@ -179,6 +179,10 @@
     font-size: 14px;
 }
 
+.product__name-input.warning{
+    border: 1px solid red;
+}
+
 .product__content-close{
     display: flex;
     justify-content: end;

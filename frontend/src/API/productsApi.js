@@ -47,6 +47,15 @@ export async function getProductsA() {
         }
 }
 
+export async function createProduct(obj) {
+    try{
+        let response = await axios.post('http://87.242.85.68:8000/api/products/', obj);
+        return response
+    } catch(e) {
+        throw(e)
+    }
+}
+
 export async function patchProduct(productId, productData) {
     try {
         let response = await axios.patch(`http://87.242.85.68:8000/api/products/?product_id=${productId}`, productData);

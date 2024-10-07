@@ -7,58 +7,68 @@ import {
   useLocation,
 } from "react-router-dom";
 import {
-  getProductsNA,
-  deleteProduct,
+  createProduct,
   patchProduct,
   uploadProductImg,
   serverUrl,
   deleteProductImg,
 } from "../../../../../API/productsApi";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
-import close from '../../../../../assets/img/close_filter.png';
-import './Product.css';
+import close from "../../../../../assets/img/close_filter.png";
+import "./Product.css";
 
-const Product = ({ currentProductObj, configName }) => {
+const Product = ({ currentProductObj, configName, showNewProduct }) => {
   const fileInputRef = useRef(null);
   const { id } = useParams();
-  const { currentProduct, setCurrentProduct } = currentProductObj != undefined ? currentProductObj : {
-    "name": "",
-    "description": "",
-    "min_price": 0,
-    "cost_price": 0,
-    "price": 0,
-    "discount_price": 0,
-    "category_id": 0,
-    "measure": "шт.",
-    "size": "S",
-    "remaining": 0,
-    "archived": false
-  };
+  const [currentProduct, setCurrentProduct] = useState(
+    currentProductObj?.currentProduct || {
+      "name": "",
+      "description": "",
+      "min_price": 0,
+      "cost_price": 0,
+      "price": 0,
+      "discount_price": 0,
+      "category_id": null,
+      "measure": "шт.",
+      "size": "S",
+      "remaining": 0,
+      "archived": false
+    }
+  );
   const [productsImages, setProductsImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
+  // const [fieldValidity, setFieldValidity] = useState({
+  //   name: true,
+  //   min_price: true,
+  //   cost_price: true,
+  //   price: true,
+  //   discount_price: true,
+  //   category_id: true,
+  // })
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
   }, [configName]);
 
-  // useEffect(() => {
-  //   console.log(productsImages)
-  // }, [productsImages])
+  useEffect(() => {
+    console.log(productsImages)
+  }, [productsImages])
 
   const returnConfig = (configName) => {
     switch (configName) {
-      case 'newProductConfig':
+      case "newProductConfig":
         return {
-          showSaveBtn: true,
+          showNewProductsBtn: true,
           showRemainsInfo: false,
-          wrapperClassName: 'product__content--new'
+          wrapperClassName: "product__content--new",
+          newProductFlag: true,
         };
-      case 'productPageConfig':
+      case "productPageConfig":
         return {
-          showSaveBtn: false,
+          showNewProductsBtn: false,
           showRemainsInfo: true,
-          wrapperClassName: 'product__content--page'
+          wrapperClassName: "product__content--page",
         };
       default:
         return null;
@@ -73,14 +83,21 @@ const Product = ({ currentProductObj, configName }) => {
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || e.dataTransfer.files);
-    
+
     if (id == undefined) {
-      setProductsImages((prevImages) => [...prevImages, files]);
-      console.log(files)
-      return
+      files.forEach((file) => {
+        setProductsImages((prevImages) => [...prevImages, file]);
+      });
+      return;
     }
 
-    const uploadPromises = files.map(async (file) => {
+    uploadImages(files, id);
+
+    // await Promise.all(uploadPromises);
+  };
+
+  const uploadImages = (files, id) =>
+    files.map(async (file) => {
       try {
         const response = await uploadProductImg(id, file);
         setProductsImages((prevImages) => [...prevImages, response]);
@@ -88,9 +105,6 @@ const Product = ({ currentProductObj, configName }) => {
         console.error("Ошибка при загрузке файла:", error);
       }
     });
-
-    await Promise.all(uploadPromises);
-  };
 
   const handleDragEnter = (e) => {
     e.preventDefault();
@@ -118,8 +132,10 @@ const Product = ({ currentProductObj, configName }) => {
 
   const renderImgDragAndDrop = () => (
     <form className="img-dragAndDrop">
-      <div 
-        className={`img-dragAndDrop__upload-zone ${isDragging ? 'dragging' : ''}`}
+      <div
+        className={`img-dragAndDrop__upload-zone ${
+          isDragging ? "dragging" : ""
+        }`}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
@@ -130,7 +146,7 @@ const Product = ({ currentProductObj, configName }) => {
           type="file"
           multiple
           onChange={handleFileChange}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
           id="file-input"
         />
       </div>
@@ -139,36 +155,66 @@ const Product = ({ currentProductObj, configName }) => {
 
   const renderImg = (imgArr) => (
     <div className="product-img__container">
-      {imgArr.map((image) => (
-        <div key={image[0].size} className="product__img-item">
-          <button
-            className="product__img-btn"
-            // onClick={() => removeImg(image.id)}
-            onClick={() => console.log(image[0].name)}
-          >
-            <div className="product__img-btn--minus"></div>
-          </button>
-          <img
-            // src={getFullImageUrl(serverUrl, image.name)}
-            src={URL.createObjectURL(image[0])}
-            alt="img"
-            className="product__img-img"
-          />
-        </div>
-      ))}
+      {imgArr.map((image) => {
+        console.log(image.size);
+        return currentConfig.newProductFlag ? (
+          <div 
+          key={image.name} 
+          className="product__img-item">
+            <button
+              className="product__img-btn"
+              onClick={() => removeImg(image.name)}
+            >
+              <div className="product__img-btn--minus"></div>
+            </button>
+            <img
+              src={URL.createObjectURL(image)}
+              alt="img"
+              className="product__img-img"
+            />
+          </div>
+        ) : (
+          <div key={image.id} className="product__img-item">
+            <button
+              className="product__img-btn"
+              onClick={() => removeImg(image.id)}
+            >
+              <div className="product__img-btn--minus"></div>
+            </button>
+            <img
+              src={getFullImageUrl(serverUrl, image.url)}
+              alt="img"
+              className="product__img-img"
+            />
+          </div>
+        );
+      })}
     </div>
   );
 
-  const renderImgContent = () => (
-    productsImages && productsImages.length > 0 ? renderImg(productsImages) : renderImgDragAndDrop()
-  );
+  const renderImgContent = () =>
+    productsImages && productsImages.length > 0
+      ? renderImg(productsImages)
+      : renderImgDragAndDrop();
 
-  const removeImg = async (id) => {
-    try {
-      await deleteProductImg(id);
-      setProductsImages((prevImages) => prevImages.filter((img) => img.id !== id));
-    } catch (e) {
-      console.error(e);
+  const removeImg = async (cnt) => {
+    if (currentConfig.newProductFlag) {
+      try {
+        setProductsImages((prevImages) =>
+          prevImages.filter((img) => img.name !== cnt)
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      try {
+        await deleteProductImg(id);
+        setProductsImages((prevImages) =>
+          prevImages.filter((img) => img.id !== cnt)
+        );
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -180,13 +226,18 @@ const Product = ({ currentProductObj, configName }) => {
 
   const handleChange = (e, field) => {
     const value = e.target.value;
-    if (setCurrentProduct) {
-      setCurrentProduct((prev) => ({ ...prev, [field]: value }));
-      updateProductInfo(field, value);
-    } else {
-      console.error("setCurrentProduct is not a function");
+    setCurrentProduct((prev) => ({ ...prev, [field]: value }));
+};
+
+  const handleUpdate = (e, field) => {
+
+    if (currentConfig.newProductFlag){
+      return
     }
-  };
+
+    const value = e.target.value;
+    updateProductInfo(field, value);
+  }
 
   const updateProductInfo = async (key, value) => {
     try {
@@ -198,12 +249,46 @@ const Product = ({ currentProductObj, configName }) => {
     }
   };
 
+  const isImportantFieldsFilled = (currentProduct) => {
+    const newFieldValidity = {
+      name: currentProduct.name !== '',
+      category_id: currentProduct.category_id != null,
+      min_price: currentProduct.min_price > 0,
+      cost_price: currentProduct.cost_price > 0,
+      price: currentProduct.price > 0,
+      discount_price: currentProduct.discount_price > 0,
+    };
+  
+    return Object.values(newFieldValidity).every(isValid => isValid);
+  }
+
+  async function createNewProduct(currentProduct) {
+
+    if (!isImportantFieldsFilled(currentProduct)) {
+      alert('Заполните необходимые поля');
+      return;
+    }
+
+    try{
+      const response = await createProduct(currentProduct);
+      // console.log(response.data);
+      uploadImages(productsImages, response.data.id);
+      showNewProduct(false)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <div className={`${currentConfig?.wrapperClassName}`}>
       <div className="product-img__content">
-        {currentConfig?.showSaveBtn && <div className="product__save-btn">
-          <button className="product__save-btn-button">Сохранить</button>
-        </div>}
+        {currentConfig?.showNewProductsBtn && (
+          <div className="product__save-btn">
+            <button className="product__save-btn-button" onClick={() => {
+              createNewProduct(currentProduct);
+              }}>Сохранить</button>
+          </div>
+        )}
         <div className="product__img">
           {renderImgContent()}
           <div className="product-img__content-load">
@@ -228,30 +313,55 @@ const Product = ({ currentProductObj, configName }) => {
         <div className="product__content-header">
           <div className="product__name">
             <input
-              className="product__name-input"
-              value={currentProduct?.name || ""}
+              className={`product__name-input ${
+                currentProduct?.name === '' ? "warning" : ""
+              }`}
+              value={currentProduct?.name}
               onChange={(e) => handleChange(e, "name")}
+              onBlur={(e) => handleUpdate(e, "name")}
               placeholder="Наименование товара"
             />
           </div>
-          <div className="product__content-close">
-            <button className="product__content-close-btn">
-              <img src={close} alt="close product__content" className="product__content-close-img" />
-            </button>
-          </div>
+          {currentConfig?.showNewProductsBtn && (
+            <div className="product__content-close">
+              <button
+                className="product__content-close-btn"
+                onClick={() => showNewProduct(false)}
+              >
+                <img
+                  src={close}
+                  alt="close product__content"
+                  className="product__content-close-img"
+                />
+              </button>
+            </div>
+          )}
         </div>
         <div className="product__navbar">
           <div className="product__navbar-content">
-            <Link
-              className={`product__navbar-link ${
-                location.pathname === `/products/${id}/productdata`
-                  ? "active"
-                  : ""
-              }`}
-              to={`/products/${id}/productdata`}
-            >
-              Данные товара
-            </Link>
+            {currentConfig?.newProductFlag ? (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/productdata`
+                    ? "active"
+                    : ""
+                }`}
+                to={`/products/productdata`}
+              >
+                Данные товара
+              </Link>
+            ) : (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/${id}/productdata`
+                    ? "active"
+                    : ""
+                }`}
+                to={`/products/${id}/productdata`}
+              >
+                Данные
+              </Link>
+            )}
             <Link
               className={`product__navbar-link ${
                 location.pathname === `/products/${id}/delivery` ? "active" : ""
@@ -278,7 +388,7 @@ const Product = ({ currentProductObj, configName }) => {
             </Link>
           </div>
         </div>
-        <Outlet context={{ currentProduct, setCurrentProduct }} />
+        <Outlet context={{ currentProduct, setCurrentProduct, currentConfig }} />
       </div>
     </div>
   );

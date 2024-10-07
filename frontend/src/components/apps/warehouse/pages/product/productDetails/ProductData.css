@@ -58,12 +58,20 @@
     font-size: 14px;
 }
 
+.product-data__item.warning .product-data__item-text{
+    color: red;
+}
+
 .product-data__item-input{
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
     padding-left: 11px;
     height: 29px;
     width: 100%;
+}
+
+.product-data__item.warning .product-data__item-input{
+    border: 1px solid red;
 }
 
 .product-data__group{

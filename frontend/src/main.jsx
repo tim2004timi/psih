@@ -67,6 +67,16 @@ const router = createBrowserRouter([
       {
         path: "products",
         element: <Products />,
+        children: [
+          {
+            path: "",
+            element: <Navigate to="productdata" replace />,
+          },
+          {
+            path: "productdata",
+            element: <ProductData />,
+          }
+        ]
       },
       {
         path: "products/:id",

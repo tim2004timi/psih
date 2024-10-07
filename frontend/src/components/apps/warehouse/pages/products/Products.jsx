@@ -517,15 +517,25 @@ const Products = () => {
             >
               Фильтр
             </button>
-            <PopularButton text={"+ Товар"} isHover={true} onClick={() => setIsNewProduct(!isNewProduct)}/>
+            <PopularButton
+              text={"+ Товар"}
+              isHover={true}
+              onClick={() => setIsNewProduct(!isNewProduct)}
+            />
             {isNewProduct && (
-              <Product configName='newProductConfig' currentProductObj={{}}/>
+              <Product
+                configName="newProductConfig"
+                currentProductObj={null}
+                showNewProduct={setIsNewProduct}
+              />
             )}
             <div className="products-header-vert-separator"></div>
-            <PopularButton text={"Архив"} isHover={true} onClick={() => setIsShowArchive(!isShowArchive)}/>
-            {isShowArchive && (
-              <ProductTable showArchive={setIsShowArchive}/>
-            )}
+            <PopularButton
+              text={"Архив"}
+              isHover={true}
+              onClick={() => setIsShowArchive(!isShowArchive)}
+            />
+            {isShowArchive && <ProductTable showArchive={setIsShowArchive} />}
           </div>
           <div
             className="warehouse-table-btn__container"
