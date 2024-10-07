@@ -21,7 +21,19 @@ import './Product.css';
 const Product = ({ currentProductObj, configName }) => {
   const fileInputRef = useRef(null);
   const { id } = useParams();
-  const { currentProduct, setCurrentProduct } = currentProductObj || {};
+  const { currentProduct, setCurrentProduct } = currentProductObj != undefined ? currentProductObj : {
+    "name": "",
+    "description": "",
+    "min_price": 0,
+    "cost_price": 0,
+    "price": 0,
+    "discount_price": 0,
+    "category_id": 0,
+    "measure": "шт.",
+    "size": "S",
+    "remaining": 0,
+    "archived": false
+  };
   const [productsImages, setProductsImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
@@ -29,6 +41,10 @@ const Product = ({ currentProductObj, configName }) => {
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
   }, [configName]);
+
+  // useEffect(() => {
+  //   console.log(productsImages)
+  // }, [productsImages])
 
   const returnConfig = (configName) => {
     switch (configName) {
@@ -57,6 +73,13 @@ const Product = ({ currentProductObj, configName }) => {
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || e.dataTransfer.files);
+    
+    if (id == undefined) {
+      setProductsImages((prevImages) => [...prevImages, files]);
+      console.log(files)
+      return
+    }
+
     const uploadPromises = files.map(async (file) => {
       try {
         const response = await uploadProductImg(id, file);
@@ -117,15 +140,17 @@ const Product = ({ currentProductObj, configName }) => {
   const renderImg = (imgArr) => (
     <div className="product-img__container">
       {imgArr.map((image) => (
-        <div key={image.id} className="product__img-item">
+        <div key={image[0].size} className="product__img-item">
           <button
             className="product__img-btn"
-            onClick={() => removeImg(image.id)}
+            // onClick={() => removeImg(image.id)}
+            onClick={() => console.log(image[0].name)}
           >
             <div className="product__img-btn--minus"></div>
           </button>
           <img
-            src={getFullImageUrl(serverUrl, image.url)}
+            // src={getFullImageUrl(serverUrl, image.name)}
+            src={URL.createObjectURL(image[0])}
             alt="img"
             className="product__img-img"
           />

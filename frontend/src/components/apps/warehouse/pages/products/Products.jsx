@@ -519,7 +519,7 @@ const Products = () => {
             </button>
             <PopularButton text={"+ Товар"} isHover={true} onClick={() => setIsNewProduct(!isNewProduct)}/>
             {isNewProduct && (
-              <Product configName='newProductConfig' />
+              <Product configName='newProductConfig' currentProductObj={{}}/>
             )}
             <div className="products-header-vert-separator"></div>
             <PopularButton text={"Архив"} isHover={true} onClick={() => setIsShowArchive(!isShowArchive)}/>
