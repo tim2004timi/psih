@@ -68,7 +68,7 @@ export async function patchProduct(productId, productData) {
 export async function deleteProduct(productId) {
     try {
         let response = await axios.delete(`http://87.242.85.68:8000/api/products/?product_id=${productId}`);
-        console.log(response)
+        // console.log(response)
     } catch(e) {
         throw(e)
     }
@@ -77,7 +77,7 @@ export async function deleteProduct(productId) {
 export async function getProductById(productId) {
     try {
         let response = await axios.get(`http://87.242.85.68:8000/api/products/?product_id=${productId}`);
-        console.log(response)
+        // console.log(response)
     } catch(e) {
         throw(e)
     }
@@ -97,7 +97,7 @@ export async function uploadProductImg(productId, file) {
           },
         }
       );
-      console.log(response);
+    //   console.log(response);
       return response.data;
     } catch (e) {
       throw e;
@@ -107,7 +107,7 @@ export async function uploadProductImg(productId, file) {
 export async function deleteProductImg(productId) {
     try {
         let response = await axios.delete(`http://87.242.85.68:8000/api/products/images/?image_id=${productId}`);
-        console.log(response)
+        // console.log(response)
     } catch(e) {
         throw(e)
     }

@@ -9,7 +9,7 @@ const ProductData = () => {
     const { id } = useParams();
     const { currentProduct, setCurrentProduct, currentConfig } = useOutletContext();
     const [categoriesObj, setCategoriesObj] = useState([]);
-    const [groupListSelectedItems, setGroupListSelectedItems] = useState();
+    const [groupListSelectedItem, setGroupListSelectedItem] = useState();
     const [isShowGroupList, setIsShowGroupList] = useState(false);
 
     // const defaultProduct = {
@@ -47,9 +47,22 @@ const ProductData = () => {
       }
     }
 
+    useEffect(() => {
+      if (categoriesObj.length > 0 && currentProduct.category_id) {
+          const selectedCategory = categoriesObj.find(category => category.id === currentProduct.category_id);
+          if (selectedCategory) {
+              setGroupListSelectedItem(selectedCategory.name);
+          }
+      }
+  }, [categoriesObj, currentProduct.category_id]);
+
     // useEffect(() => {
     //   console.log(categoriesObj)
     // }, [categoriesObj])
+
+    // useEffect(() => {
+    //   console.log(groupListSelectedItem)
+    // }, [groupListSelectedItem])
 
     useEffect(() => {
       fetchCategories();
@@ -64,7 +77,7 @@ const ProductData = () => {
       try {
           const updatedProduct = { ...currentProduct, [key]: value };
           const response = await patchProduct(id, updatedProduct);
-          console.log(response.data);
+          // console.log(response.data);
       } catch (error) {
           console.error(error);
       }
@@ -78,7 +91,7 @@ const ProductData = () => {
               key={category.id}
               className='product-data__group-list-button'
               onClick={() => {
-                setGroupListSelectedItems(category.name);
+                setGroupListSelectedItem(category.name);
                 setCurrentProduct((prev) => ({ ...prev, category_id: category.id }));
                 setIsShowGroupList(false);
                 updateProductInfo("category_id", category.id);
@@ -119,7 +132,7 @@ const ProductData = () => {
                 className="product-data__group-list product-data__item-input"
                 onClick={() => setIsShowGroupList(!isShowGroupList)}
               >
-                {groupListSelectedItems}
+                {groupListSelectedItem}
               </button>
               {isShowGroupList && renderCategoriesList()}
             </div>

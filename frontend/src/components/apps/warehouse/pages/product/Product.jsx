@@ -17,11 +17,11 @@ import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import close from "../../../../../assets/img/close_filter.png";
 import "./Product.css";
 
-const Product = ({ currentProductObj, configName, showNewProduct }) => {
+const Product = ({ currentProductArr, configName, showNewProduct }) => {
   const fileInputRef = useRef(null);
   const { id } = useParams();
   const [currentProduct, setCurrentProduct] = useState(
-    currentProductObj?.currentProduct || {
+    {
       "name": "",
       "description": "",
       "min_price": 0,
@@ -38,22 +38,20 @@ const Product = ({ currentProductObj, configName, showNewProduct }) => {
   const [productsImages, setProductsImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
-  // const [fieldValidity, setFieldValidity] = useState({
-  //   name: true,
-  //   min_price: true,
-  //   cost_price: true,
-  //   price: true,
-  //   discount_price: true,
-  //   category_id: true,
-  // })
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
   }, [configName]);
 
+  // useEffect(() => {
+  //   console.log('product', currentProduct)
+  // }, [currentProduct])
+
   useEffect(() => {
-    console.log(productsImages)
-  }, [productsImages])
+    if (currentProductArr && currentProductArr[0]) {
+      setCurrentProduct(currentProductArr[0]);
+    }
+  }, [currentProductArr]);
 
   const returnConfig = (configName) => {
     switch (configName) {
@@ -78,6 +76,7 @@ const Product = ({ currentProductObj, configName, showNewProduct }) => {
   useEffect(() => {
     if (currentProduct && currentProduct.images) {
       setProductsImages(currentProduct.images);
+      // console.log(productsImages)
     }
   }, [currentProduct]);
 
@@ -156,7 +155,7 @@ const Product = ({ currentProductObj, configName, showNewProduct }) => {
   const renderImg = (imgArr) => (
     <div className="product-img__container">
       {imgArr.map((image) => {
-        console.log(image.size);
+        // console.log(image)
         return currentConfig.newProductFlag ? (
           <div 
           key={image.name} 
@@ -208,7 +207,7 @@ const Product = ({ currentProductObj, configName, showNewProduct }) => {
       }
     } else {
       try {
-        await deleteProductImg(id);
+        await deleteProductImg(cnt);
         setProductsImages((prevImages) =>
           prevImages.filter((img) => img.id !== cnt)
         );
