@@ -60,7 +60,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4173"],  # Разрешить все источники
+    allow_origins=["http://87.242.85.68:5173",
+                   "http://87.242.85.68:4173"],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки
