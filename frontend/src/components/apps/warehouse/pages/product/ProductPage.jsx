@@ -58,6 +58,10 @@ const ProductPage = () => {
     }
   }, [products, id]);
 
+  // useEffect(() => {
+  //   console.log('product page', currentProduct)
+  // }, [currentProduct])
+
   useEffect(() => {
     if (products.length > 0) {
       const newProductsNames = products
@@ -145,7 +149,7 @@ const ProductPage = () => {
         </div>
       </div>
       <div className="product__separator"></div>
-      <Product currentProductObj={{currentProduct, setCurrentProduct}}/>
+      <Product currentProductArr={[currentProduct, setCurrentProduct]} configName='productPageConfig'/>
     </>
   );
 };

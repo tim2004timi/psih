@@ -25,6 +25,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
+import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
 
 const Products = () => {
@@ -516,32 +517,25 @@ const Products = () => {
             >
               Фильтр
             </button>
-            <PopularButton text={"+ Товар"} isHover={true} />
+            <PopularButton
+              text={"+ Товар"}
+              isHover={true}
+              onClick={() => setIsNewProduct(!isNewProduct)}
+            />
             {isNewProduct && (
-              <div className="new-product">
-                <div className="new-product__img">
-                  <div className="new-product__save-btn">
-                    <PopularButton text={"Сохранить"} isHover={true} />
-                  </div>
-                  <form className="new-product__form" method="post">
-                    <div className="new-product__upload-zone">
-                      <p className="new-product__upload-zone-plus">+</p>
-                    </div>
-                    <div className="new-product__form-load-btn">
-                      <input
-                        type="file"
-                        className="new-product__form-load-input"
-                      />
-                    </div>
-                  </form>
-                </div>
-              </div>
+              <Product
+                configName="newProductConfig"
+                currentProductObj={null}
+                showNewProduct={setIsNewProduct}
+              />
             )}
             <div className="products-header-vert-separator"></div>
-            <PopularButton text={"Архив"} isHover={true} onClick={() => setIsShowArchive(!isShowArchive)}/>
-            {isShowArchive && (
-              <ProductTable showArchive={setIsShowArchive}/>
-            )}
+            <PopularButton
+              text={"Архив"}
+              isHover={true}
+              onClick={() => setIsShowArchive(!isShowArchive)}
+            />
+            {isShowArchive && <ProductTable showArchive={setIsShowArchive} />}
           </div>
           <div
             className="warehouse-table-btn__container"
