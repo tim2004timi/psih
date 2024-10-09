@@ -4,8 +4,8 @@ import { serverUrl } from './API/productsApi';
 export const instance = axios.create({
     // к запросу будет приуепляться cookies
     withCredentials: true,
-    // baseURL: serverUrl,
-    baseURL: 'http://87.242.85.68:3000',
+    baseURL: serverUrl,
+    // baseURL: 'http://87.242.85.68:3000',
   });
   
   
