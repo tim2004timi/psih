@@ -109,7 +109,7 @@ const OrderTable = ({
     try {
       const response = await getOrders();
       setData(response.data);
-      console.log(response.data)
+      // console.log(response.data)
       initialCheckboxStates = response.data.reduce((acc, row) => {
         acc[row.id] = false;
         return acc;
