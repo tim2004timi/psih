@@ -42,7 +42,7 @@ const LoginForm = observer(() => {
             ВОЙТИ
           </button>
         </form>
-        <Link to="/registration" className="authorization__content-dont-acc">
+        <Link to="/sign-up" className="authorization__content-dont-acc">
           Нет аккаунта?
         </Link>
       </div>
