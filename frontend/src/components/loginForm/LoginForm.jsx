@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
+import { observer } from 'mobx-react-lite';
+import AuthStore from '../../AuthStore';
 
-const LoginForm = () => {
-  const [login, setLogin] = useState("");
-  const [email, setEmail] = useState("");
+const LoginForm = observer(() => {
+  const [loginValue, setLoginValue] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = AuthStore;
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log("submit", login, email, password);
+    login(loginValue, password);
   };
   return (
     <div className="authorization">
@@ -24,19 +27,19 @@ const LoginForm = () => {
             type="text"
             placeholder="Логин"
             className="authorization__form-input"
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
+            value={loginValue}
+            onChange={(e) => setLoginValue(e.target.value)}
           />
           <input
             required
-            type="email"
-            placeholder="Email"
+            type="password"
+            placeholder="Пароль"
             className="authorization__form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button type="submit" className="authorization__form-btn">
-            Зарегистрироваться
+            ВОЙТИ
           </button>
         </form>
         <Link to="/registration" className="authorization__content-dont-acc">
@@ -45,6 +48,6 @@ const LoginForm = () => {
       </div>
     </div>
   );
-};
+});
 
 export default LoginForm;

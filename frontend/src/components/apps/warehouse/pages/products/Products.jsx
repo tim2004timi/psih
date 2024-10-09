@@ -21,6 +21,7 @@ import {
   deleteCategory,
   createCategory,
   serverUrl,
+  deleteProducts,
 } from "../../../../../API/productsApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setProductsNA } from "../../../../stm/productsNASlice";
@@ -254,6 +255,7 @@ const Products = () => {
   async function fetchProductsNA() {
     try {
       const response = await getProductsNA();
+      // console.log(response.data)
       dispatch(setProductsNA(response.data));
     } catch (e) {
       console.error(e);
@@ -279,13 +281,25 @@ const Products = () => {
     }
   }, [categories, productsNA]);
 
-  async function toArchive(id, key, newValue) {
+  function toArchive(idArr, key, newValue) {
+    idArr.map(async(id) => {
+      try {
+        // let response = await patchProduct(id, key, newValue);
+        // console.log(response.data);
+        // fetchProductsNA();
+        console.log(id)
+      } catch (e) {
+        console.error(e);
+      }
+    })
+  }
+
+  async function deleteSelectedProducts(idArr) {
     try {
-      let response = await patchProduct(id, key, newValue);
-      console.log(response.data);
-      fetchProductsNA();
+      const response = await deleteProducts(idArr);
+      console.log('успешно', response)
     } catch (e) {
-      console.error(e);
+      console.log(e);
     }
   }
 
@@ -416,32 +430,32 @@ const Products = () => {
         );
       },
     },
-    "в архив": {
-      className: "products-column column-archive",
-      content: (row) => {
-        return !row.archived ? (
-          <div
-            className={`products-column-container column-archive__container`}
-          >
-            <button
-              className="column-archive__btn"
-              onClick={() => toArchive(row.id, "archived", true)}
-            >
-              <img
-                src={archiveBtn}
-                alt="archive-btn"
-                className="column-archive__img"
-              />
-              <img
-                src={archiveBtnHover}
-                alt="archive-btn"
-                className="column-archive__img--hover"
-              />
-            </button>
-          </div>
-        ) : null;
-      },
-    },
+    // "в архив": {
+    //   className: "products-column column-archive",
+    //   content: (row) => {
+    //     return !row.archived ? (
+    //       <div
+    //         className={`products-column-container column-archive__container`}
+    //       >
+    //         <button
+    //           className="column-archive__btn"
+    //           onClick={() => toArchive(row.id, "archived", true)}
+    //         >
+    //           <img
+    //             src={archiveBtn}
+    //             alt="archive-btn"
+    //             className="column-archive__img"
+    //           />
+    //           <img
+    //             src={archiveBtnHover}
+    //             alt="archive-btn"
+    //             className="column-archive__img--hover"
+    //           />
+    //         </button>
+    //       </div>
+    //     ) : null;
+    //   },
+    // },
   };
 
   const renderCategoriesBtn = () => {
@@ -546,7 +560,7 @@ const Products = () => {
             </div>
             <button
               className="column-archive__btn"
-              onClick={() => toArchive(row.id, "archived", true)}
+              onClick={() => toArchive(activeCheckboxIds, "archived", true)}
             >
               <img
                 src={archiveBtn}
@@ -562,8 +576,8 @@ const Products = () => {
             <button
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
               onClick={() => {
-                deleteSelectedOrders(activeCheckboxIds);
-                setIsFetchData(true);
+                deleteSelectedProducts(activeCheckboxIds);
+                fetchProductsNA()
               }}
             >
               <img

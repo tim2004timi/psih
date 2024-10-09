@@ -13,12 +13,6 @@
     position: relative;
 }
 
-.logo{
-    /* position: absolute;
-    left: 50%;
-    transform: translateX(-50%); */
-}
-
 .logo_img{
     width: 23px;
 }
