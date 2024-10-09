@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const serverUrl = 'http://87.242.85.68:8000/ ';
+export const serverUrl = 'http://87.242.85.68:8000';
 
 export async function getCategories() {
     try {
