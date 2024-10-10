@@ -41,9 +41,9 @@ export const instance = axios.create({
       ) {
         try {
           // запрос на обновление токенов
-          const resp = await instance.get("/api/refresh");
+          const resp = await instance.get("/api/jwt/refresh/");
           // сохраняем новый accessToken в localStorage
-          localStorage.setItem("token", resp.data.accessToken);
+          localStorage.setItem("token", resp.data.access_token);
           // переотправляем запрос с обновленным accessToken
           return instance.request(originalRequest);
         } catch (error) {

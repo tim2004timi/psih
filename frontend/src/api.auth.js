@@ -20,6 +20,10 @@ const AuthService = {
     // logout() {
     //     return instance.post("/api/jwt/logout");
     // }
+
+    checkMe() {
+        return instance.get("/api/jwt/users/me/");
+    }
 };
 
 export default AuthService;
