@@ -7,13 +7,21 @@ import AuthStore from '../../AuthStore';
 const LoginForm = observer(() => {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = AuthStore;
+  const { login, checkMe, checkAuth } = AuthStore;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    login(loginValue, password);
+    try {
+      await login(loginValue, password);
+      await checkMe();
+      // await checkAuth();
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Ошибка при входе. Пожалуйста, проверьте ваши данные.");
+    }
   };
+
   return (
     <div className="authorization">
       <div className="authorization__content">

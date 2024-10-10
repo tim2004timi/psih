@@ -32,7 +32,6 @@ export async function createCategory(name) {
 export async function getProductsNA() {
     try {
         let response = await axios.get(`${serverUrl}/api/products/not-archived/`);
-        console.log('загрузил')
         return response;
     } catch (e) {
         throw e;
