@@ -9,7 +9,7 @@ class AuthStore {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  async login(email, password) {
+  async login(email, password, onSuccess) {
     // console.log(AuthService.login(email, password))
     this.isAuthInProgress = true;
     try {
@@ -18,6 +18,11 @@ class AuthStore {
       localStorage.setItem("token", resp.data.access_token);
       console.log(localStorage)
       this.isAuth = true;
+
+      if (onSuccess) {
+        onSuccess();
+      }
+
     } catch (err) {
       console.log("login error");
     } finally {
@@ -30,9 +35,10 @@ class AuthStore {
     try {
       const resp = await AuthService.refreshToken();
       localStorage.setItem("token", resp.data.access_token);
+      console.log('рефреш')
       this.isAuth = true;
     } catch (err) {
-      console.error(err);
+      console.error(err)
       console.log("login error");
     } finally {
       this.isAuthInProgress = false;
@@ -56,10 +62,11 @@ class AuthStore {
     this.isAuthInProgress = true;
     try {
       const resp = await AuthService.checkMe();
+      // this.isAuth = false;
       console.log(resp)
-      console.log('доступ разрешен')
+      console.log('вы внутри системы')
     } catch (err) {
-      console.log("login error");
+      console.log("нет доступа");
     } finally {
       this.isAuthInProgress = false;
     }

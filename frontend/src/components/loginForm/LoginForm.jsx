@@ -13,12 +13,10 @@ const LoginForm = observer(() => {
     e.preventDefault();
 
     try {
-      await login(loginValue, password);
-      await checkMe();
-      // await checkAuth();
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Ошибка при входе. Пожалуйста, проверьте ваши данные.");
+      // await login(loginValue, password);
+      await checkAuth()
+    } catch (e) {
+      console.log(e);
     }
   };
 
