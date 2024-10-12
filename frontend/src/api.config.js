@@ -2,19 +2,14 @@ import axios from 'axios';
 import { serverUrl } from './API/productsApi';
 
 export const instance = axios.create({
-    // к запросу будет приуепляться cookies
     withCredentials: true,
     baseURL: serverUrl,
-    // baseURL: 'http://87.242.85.68:3000',
-  });
-  
-  
-  // создаем перехватчик запросов
-  // который к каждому запросу добавляет accessToken из localStorage
-  instance.interceptors.request.use(
+});
+
+instance.interceptors.request.use(
     (config) => {
-      config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`
-      return config
+        config.headers.Authorization = `Bearer ${localStorage.getItem("token")}`;
+        return config;
     }
   )
   
@@ -41,9 +36,9 @@ export const instance = axios.create({
       ) {
         try {
           // запрос на обновление токенов
-          const resp = await instance.get("/api/refresh");
+          const resp = await instance.get("/api/jwt/refresh/");
           // сохраняем новый accessToken в localStorage
-          localStorage.setItem("token", resp.data.accessToken);
+          localStorage.setItem("token", resp.data.access_token);
           // переотправляем запрос с обновленным accessToken
           return instance.request(originalRequest);
         } catch (error) {

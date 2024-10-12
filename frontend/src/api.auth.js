@@ -13,13 +13,18 @@ const AuthService = {
         });
     },
     
+
     refreshToken() {
-        return instance.get("/api/jwt/refresh/");
+        return instance.post("/api/jwt/refresh/");
     },
     
     // logout() {
     //     return instance.post("/api/jwt/logout");
     // }
+
+    checkMe() {
+        return instance.get("/api/jwt/users/me/");
+    }
 };
 
 export default AuthService;
