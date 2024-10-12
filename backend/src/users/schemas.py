@@ -5,7 +5,8 @@ from pydantic import BaseModel, EmailStr, ConfigDict
 
 class UserBase(BaseModel):
     username: str
-    email: EmailStr
+    # email: EmailStr
+    tg_username: str
 
 
 class UserCreate(UserBase):

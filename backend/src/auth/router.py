@@ -65,7 +65,7 @@ async def auth_user_check_self_info(
     iat = payload.get("iat")
     return {
         "username": user.username,
-        "email": user.email,
+        "tg_username": user.tg_username,
         "logged_in_at": iat,
     }
 
