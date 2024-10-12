@@ -1,11 +1,12 @@
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
+from ..schemas import File as MyFile
 from src.orders.schemas import (
     Order,
     OrderCreate,
@@ -51,6 +52,29 @@ async def update_order(
     return await service.update_order(
         session=session, order_update=order_update, order=order
     )
+
+
+@router.post(
+    "/{order_id}/upload-file/",
+    response_model=MyFile,
+    description="Upload order file",
+)
+async def upload_order_file(
+    order_id: int,
+    file: UploadFile = File(...),
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.upload_order_file(
+        order_id=order_id, file=file, session=session, is_image=False
+    )
+
+
+@router.delete(path="/files/", description="Delete order file by id")
+async def delete_order_file_by_id(
+    file_id: int,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.delete_order_file_by_id(session=session, file_id=file_id)
 
 
 @router.delete(

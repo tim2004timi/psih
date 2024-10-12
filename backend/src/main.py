@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .orders.router import router as orders_router
 from .products.router import products_router, categories_router
 from .auth.router import router as auth_router
+from .models import File
 
 from .database import Base
 from .config import UPLOAD_DIR
@@ -60,10 +61,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://87.242.85.68:5173",
-                   "http://87.242.85.68:4173",
-                   "http://localhost:5173",
-                   "http://localhost:4173"],
+    allow_origins=[
+        "http://87.242.85.68:5173",
+        "http://87.242.85.68:4173",
+        "http://localhost:5173",
+        "http://localhost:4173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки

@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from datetime import datetime
 from enum import Enum
 
+from ..schemas import File as MyFile
+
 
 class StatusEnum(str, Enum):
     PROCESSING = "в обработке"
@@ -58,6 +60,7 @@ class Order(OrderBase):
     order_date: datetime
 
     products_in_order: List["ProductInOrder"]
+    files: List["MyFile"]
 
 
 class OrderWithoutProducts(OrderBase):

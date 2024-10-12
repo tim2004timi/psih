@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     db_port: str
     db_name: str
     db_echo: bool
+    bot_token: str
     # salt: str
 
     model_config = SettingsConfigDict(env_file=".env")
