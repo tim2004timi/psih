@@ -47,7 +47,7 @@ async def login_1_step(response: dict = Depends(login)):
     return response
 
 
-@router.post("/2fa-2-step/")
+@router.post("/2fa-2-step/", response_model=TokenInfo)
 async def login_2_step(user: UserSchema = Depends(verify_code)):
     access_token = await create_access_token(user)
     refresh_token = await create_refresh_token(user)
