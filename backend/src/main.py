@@ -49,8 +49,8 @@ from .config import UPLOAD_DIR
 #         response = await call_next(request)
 #         return response
 
-
 app = FastAPI(title="Psih Clothes")
+
 main_router = APIRouter(prefix="/api")
 
 if not os.path.exists(UPLOAD_DIR):

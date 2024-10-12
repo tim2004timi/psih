@@ -10,6 +10,7 @@ from .jwtcreators import (
     REFRESH_TOKEN_TYPE,
 )
 from . import utils as auth_utils
+from .schemas import LoginRequest
 from .. import utils
 from ..users.schemas import User as UserSchema
 from ..users import service
@@ -85,8 +86,7 @@ async def get_current_active_auth_user(
 
 
 async def validate_auth_user(
-    username: str = Form(),
-    password: str = Form(),
+    login_request: LoginRequest,
     session: AsyncSession = Depends(db_manager.session_dependency),
 ) -> UserSchema:
     unauthed_exc = HTTPException(
@@ -94,12 +94,12 @@ async def validate_auth_user(
         detail="Неверный логин или пароль",
     )
 
-    user = await service.get_user_by_username(session=session, username=username)
+    user = await service.get_user_by_username(session=session, username=login_request.username)
     if user is None:
         raise unauthed_exc
 
     if not utils.validate_password(
-        password=password, hashed_password=user.hashed_password
+        password=login_request.password, hashed_password=user.hashed_password
     ):
         raise unauthed_exc
 
