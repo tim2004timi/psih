@@ -47,7 +47,7 @@ async def get_user_by_tg_username(tg_username: str, session: AsyncSession) -> Us
 async def create_user(session: AsyncSession, user: schemas.UserCreate) -> User:
     hashed_password = hash_password(user.password)
     user = User(
-        username=user.username, hashed_password=hashed_password, email=user.email
+        username=user.username, hashed_password=hashed_password, tg_username=user.tg_username
     )
     session.add(user)
     await session.commit()
