@@ -7,9 +7,29 @@ from redis.asyncio import Redis
 
 from .users.service import get_user_by_tg_username
 from .config import settings
-from .database import db_manager
+
+from sqlalchemy.ext.asyncio import (
+    create_async_engine,
+    async_sessionmaker,
+)
 
 
+class DatabaseManager:
+    def __init__(self):
+        url = (
+            f"postgresql+asyncpg://{settings.db_user}:{settings.db_pass}@{settings.db_host}:{settings.db_port}/"
+            f"{settings.db_name}"
+        )
+        self.engine = create_async_engine(url=url, echo=settings.db_echo)
+        self.session_maker = async_sessionmaker(
+            bind=self.engine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False,
+        )
+
+
+db_manager = DatabaseManager()
 dp = Dispatcher()
 
 # Инициализация Redis клиента
@@ -26,7 +46,7 @@ async def start_command(message: types.Message):
             )
         except HTTPException:
             await message.answer(
-                "Вы не зарегистрированы в системе psih, зарегистрируйтесь и повторите попытку!"
+                "Ваш аккаунт не привязан к профилю в системе psih! Привяжите ваш telegram-аккаунт и повторите попытку."
             )
             return
         await redis_client.set(f"telegram_chat_id:{user.username}", message.chat.id)
