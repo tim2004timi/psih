@@ -24,7 +24,7 @@ class AuthSettings(BaseModel):
     algorithm: str = "RS256"
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
-    access_token_expire_minutes: int = 5  # TODO: изменить
+    access_token_expire_minutes: int = 1  # TODO: изменить
     refresh_token_expire_days: int = 1
 
 
