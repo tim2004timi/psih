@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import DateTime, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 from datetime import datetime
@@ -31,5 +33,12 @@ class Order(Base):
     products_in_order: Mapped[list["ProductInOrder"]] = relationship(
         back_populates="order", cascade="all, delete-orphan", passive_deletes=True
     )
+
+    files: Mapped[List["File"]] = relationship(
+        back_populates="order",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        primaryjoin="and_(foreign(File.owner_id) == Order.id, File.owner_type == 'Order', File.image == False)",
+    )
+
     # другая инфа для суммы
-    # files

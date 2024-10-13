@@ -15,6 +15,7 @@ from .dependencies import (
     get_current_active_auth_user,
     validate_auth_user,
 )
+from .service import login, verify_code
 from ..database import db_manager
 from ..users import service
 from ..users.schemas import User as UserSchema, UserCreate as UserCreateSchema
@@ -26,14 +27,35 @@ http_bearer = HTTPBearer(auto_error=False)
 router = APIRouter(
     prefix="/jwt",
     tags=["JWT"],
-    dependencies=[Depends(http_bearer)],
 )
 
 
-@router.post("/login/", response_model=TokenInfo)
+@router.post("/login/", response_model=TokenInfo, deprecated=True)
 async def auth_user_issue_jwt(
     user: UserSchema = Depends(validate_auth_user),
 ):
+    access_token = await create_access_token(user)
+    refresh_token = await create_refresh_token(user)
+    return TokenInfo(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+
+
+@router.post("/validate/")
+async def auth_user_issue_jwt(
+    _: UserSchema = Depends(validate_auth_user),
+):
+    return {"message": "OK"}
+
+
+@router.post("/2fa-1-step/")
+async def login_1_step(response: dict[str, str] = Depends(login)):
+    return response
+
+
+@router.post("/2fa-2-step/", response_model=TokenInfo)
+async def login_2_step(user: UserSchema = Depends(verify_code)):
     access_token = await create_access_token(user)
     refresh_token = await create_refresh_token(user)
     return TokenInfo(
@@ -46,6 +68,7 @@ async def auth_user_issue_jwt(
     "/refresh/",
     response_model=TokenInfo,
     response_model_exclude_none=True,
+    dependencies=[Depends(http_bearer)],
 )
 async def auth_refresh_jwt(
     # todo: validate user is active!!
@@ -57,7 +80,7 @@ async def auth_refresh_jwt(
     )
 
 
-@router.get("/users/me/")
+@router.get("/users/me/", dependencies=[Depends(http_bearer)])
 async def auth_user_check_self_info(
     payload: dict = Depends(get_current_token_payload),
     user: UserSchema = Depends(get_current_active_auth_user),
@@ -65,7 +88,7 @@ async def auth_user_check_self_info(
     iat = payload.get("iat")
     return {
         "username": user.username,
-        "email": user.email,
+        "tg_username": user.tg_username,
         "logged_in_at": iat,
     }
 

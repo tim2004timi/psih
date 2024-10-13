@@ -9,7 +9,8 @@ class User(Base):
     __tablename__ = "users"
 
     username: Mapped[str] = mapped_column(unique=True)
-    email: Mapped[str] = mapped_column(unique=True)
+    # email: Mapped[str] = mapped_column(unique=True)
+    tg_username: Mapped[str] = mapped_column(unique=True, nullable=True)
     hashed_password: Mapped[bytes]
     admin: Mapped[bool] = mapped_column(default=False)
     active: Mapped[bool] = mapped_column(default=True)
