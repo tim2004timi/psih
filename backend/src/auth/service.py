@@ -49,8 +49,8 @@ async def login(user: UserSchema = Depends(validate_auth_user)):
 
 
 async def verify_code(
-    username: Form(),
-    code: Form(),
+    username: str = Form(),
+    code: str = Form(),
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
     request = VerifyCodeRequest(username=username, code=code)

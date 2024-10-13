@@ -50,7 +50,7 @@ async def auth_user_issue_jwt(
 
 
 @router.post("/2fa-1-step/")
-async def login_1_step(response: dict = Depends(login)):
+async def login_1_step(response: dict[str, str] = Depends(login)):
     return response
 
 
