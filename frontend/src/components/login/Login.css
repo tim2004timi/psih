@@ -1,0 +1,93 @@
+.authorization{
+    width: 310px;
+    height: 100vh;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.authorization__content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    position: relative;
+}
+
+.authorization__logo{
+    margin-bottom: 50px;
+}
+
+.authorization__logo-img{
+    width: 72px;
+}
+
+.authorization__form{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+}
+
+.authorization__form-input{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    width: 100%;
+    padding: 4px 7px;
+}
+
+.authorization__form-btn{
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+.authorization__form-btn:hover{
+    transition: all 0.3s;
+    color: #fff;
+}
+
+.authorization__content-dont-acc{
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.authorization__content-dont-acc:hover{
+    color: rgba(0, 0, 0, 1);
+    transition: all 0.3s;
+}
+
+.tegram-code__text{
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 13px;
+    text-align: center;
+}
+
+.tegram-code__link{
+    color: rgba(0, 0, 0, 0.5);
+    text-decoration: underline;
+}
+
+.tegram-code-btn{
+    color: rgb(0, 0, 0);
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgb(0, 0, 0);
+    cursor: pointer;
+    padding: 0;
+}
+
+.tegram-code__error-text{
+    color: red;
+    font-size: 13px;
+    position: absolute;
+    bottom: -60px;
+    text-align: center;
+}

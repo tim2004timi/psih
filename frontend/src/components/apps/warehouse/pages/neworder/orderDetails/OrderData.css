@@ -1,3 +1,16 @@
+.orderDate-new{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 20%;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(40px);
+    border-radius: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    width: 1612px;
+    
+}
+
 .orderData__header{
     display: flex;
     align-items: center;
@@ -82,6 +95,7 @@
     border: none;
     padding: 0;
     width: 100%;
+    background-color: transparent;
 }
 
 .orderDataInfo__input-area{

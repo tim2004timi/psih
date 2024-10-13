@@ -1,27 +1,50 @@
-import { instance } from "./api.config.js";
+import { instance, refreshInstance } from "./api.config.js";
+import axios from 'axios';
+import { serverUrl } from './API/productsApi';
 
 const AuthService = {
-    login(username, password) {
+    validateLogin(username, password) {
         const data = new URLSearchParams();
         data.append('username', username);
         data.append('password', password);
         
-        return instance.post("/api/jwt/login/", data, {
+        return axios.post(`${serverUrl}/api/jwt/validate/`, data, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+    },
+
+    messageFromBot(username, password) {
+        const data = new URLSearchParams();
+        data.append('username', username);
+        data.append('password', password);
+        
+        return axios.post(`${serverUrl}/api/jwt/2fa-1-step/`, data, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
+    },
+
+    getTokens(username, code) {
+        const data = new URLSearchParams();
+        data.append('username', username);
+        data.append('code', code);
+        
+        return axios.post(`${serverUrl}/api/jwt/2fa-2-step/`, data, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
     },
     
-
     refreshToken() {
-        return instance.post("/api/jwt/refresh/");
+        return (
+            refreshInstance.post("/api/jwt/refresh/")
+        );
     },
     
-    // logout() {
-    //     return instance.post("/api/jwt/logout");
-    // }
-
     checkMe() {
         return instance.get("/api/jwt/users/me/");
     }

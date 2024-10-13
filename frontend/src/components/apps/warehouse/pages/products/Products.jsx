@@ -101,7 +101,7 @@ const Products = () => {
   };
 
   const handleCheckboxChange = (rowId, event) => {
-    // console.log('handleCheckboxChange')
+    console.log(rowId)
     event.stopPropagation();
     setLastSelectedIndex(rowId);
 
@@ -124,19 +124,28 @@ const Products = () => {
         }
 
         if (upFlag) {
+          // console.log(upFlag);
           for (let i = start + 1; i <= end; i++) {
+            console.log(i)
             if (newState[i] !== undefined) {
               newState[i] = !newState[i];
               countChange += newState[i] ? 1 : -1;
-              setActiveCheckboxIds((prevState) => [...prevState, i]);
+              setActiveCheckboxIds((prevState) => {
+                // console.log(prevState);
+                return [...prevState, i]
+              });
             }
           }
         } else {
+          // console.log(upFlag);
           for (let i = start; i < end; i++) {
             if (newState[i] !== undefined) {
               newState[i] = !newState[i];
               countChange += newState[i] ? 1 : -1;
-              setActiveCheckboxIds((prevState) => [...prevState, i]);
+              setActiveCheckboxIds((prevState) => {
+                // console.log(prevState);
+                return [...prevState, i]
+              });
             }
           }
         }
@@ -281,17 +290,21 @@ const Products = () => {
     }
   }, [categories, productsNA]);
 
-  function toArchive(idArr, key, newValue) {
-    idArr.map(async(id) => {
-      try {
-        // let response = await patchProduct(id, key, newValue);
-        // console.log(response.data);
-        // fetchProductsNA();
-        console.log(id)
-      } catch (e) {
-        console.error(e);
-      }
-    })
+  async function toArchive(idArr, key, newValue) {
+    if (idArr.length === 0) return
+    try {
+      const promises = idArr.map(async (id) => {
+        const product = productsNA.find(product => product.id === id);
+        const updatedProduct = { ...product, [key]: newValue };
+        return patchProduct(id, updatedProduct);
+      });
+  
+      const responses = await Promise.all(promises);
+      fetchCategories();
+      fetchProductsNA();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async function deleteSelectedProducts(idArr) {
@@ -549,7 +562,7 @@ const Products = () => {
               isHover={true}
               onClick={() => setIsShowArchive(!isShowArchive)}
             />
-            {isShowArchive && <ProductTable showArchive={setIsShowArchive} />}
+            {isShowArchive && <ProductTable showArchive={setIsShowArchive} configName='archiveConfig' />}
           </div>
           <div
             className="warehouse-table-btn__container"

@@ -20,7 +20,7 @@ import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/O
 import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
 import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
 import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
-import LoginForm from './components/loginForm/LoginForm.jsx';
+import Login from './components/login/Login.jsx';
 import RegForm from './components/regForm/RegForm.jsx';
 
 const router = createBrowserRouter([
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
           },
           {
             path: "orderdata",
-            element: <OrderData />,
+            element: <OrderData configName='orderPageConfig' />,
           }
         ]
       },
@@ -116,7 +116,7 @@ const router = createBrowserRouter([
   }, 
   {
     path: "/login",
-    element: <LoginForm />,
+    element: <Login />,
   },
   {
     path: "/sign-up",
@@ -125,9 +125,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
 )
