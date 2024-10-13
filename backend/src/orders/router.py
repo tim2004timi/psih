@@ -2,10 +2,12 @@ from typing import List
 
 from fastapi import APIRouter, UploadFile, File
 from fastapi.params import Depends
+from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
+from ..auth.dependencies import get_current_token_payload, get_current_active_auth_user
 from ..schemas import File as MyFile
 from src.orders.schemas import (
     Order,
@@ -14,7 +16,17 @@ from src.orders.schemas import (
     OrderWithoutProducts,
 )
 
-router = APIRouter(tags=["Orders"], prefix="/orders")
+
+http_bearer = HTTPBearer(auto_error=False)
+router = APIRouter(
+    tags=["Orders"],
+    prefix="/orders",
+    dependencies=[
+        Depends(http_bearer),
+        Depends(get_current_token_payload),
+        Depends(get_current_active_auth_user),
+    ],
+)
 
 
 @router.get(
