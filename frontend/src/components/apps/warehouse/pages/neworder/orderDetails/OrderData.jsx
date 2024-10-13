@@ -16,19 +16,20 @@ import settings from "../../../../../../assets/img/table-settings.svg";
 import InputMask from "react-input-mask";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
 
-const OrderData = () => {
+
+const OrderData = ({configName, showNewOrder}) => {
   const { id } = useParams();
-  const [orderInfo, setOrderInfo] = useState({});
+  const [orderInfo, setOrderInfo] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([[], []]);
-  // const [statusObj, setStatusObj] = useState({});
-  // const [tagObj, setTagObj] = useState({});
+  const [statusObj, setStatusObj] = useState({});
+  const [tagObj, setTagObj] = useState({});
   // const [localPhone, setLocalPhone] = useState('')
   const navigate = useNavigate();
   const phoneInputRef = useRef(null);
-  const { ordersDate, setOrdersDate } = useOutletContext();
   const [unformateDate, setUnformateDate] = useState("");
   const [ordersProducts, setOrdersProducts] = useState([]);
+  // let {ordersDate, setOrdersDate} = useOutletContext();
   const columns = [
     "Товары",
     "Количество",
@@ -55,30 +56,77 @@ const OrderData = () => {
 
   const columnsListRef = useRef(null);
 
-  const getOrderData = async (id) => {
+  const [currentConfig, setCurrentConfig] = useState(null);
+
+  useEffect(() => {
+    setCurrentConfig(returnConfig(configName));
+    // console.log(configName)
+  }, [configName]);
+
+  const returnConfig = (configName) => {
+    switch (configName) {
+      case "newOrderConfig":
+        return {
+          isShowLink: false,
+          isShowMessage: false,
+          isShowFiles: false,
+          isShowHeaderBtn: true,
+          newDropDownList: true,
+          wrapperClassName: "orderDate-new",
+          startFunc: () => {
+            setOrderInfo({
+              "full_name": "",
+              "status": "в обработке",
+              "tag": "",
+              "channel": "",
+              "address": "",
+              "task": "",
+              "note": "",
+              "comment": "",
+              "storage": "",
+              "project": "",
+              "phone_number": "",
+              "email": "",
+              "products_in_order": []
+            })
+          }
+        };
+      case "orderPageConfig":
+        return {
+          isShowLink: true,
+          isShowMessage: true,
+          isShowFiles: true,
+          isShowHeaderBtn: false,
+          wrapperClassName: "orderDate-page",
+          startFunc: getOrderData
+        };
+      default:
+        return null;
+    }
+  };
+
+  const getOrderData = async () => {
     try {
       const response = await getOrderById(id);
       setOrderInfo(response.data);
-      setIsLoading(false);
       // setUnformateDate(response.data.order_date);
-      setOrdersDate(formatDateTime(response.data.order_date));
+      // setOrdersDate(formatDateTime(response.data.order_date));
+      // console.log(ordersDate)
       setOrdersProducts(response.data.products_in_order);
     } catch (error) {
       setIsLoading(true);
     }
   };
 
-  // useEffect(() => {
-  //   console.log(ordersProducts);
-  // }, [ordersProducts])
+  useEffect(() => {
+    currentConfig?.startFunc();
+  }, [currentConfig, id]);
 
   useEffect(() => {
-    if (id !== undefined) {
-      getOrderData(id);
-    } else {
+    if (orderInfo) {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [orderInfo])
 
   const handleChange = (e, field) => {
     const value = e.target.value;
@@ -168,40 +216,63 @@ const OrderData = () => {
   }
 
   return (
-    <>
+    <div className={`${currentConfig?.wrapperClassName}`}>
       <div className="orderData__header">
-        <div className="orderData__navBar">
-          <Link
-            className="orderData__navBar-link"
-            to={`/orders/${id}/orderdata`}
-          >
-            Данные заказа
-          </Link>
-          <Link className="orderData__navBar-link">Доставка</Link>
-          <Link className="orderData__navBar-link">
-            Выставить счет для оплаты
-          </Link>
-        </div>
+        {currentConfig?.isShowLink && 
+          <div className="orderData__navBar">
+            <Link
+              className="orderData__navBar-link"
+              to={`/orders/${id}/orderdata`}
+            >
+              Данные заказа
+            </Link>
+            <Link className="orderData__navBar-link">Доставка</Link>
+            <Link className="orderData__navBar-link">
+              Выставить счет для оплаты
+            </Link>
+          </div>
+        }
+        {currentConfig?.isShowHeaderBtn && (
+          <div className="orderData__header-btn">
+            <div className="product__save-btn">
+              <button className="product__save-btn-button" onClick={() => {
+                createNewProduct(currentProduct);
+                }}>Сохранить</button>
+            </div>
+            <div className="product__content-close">
+              <button
+                className="product__content-close-btn"
+                onClick={() => showNewProduct(false)}
+              >
+                <img
+                  src={close}
+                  alt="close product__content"
+                  className="product__content-close-img"
+                />
+              </button>
+            </div>
+          </div>
+        )}
         <div className="orderData__header-data">
-          <DropDownList
+          {/* <DropDownList
             statusList={true}
-            startItem={id ? orderInfo.status : "статус заказа"}
-            rowId={orderInfo.id}
-            // statusObj={id ? null : handleStatusObj}
+            startItem={currentConfig.newDropDownList ? "статус заказа" : orderInfo.status}
+            // rowId={orderInfo.id}
+            statusObj={id ? null : handleStatusObj}
             currentPage="orders"
           />
           <DropDownList
             statusList={false}
             isItemLink={false}
             startItem={
-              id ? (orderInfo.tag === null ? "нет" : orderInfo.tag) : "тег"
+              currentConfig.newDropDownList ? "тег" : (orderInfo.tag === null ? "нет" : orderInfo.tag)
             }
             items={["бартер", "нет"]}
             tagClass={true}
-            rowId={orderInfo.id}
-            // tagObj={id ? null : handleTagObj}
+            // rowId={orderInfo.id}
+            tagObj={id ? null : handleTagObj}
             currentPage="orders"
-          />
+          /> */}
         </div>
         <div className="orderData__header-settings">
           <button className="OrderData__settings-btn">
@@ -226,9 +297,11 @@ const OrderData = () => {
                 onBlur={(e) => handleUpdate(e, "full_name")}
               />
             </div>
-            <Link className="orderDataInfo__message orderDataInfo-item">
-              Сообщения
-            </Link>
+            {currentConfig?.isShowMessage && 
+              <Link className="orderDataInfo__message orderDataInfo-item">
+                Сообщения
+              </Link>
+            }
           </div>
           <div className="orderDataInfo__email">
             <p 
@@ -357,9 +430,11 @@ const OrderData = () => {
             </div>
           </div>
         </div>
-        <div className="orderDataInfo__files">
-          
-        </div>
+        {currentConfig.isShowFiles && 
+          <div className="orderDataInfo__files">
+            
+          </div>
+        }
       </div>
       <div className="orderData__tableSettins">
         <button
@@ -399,7 +474,7 @@ const OrderData = () => {
         </thead>
         {/* <tbody>{renderRows()}</tbody> */}
       </table>
-    </>
+    </div>
   );
 };
 

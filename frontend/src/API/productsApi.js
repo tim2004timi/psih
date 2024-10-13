@@ -56,9 +56,9 @@ export async function createProduct(obj) {
     }
 }
 
-export async function patchProduct(productId, key, newValue) {
+export async function patchProduct(productId, obj) {
     try {
-        let response = await axios.patch(`${serverUrl}/api/products/?product_id=${productId}`, { [key]: newValue });
+        let response = await axios.patch(`${serverUrl}/api/products/?product_id=${productId}`, obj);
         return response;
     } catch (e) {
         throw e;

@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
 import AuthStore from '../../AuthStore';
+import '../login/Login.css';
 
-const LoginForm = observer(() => {
-  const [loginValue, setLoginValue] = useState("");
-  const [password, setPassword] = useState("");
-  const { login, checkMe, checkAuth } = AuthStore;
+const LoginForm = observer(({usersData}) => {
+  const { loginValue, setLoginValue, password, setPassword } = usersData;
+  const { validateLogin } = AuthStore;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // await login(loginValue, password);
-      await checkAuth()
+      await validateLogin(loginValue, password);
+      // await checkMe()
+      // await checkAuth()
     } catch (e) {
       console.log(e);
     }
@@ -23,11 +24,13 @@ const LoginForm = observer(() => {
   return (
     <div className="authorization">
       <div className="authorization__content">
-        <a className="logo">
-          <img src={logo} alt="" className="logo-img" />
+        <a className="authorization__logo">
+          <img src={logo} alt="" className="authorization__logo-img" />
         </a>
         <p className="authorization__content-text">ВХОД В АККАУНТ</p>
-        <form className="authorization__form" onSubmit={handleSubmit}>
+        <form className="authorization__form" 
+          onSubmit={handleSubmit}
+        >
           <input
             required
             type="text"
@@ -47,10 +50,20 @@ const LoginForm = observer(() => {
           <button type="submit" className="authorization__form-btn">
             ВОЙТИ
           </button>
+          {/* <button type="button" className="authorization__form-btn" onClick={
+            () => checkMe()
+          }>
+            checkMe
+          </button>
+          <button type="button" className="authorization__form-btn" onClick={
+            () => checkAuth()
+          }>
+            checkAuth
+          </button> */}
         </form>
-        <Link to="/sign-up" className="authorization__content-dont-acc">
+        {/* <Link to="/sign-up" className="authorization__content-dont-acc">
           Нет аккаунта?
-        </Link>
+        </Link> */}
       </div>
     </div>
   );
