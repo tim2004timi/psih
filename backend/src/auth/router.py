@@ -46,7 +46,7 @@ async def auth_user_issue_jwt(
 async def auth_user_issue_jwt(
     _: UserSchema = Depends(validate_auth_user),
 ):
-    pass
+    return {"message": "OK"}
 
 
 @router.post("/2fa-1-step/")

@@ -1,6 +1,6 @@
 import random
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Form
 from redis.asyncio import Redis
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,7 +35,7 @@ async def login(user: UserSchema = Depends(validate_auth_user)):
     if chat_id is None:
         raise HTTPException(
             status_code=400,
-            detail="Telegram-аккаунт не привязан. Пожалуйста, начните диалог с ботом и привяжите свой аккаунт.",
+            detail="Telegram-аккаунт не привязан. Пожалуйста, начните диалог с ботом для привязки аккаунта.",
         )
 
     # Отправка кода через Telegram-бота
@@ -49,9 +49,11 @@ async def login(user: UserSchema = Depends(validate_auth_user)):
 
 
 async def verify_code(
-    request: VerifyCodeRequest,
+    username: Form(),
+    code: Form(),
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
+    request = VerifyCodeRequest(username=username, code=code)
     # Получение сохраненного кода и количества попыток из Redis
     code = await redis_client.get(f"2fa_code:{request.username}")
     attempts = await redis_client.get(f"2fa_attempts:{request.username}")

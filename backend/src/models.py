@@ -29,15 +29,3 @@ class File(Base):
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product')",
         foreign_keys=[owner_id],
     )
-
-
-#
-# class ProductImage(Base):
-#     __tablename__ = "product_images"
-#
-#     url: Mapped[str]
-#
-#     product_id: Mapped[int] = mapped_column(
-#         ForeignKey("products.id", ondelete="CASCADE")
-#     )
-#     product: Mapped["Product"] = relationship(back_populates="images")
