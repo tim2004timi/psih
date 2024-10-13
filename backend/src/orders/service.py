@@ -91,9 +91,11 @@ async def upload_order_file(
     session: AsyncSession, order_id: int, is_image: bool, file: UploadFile
 ) -> MyFile:
     order = await get_order_by_id(session=session, order_id=order_id)
-    url = await upload_file(file=file, dir_name="orders")
+    url, human_size = await upload_file(file=file, dir_name="orders")
 
-    file = MyFile(url=url, owner_id=order.id, image=is_image, owner_type="Order")
+    file = MyFile(
+        url=url, owner_id=order.id, image=is_image, owner_type="Order", size=human_size
+    )
     session.add(file)
     await session.commit()
     await session.refresh(file)

@@ -7,3 +7,4 @@ class File(BaseModel):
     id: int
     url: str
     image: bool
+    size: str | None
