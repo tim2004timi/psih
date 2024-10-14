@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { serverUrl } from './API/productsApi';
+import { serverUrl } from './config.js';
 
 export const refreshInstance = axios.create({
     baseURL: serverUrl,
@@ -28,9 +28,9 @@ instance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-
             try {
                 const refreshToken = localStorage.getItem("refresh_token");
 
@@ -40,7 +40,6 @@ instance.interceptors.response.use(
 
                 const resp = await refreshInstance.post("/api/jwt/refresh/");
                 localStorage.setItem("access_token", resp.data.access_token);
-
                 originalRequest.headers.Authorization = `Bearer ${resp.data.access_token}`;
                 return instance(originalRequest);
             } catch (refreshError) {

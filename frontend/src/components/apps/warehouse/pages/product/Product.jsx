@@ -10,9 +10,9 @@ import {
   createProduct,
   patchProduct,
   uploadProductImg,
-  serverUrl,
   deleteProductImg,
 } from "../../../../../API/productsApi";
+import { serverUrl } from "../../../../../config.js";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import close from "../../../../../assets/img/close_filter.png";
 import "./Product.css";

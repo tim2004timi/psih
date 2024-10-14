@@ -20,9 +20,9 @@ import {
   patchProduct,
   deleteCategory,
   createCategory,
-  serverUrl,
   deleteProducts,
 } from "../../../../../API/productsApi";
+import { serverUrl } from "../../../../../config.js";
 import { useDispatch, useSelector } from "react-redux";
 import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";

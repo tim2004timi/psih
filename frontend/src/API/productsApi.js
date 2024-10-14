@@ -1,10 +1,10 @@
 import axios from "axios";
-
-export const serverUrl = 'http://87.242.85.68:8000';
+import { instance } from "../api.config";
+import {serverUrl} from '../config.js'
 
 export async function getCategories() {
     try {
-        let response = await axios.get(`${serverUrl}/api/products/categories/`);
+        let response = await instance.get(`${serverUrl}/api/products/categories/`);
         return response;
     } catch (e) {
         throw e;
@@ -13,7 +13,7 @@ export async function getCategories() {
 
 export async function deleteCategory(categoryId) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/products/categories/?product_category_id=${categoryId}`);
+        let response = await instance.delete(`${serverUrl}/api/products/categories/?product_category_id=${categoryId}`);
         return response;
     } catch (e) {
         throw e;
@@ -22,7 +22,7 @@ export async function deleteCategory(categoryId) {
 
 export async function createCategory(name) {
     try {
-        let response = await axios.post(`${serverUrl}/api/products/categories/`, { 'name': name });
+        let response = await instance.post(`${serverUrl}/api/products/categories/`, { 'name': name });
         return response;
     } catch (e) {
         throw e;
@@ -31,7 +31,7 @@ export async function createCategory(name) {
 
 export async function getProductsNA() {
     try {
-        let response = await axios.get(`${serverUrl}/api/products/not-archived/`);
+        let response = await instance.get(`${serverUrl}/api/products/not-archived/`);
         return response;
     } catch (e) {
         throw e;
@@ -40,7 +40,7 @@ export async function getProductsNA() {
 
 export async function getProductsA() {
     try {
-        let response = await axios.get(`${serverUrl}/api/products/archived/`);
+        let response = await instance.get(`${serverUrl}/api/products/archived/`);
         return response;
     } catch (e) {
         throw e;
@@ -49,7 +49,7 @@ export async function getProductsA() {
 
 export async function createProduct(obj) {
     try {
-        let response = await axios.post(`${serverUrl}/api/products/`, obj);
+        let response = await instance.post(`${serverUrl}/api/products/`, obj);
         return response;
     } catch (e) {
         throw e;
@@ -58,7 +58,7 @@ export async function createProduct(obj) {
 
 export async function patchProduct(productId, obj) {
     try {
-        let response = await axios.patch(`${serverUrl}/api/products/?product_id=${productId}`, obj);
+        let response = await instance.patch(`${serverUrl}/api/products/?product_id=${productId}`, obj);
         return response;
     } catch (e) {
         throw e;
@@ -67,7 +67,7 @@ export async function patchProduct(productId, obj) {
 
 export async function deleteProduct(productId) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/products/?product_id=${productId}`);
+        let response = await instance.delete(`${serverUrl}/api/products/?product_id=${productId}`);
         // console.log(response)
     } catch (e) {
         throw e;
@@ -76,7 +76,7 @@ export async function deleteProduct(productId) {
 
 export async function deleteProducts(idsArr) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/products/multiple/`, { data: idsArr });
+        let response = await instance.delete(`${serverUrl}/api/products/multiple/`, { data: idsArr });
         return response;
     } catch (e) {
         throw e;
@@ -85,7 +85,7 @@ export async function deleteProducts(idsArr) {
 
 export async function getProductById(productId) {
     try {
-        let response = await axios.get(`${serverUrl}/api/products/?product_id=${productId}`);
+        let response = await instance.get(`${serverUrl}/api/products/?product_id=${productId}`);
         // console.log(response)
     } catch (e) {
         throw e;
@@ -97,7 +97,7 @@ export async function uploadProductImg(productId, file) {
     formData.append('file', file);
 
     try {
-        const response = await axios.post(
+        const response = await instance.post(
             `${serverUrl}/api/products/${productId}/upload-image/`,
             formData,
             {
@@ -115,7 +115,7 @@ export async function uploadProductImg(productId, file) {
 
 export async function deleteProductImg(productId) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/products/images/?image_id=${productId}`);
+        let response = await instance.delete(`${serverUrl}/api/products/images/?image_id=${productId}`);
         // console.log(response)
     } catch (e) {
         throw e;

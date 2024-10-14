@@ -15,6 +15,7 @@ import {
 import settings from "../../../../../../assets/img/table-settings.svg";
 import InputMask from "react-input-mask";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
+import close from "../../../../../../assets/img/close_filter.png";
 
 
 const OrderData = ({configName, showNewOrder}) => {
@@ -72,7 +73,9 @@ const OrderData = ({configName, showNewOrder}) => {
           isShowFiles: false,
           isShowHeaderBtn: true,
           newDropDownList: true,
-          wrapperClassName: "orderDate-new",
+          wrapperClassName: "orderData-new",
+          orderDataHeaderClassName: 'orderData__header-new',
+          orderDataInfoHeaderClassName: 'orderDataInfo__header-new',
           startFunc: () => {
             setOrderInfo({
               "full_name": "",
@@ -98,6 +101,8 @@ const OrderData = ({configName, showNewOrder}) => {
           isShowFiles: true,
           isShowHeaderBtn: false,
           wrapperClassName: "orderDate-page",
+          orderDataHeaderClassName: 'orderData__header-page',
+          orderDataInfoHeaderClassName: 'orderDataInfo__header-page',
           startFunc: getOrderData
         };
       default:
@@ -117,6 +122,10 @@ const OrderData = ({configName, showNewOrder}) => {
       setIsLoading(true);
     }
   };
+
+  useEffect(() => {
+    console.log(ordersProducts)
+  }, [ordersProducts])
 
   useEffect(() => {
     currentConfig?.startFunc();
@@ -188,6 +197,49 @@ const OrderData = ({configName, showNewOrder}) => {
     }
   };
 
+  // const columnConfig = {
+  //   товары: {
+  //     className: "orderdata-column orderdata-name",
+  //     content: (row) => {
+  //       return row.name ? (
+  //         <div className="orderdata-column-container">{row.name}</div>
+  //       ) : null;
+  //     },
+  //   },
+  //   // количество: {
+  //   //   className: "orderdata-column orderdata-quantity",
+  //   //   content: (row) => {
+  //   //     return row.name ? (
+  //   //       <div className="orderdata-column-container">{row.name}</div>
+  //   //     ) : null;
+  //   //   },
+  //   // },
+  //   остаток: {
+  //     className: "orderdata-column orderdata-remains",
+  //     content: (row) => {
+  //       return row.remaining ? (
+  //         <div className="orderdata-column-container">{row.remaining + ' ' + row.measure}</div>
+  //       ) : null;
+  //     },
+  //   },
+  //   цена: {
+  //     className: "orderdata-column orderdata-remains",
+  //     content: (row) => {
+  //       return row.price ? (
+  //         <div className="orderdata-column-container">{row.price + ' ₽'}</div>
+  //       ) : null;
+  //     },
+  //   },
+  //   'стоимость доставки': {
+  //     className: "orderdata-column orderdata-remains",
+  //     content: (row) => {
+  //       return row.price ? (
+  //         <div className="orderdata-column-container">{row.price + ' ₽'}</div>
+  //       ) : null;
+  //     },
+  //   },
+  // }
+
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (
       <th key={index} className="orderdata-column-header">
@@ -217,8 +269,8 @@ const OrderData = ({configName, showNewOrder}) => {
 
   return (
     <div className={`${currentConfig?.wrapperClassName}`}>
-      <div className="orderData__header">
-        {currentConfig?.isShowLink && 
+      <div className={`${currentConfig?.orderDataHeaderClassName}`}>
+        {currentConfig?.isShowLink && (
           <div className="orderData__navBar">
             <Link
               className="orderData__navBar-link"
@@ -231,18 +283,23 @@ const OrderData = ({configName, showNewOrder}) => {
               Выставить счет для оплаты
             </Link>
           </div>
-        }
+        )}
         {currentConfig?.isShowHeaderBtn && (
           <div className="orderData__header-btn">
-            <div className="product__save-btn">
-              <button className="product__save-btn-button" onClick={() => {
-                createNewProduct(currentProduct);
-                }}>Сохранить</button>
+            <div className="c-btn">
+              <button
+                className="product__save-btn-button"
+                onClick={() => {
+                  createNewProduct(currentProduct);
+                }}
+              >
+                Сохранить
+              </button>
             </div>
             <div className="product__content-close">
               <button
                 className="product__content-close-btn"
-                onClick={() => showNewProduct(false)}
+                onClick={() => showNewOrder(false)}
               >
                 <img
                   src={close}
@@ -274,22 +331,30 @@ const OrderData = ({configName, showNewOrder}) => {
             currentPage="orders"
           /> */}
         </div>
-        <div className="orderData__header-settings">
-          <button className="OrderData__settings-btn">
-            <img src={settings} alt="settings" />
-          </button>
-        </div>
+        {currentConfig?.isShowLink && (
+          <div className="orderData__header-settings">
+            <button className="OrderData__settings-btn">
+              <img src={settings} alt="settings" />
+            </button>
+          </div>
+        )}
       </div>
       <div className="orderDataInfo">
         <div className="orderDataInfo__personalInfo">
-          <div className="orderDataInfo__header">
-            <div
-              className={`orderDataInfo__fullName ${
-                orderInfo.full_name != ""
-                  ? "orderDataInfo-item-content"
-                  : "orderDataInfo-item"
-              }`}
-            >
+          <div className={`${currentConfig.orderDataInfoHeaderClassName}`}>
+            {currentConfig?.isShowHeaderBtn && (
+              <p
+                className={`orderDataInfo_fullName-text ${
+                  // orderInfo.email != ""
+                  // ? "orderDataInfo-text-content"
+                  // :
+                  "orderDataInfo-text"
+                }`}
+              >
+                ФИО покупателя
+              </p>
+            )}
+            <div className={`orderDataInfo__fullName orderDataInfo-item`}>
               <input
                 className="orderDataInfo__input"
                 value={orderInfo.full_name || ""}
@@ -297,29 +362,31 @@ const OrderData = ({configName, showNewOrder}) => {
                 onBlur={(e) => handleUpdate(e, "full_name")}
               />
             </div>
-            {currentConfig?.isShowMessage && 
+            {currentConfig?.isShowMessage && (
               <Link className="orderDataInfo__message orderDataInfo-item">
                 Сообщения
               </Link>
-            }
+            )}
           </div>
           <div className="orderDataInfo__email">
-            <p 
+            <p
               className={`orderDataInfo__email-text ${
                 // orderInfo.email != ""
-                  // ? "orderDataInfo-text-content"
-                  // : 
-                  "orderDataInfo-text"
-              }`}>
+                // ? "orderDataInfo-text-content"
+                // :
+                "orderDataInfo-text"
+              }`}
+            >
               Email
             </p>
-            <div 
+            <div
               className={`orderDataInfo__email-content ${
                 // orderInfo.email != ""
-                  // ? "orderDataInfo-item-content"
-                  // : 
-                  "orderDataInfo-item"
-              }`}>
+                // ? "orderDataInfo-item-content"
+                // :
+                "orderDataInfo-item"
+              }`}
+            >
               <input
                 className="orderDataInfo__input"
                 value={orderInfo.email || ""}
@@ -430,11 +497,9 @@ const OrderData = ({configName, showNewOrder}) => {
             </div>
           </div>
         </div>
-        {currentConfig.isShowFiles && 
-          <div className="orderDataInfo__files">
-            
-          </div>
-        }
+        {currentConfig.isShowFiles && (
+          <div className="orderDataInfo__files"></div>
+        )}
       </div>
       <div className="orderData__tableSettins">
         <button
