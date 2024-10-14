@@ -198,6 +198,7 @@
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     padding-bottom: 18px;
     padding-top: 8px;
+    width: 300px;
 }
 
 .products-column-header:first-child{
@@ -209,6 +210,7 @@
     padding: 0 20px 4.5px 20px;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     vertical-align: middle;
+    width: 300px;
 }
 
 .products-column:first-child{
@@ -220,9 +222,9 @@
     border: 1px solid transparent;
 }
 
-.column-name{
+/* .column-name{
     width: 282px;
-}
+} */
 
 .column-name__container{
     display: flex;
@@ -328,7 +330,7 @@
     box-shadow: 0 0 0 0.4px black;
 }
 
-.column-article{
+/* .column-article{
     width: 183px;
 }
 
@@ -338,5 +340,5 @@
 
 .column-product-remains{
     width: 183px;
-}
+} */
 

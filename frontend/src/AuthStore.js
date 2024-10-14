@@ -40,7 +40,7 @@ class AuthStore {
   async getTokens(email, code) {
     // this.isAuthInProgress = true;
     try {
-      localStorage.clear()
+      // localStorage.clear()
       const resp = await AuthService.getTokens(email, code);
       console.log(resp);
       localStorage.setItem("access_token", resp.data.access_token);

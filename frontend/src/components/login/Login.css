@@ -1,10 +1,11 @@
 .authorization{
-    width: 310px;
+    width: 100%;
     height: 100vh;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .authorization__content{
@@ -12,8 +13,8 @@
     flex-direction: column;
     align-items: center;
     gap: 24px;
-    width: 100%;
-    position: relative;
+    width: 320px;
+    /* position: relative; */
 }
 
 .authorization__logo{
@@ -68,11 +69,28 @@
     color: rgba(0, 0, 0, 0.5);
     font-size: 13px;
     text-align: center;
+    line-height: 19px;
 }
 
 .tegram-code__link{
     color: rgba(0, 0, 0, 0.5);
     text-decoration: underline;
+}
+
+.tegram-code__img{
+    padding-left: 10px;
+}
+
+.telegram-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .tegram-code-btn{
@@ -82,6 +100,11 @@
     border-bottom: 1px solid rgb(0, 0, 0);
     cursor: pointer;
     padding: 0;
+}
+
+.tegram-code-btn[disabled]{
+    border-bottom: 1px solid transparent;
+    cursor: default;
 }
 
 .tegram-code__error-text{
