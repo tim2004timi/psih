@@ -51,17 +51,6 @@ class Product(Base):
     )
 
 
-# class ProductImage(Base):
-#     __tablename__ = "product_images"
-#
-#     url: Mapped[str]
-#
-#     product_id: Mapped[int] = mapped_column(
-#         ForeignKey("products.id", ondelete="CASCADE")
-#     )
-#     product: Mapped["Product"] = relationship(back_populates="images")
-
-
 class ProductInOrder(Base):
     __tablename__ = "products_in_order"
 
