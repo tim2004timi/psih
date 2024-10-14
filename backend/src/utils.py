@@ -14,7 +14,15 @@ def get_file_path(*path_segments) -> str:
     return normalized_path
 
 
-async def upload_file(file: UploadFile, dir_name: str) -> str:
+def human_readable_size(size: int) -> str:
+    for unit in ["Б", "КБ", "МБ", "ГБ", "ТБ"]:
+        if size < 1024:
+            return f"{size:.1f} {unit}"
+        size /= 1024
+    return f"{size:.1f} ТБ"
+
+
+async def upload_file(file: UploadFile, dir_name: str) -> tuple[str, str]:
     full_dir_path = get_file_path(UPLOAD_DIR, dir_name)
 
     if not os.path.exists(full_dir_path):
@@ -28,11 +36,17 @@ async def upload_file(file: UploadFile, dir_name: str) -> str:
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
+    # Получаем размер файла
+    file_size = os.path.getsize(file_path)
+
+    # Преобразуем размер в человекочитаемый формат
+    human_size = human_readable_size(file_size)
+
     url = file_path
     if file_path[:2] == "./":
         url = file_path[2:]
 
-    return url
+    return url, human_size
 
 
 async def delete_file(file_path: str) -> bool:

@@ -8,6 +8,7 @@ class File(Base):
     __tablename__ = "files"
 
     url: Mapped[str]
+    size: Mapped[str] = mapped_column(nullable=True, default="?")
     image: Mapped[bool]  # image or file
 
     # Полиморфная связь (тип владельца и ID владельца)

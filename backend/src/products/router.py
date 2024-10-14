@@ -2,10 +2,12 @@ from typing import List
 
 from fastapi import APIRouter, UploadFile, File
 from fastapi.params import Depends
+from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
+from ..auth.dependencies import get_current_token_payload, get_current_active_auth_user
 from ..schemas import File as MyFile
 from .schemas import (
     ProductCategoryCreate,
@@ -18,9 +20,26 @@ from .schemas import (
 )
 
 
-products_router = APIRouter(tags=["Products"], prefix="/products")
+http_bearer = HTTPBearer(auto_error=False)
+products_router = APIRouter(
+    tags=["Products"],
+    prefix="/products",
+    dependencies=[
+        Depends(http_bearer),
+        Depends(get_current_token_payload),
+        Depends(get_current_active_auth_user),
+    ],
+)
 
-categories_router = APIRouter(tags=["Categories"], prefix="/products")
+categories_router = APIRouter(
+    tags=["Categories"],
+    prefix="/products",
+    dependencies=[
+        Depends(http_bearer),
+        Depends(get_current_token_payload),
+        Depends(get_current_active_auth_user),
+    ],
+)
 
 
 @categories_router.get(
