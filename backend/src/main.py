@@ -48,16 +48,22 @@ from .config import UPLOAD_DIR
 #             )
 #         response = await call_next(request)
 #         return response
-
-app = FastAPI(title="Psih Clothes")
-
-main_router = APIRouter(prefix="/api")
-
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
-# Маршрут для отдачи статических файлов
+
+app = FastAPI(title="Psih Clothes")
+main_router = APIRouter(prefix="/api")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.middleware("http")
+async def add_csp_header(request, call_next):
+    response = await call_next(request)
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; mg-src 'self';"
+    )
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -71,7 +77,6 @@ app.add_middleware(
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки
 )
-
 # app.add_middleware(LogPostPatchRequestsMiddleware)
 
 main_router.include_router(auth_router)
