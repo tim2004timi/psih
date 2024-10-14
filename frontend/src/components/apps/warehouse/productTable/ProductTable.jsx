@@ -452,14 +452,14 @@ const ProductTable = ({ showArchive, configName }) => {
           </div>
           <div className="product-table__navbar-container">
             {renderCategoriesBtn()}
-            <div className="product-table__navbar-add">
+            {/* <div className="product-table__navbar-add">
               <span
                 className="product-table__navbar-addBtn"
                 onClick={() =>
                   setIsCategoriesSettingsOpen(!isCategoriesSettingsOpen)
                 }
               ></span>
-            </div>
+            </div> */}
             {isCategoriesSettingsOpen && (
               <div className="categories-settings" ref={categoriesSettingsRef}>
                 <div className="categories-settings-content">

@@ -8,6 +8,7 @@ export const refreshInstance = axios.create({
 refreshInstance.interceptors.request.use(
     (config) => {
         config.headers.Authorization = `Bearer ${localStorage.getItem("refresh_token")}`;
+        console.log('refresh токен: ', config.headers.Authorization);
         return config;
     }
 );
@@ -20,6 +21,7 @@ export const instance = axios.create({
 instance.interceptors.request.use(
     (config) => {
         config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
+        console.log('access токен: ', config.headers.Authorization);
         return config;
     }
 );
