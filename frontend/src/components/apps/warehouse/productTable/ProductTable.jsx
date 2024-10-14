@@ -11,9 +11,9 @@ import {
   patchProduct,
   deleteCategory,
   createCategory,
-  serverUrl,
   deleteProducts,
 } from "../../../../API/productsApi";
+import { serverUrl } from "../../../../config.js";
 import getFullImageUrl from "../../../../API/getFullImgUrl";
 import './ProductTable.css';
 import search from '../../../../assets/img/search_btn.svg';

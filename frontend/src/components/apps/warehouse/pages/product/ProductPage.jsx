@@ -14,9 +14,9 @@ import {
   deleteProduct,
   patchProduct,
   uploadProductImg,
-  serverUrl,
   deleteProductImg,
 } from "../../../../../API/productsApi";
+import { serverUrl } from "../../../../../config.js";
 import tshirts from "../../../../../assets/img/tshirts.svg";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "./Product";

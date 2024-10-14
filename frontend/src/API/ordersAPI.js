@@ -1,9 +1,10 @@
 import axios from "axios";
-import { serverUrl } from "./productsApi";
+import { instance } from "../api.config";
+import { serverUrl } from "../config";
 
 export async function getOrders() {
     try {
-        let response = await axios.get(`${serverUrl}/api/orders/`);
+        let response = await instance.get(`${serverUrl}/api/orders/`);
         return response;
     } catch (e) {
         throw e;
@@ -12,7 +13,7 @@ export async function getOrders() {
 
 export async function createOrder(obj) {
     try {
-        let response = await axios.post(`${serverUrl}/api/orders/`, obj);
+        let response = await instance.post(`${serverUrl}/api/orders/`, obj);
         return response;
     } catch (e) {
         throw e;
@@ -21,7 +22,7 @@ export async function createOrder(obj) {
 
 export async function patchOrder(orderId, key, newValue) {
     try {
-        let response = await axios.patch(`${serverUrl}/api/orders/?order_id=${orderId}`, { [key]: newValue });
+        let response = await instance.patch(`${serverUrl}/api/orders/?order_id=${orderId}`, { [key]: newValue });
         return response;
     } catch (e) {
         throw e;
@@ -30,7 +31,7 @@ export async function patchOrder(orderId, key, newValue) {
 
 export async function deleteOrder(id) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/orders/?order_id=${id}`);
+        let response = await instance.delete(`${serverUrl}/api/orders/?order_id=${id}`);
         return response;
     } catch (e) {
         throw e;
@@ -39,7 +40,7 @@ export async function deleteOrder(id) {
 
 export async function getOrderById(id) {
     try {
-        let response = await axios.get(`${serverUrl}/api/orders/${id}`);
+        let response = await instance.get(`${serverUrl}/api/orders/${id}`);
         return response;
     } catch (e) {
         throw e;
@@ -48,7 +49,7 @@ export async function getOrderById(id) {
 
 export async function deleteOrders(idsArr) {
     try {
-        let response = await axios.delete(`${serverUrl}/api/orders/multiple/`, { data: idsArr });
+        let response = await instance.delete(`${serverUrl}/api/orders/multiple/`, { data: idsArr });
         return response;
     } catch (e) {
         throw e;
