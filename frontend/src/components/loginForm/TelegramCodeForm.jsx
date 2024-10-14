@@ -64,9 +64,9 @@ const TelegramCodeForm = observer(({ usersData }) => {
             @psihsystem_bot
           </a>
           <img src={telegram_qr_img} alt="telegram qr img" className="tegram-code__img" />
-          <div className="telegram-overlay">
+          {/* <div className="telegram-overlay">
             <img src={telegram_qr} alt="telegram qr" className="telegram-overlay__qr" />
-          </div>
+          </div> */}
         </p>
         <button 
           type="button" 
