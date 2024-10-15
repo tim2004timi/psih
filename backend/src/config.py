@@ -31,3 +31,4 @@ class AuthSettings(BaseModel):
 
 settings = Settings()
 auth_settings = AuthSettings()
+# TODO: добавить переменную DEV

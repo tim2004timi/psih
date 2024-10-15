@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import db_manager
 from . import service, dependencies
 from ..auth.dependencies import get_current_active_auth_user
-from ..dependencies import check_permission_storage
+from ..dependencies import check_permission, Permission
 from ..schemas import File as MyFile
 from src.orders.schemas import (
     Order,
@@ -25,7 +25,7 @@ router = APIRouter(
     dependencies=[
         Depends(http_bearer),
         Depends(get_current_active_auth_user),
-        Depends(check_permission_storage),
+        Depends(check_permission(Permission.STORAGE)),
     ],
 )
 
