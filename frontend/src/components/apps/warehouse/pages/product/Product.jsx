@@ -341,29 +341,29 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             {currentConfig?.newProductFlag ? (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/productdata`
+                  location.pathname === `/warehouse/products/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/products/productdata`}
+                to={`/warehouse/products/data`}
               >
-                Данные товара
+              Данные товара
               </Link>
             ) : (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/${id}/productdata`
+                  location.pathname === `/warehouse/products/${id}/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/products/${id}/productdata`}
+                to={`/warehouse/products/${id}/data`}
               >
-                Данные
+                Данные товара
               </Link>
             )}
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/products/${id}/delivery` ? "active" : ""
+                location.pathname === `/warehouse/products/${id}/delivery` ? "active" : ""
               }`}
               // to={`/products/${id}/delivery`}
             >
@@ -371,15 +371,15 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             </Link>
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/products/${id}/files` ? "active" : ""
+                location.pathname === `/warehouse/products/${id}/files` ? "active" : ""
               }`}
-              // to={`/products/${id}/files`}
+              to={`/warehouse/products/${id}/files`}
             >
               Файлы
             </Link>
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/products/${id}/history` ? "active" : ""
+                location.pathname === `/warehouse/products/${id}/history` ? "active" : ""
               }`}
               // to={`/products/${id}/history`}
             >

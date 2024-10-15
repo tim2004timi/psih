@@ -19,11 +19,13 @@ import DropDownList from "../../../../dropDownList/DropDownList";
 import InputMask from "react-input-mask";
 import { createOrder } from "../../../../../API/ordersAPI";
 import OrderData from "../neworder/orderDetails/OrderData";
+import AuthStore from "../../../../../AuthStore";
 
 const Orders = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
   const filterBtnRef = useRef(null);
+  const { isAuth, isLoadingAuth } = AuthStore;
 
   const [selectedColumns, setSelectedColumns] = useState([
     "№",

@@ -232,7 +232,7 @@ const OrderTable = ({
               ></span>
             </div>
             <div className="column-number-link">
-              <Link className="column-number-link-link" to={`/orders/${row.id}`}>
+              <Link className="column-number-link-link" to={`/warehouse/orders/${row.id}`}>
                 {row.id}
               </Link>
             </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
@@ -7,7 +7,7 @@ import '../login/Login.css';
 
 const LoginForm = observer(({usersData}) => {
   const { loginValue, setLoginValue, password, setPassword } = usersData;
-  const { validateLogin } = AuthStore;
+  const { validateLogin, isAuth } = AuthStore;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +20,10 @@ const LoginForm = observer(({usersData}) => {
       console.log(e);
     }
   };
+
+  // useEffect(() => {
+  //   console.log(isAuth)
+  // }, [isAuth])
 
   return (
     <div className="authorization">

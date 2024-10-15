@@ -9,19 +9,18 @@ const AppNavBar = () => {
         <ul className="Appnavbar__container">
             <li className={
             `Appnavbar__container-li ${
-            location.pathname === '/' 
-            || location.pathname === '/orders' 
-            || location.pathname === '/orders/neworder/orderdata' 
-            || location.pathname === '/products' 
-            || location.pathname === '/productsarchive' 
-            || location.pathname === '/remains' 
-            || location.pathname === '/parties' 
-            || location.pathname === '/neworder'
+            location.pathname === '/warehouse/orders' 
+            || location.pathname === '/warehouse/orders/neworder/orderdata' 
+            || location.pathname === '/warehouse/products' 
+            || location.pathname === '/warehouse/productsarchive' 
+            || location.pathname === '/warehouse/remains' 
+            || location.pathname === '/warehouse/parties' 
+            || location.pathname === '/warehouse/neworder'
             ?
             'Appnavbar__container-li_active' 
             : 
             ''}`}>
-                <Link className="Appnavbar__container-link" to="/">Склад</Link>
+                <Link className="Appnavbar__container-link" to="/warehouse/orders">Склад</Link>
             </li>
             <li className={`Appnavbar__container-li ${location.pathname === '/messager'  ? 'Appnavbar__container-li_active' : ''}`}>
                 <Link className="Appnavbar__container-link" to="/messager">Сообщения</Link>

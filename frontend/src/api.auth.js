@@ -45,9 +45,6 @@ const AuthService = {
         );
     },
     
-    checkMe() {
-        return instance.get("/api/jwt/users/me/");
-    }
 };
 
 export default AuthService;
