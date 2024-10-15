@@ -1,9 +1,10 @@
 from fastapi import (
     APIRouter,
-    Depends,
+    Depends, HTTPException,
 )
 from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from .jwtcreators import (
     create_access_token,
@@ -71,9 +72,13 @@ async def login_2_step(user: UserSchema = Depends(verify_code)):
     dependencies=[Depends(http_bearer)],
 )
 async def auth_refresh_jwt(
-    # todo: validate user is active!!
     user: UserSchema = Depends(get_current_auth_user_for_refresh),
 ):
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Неактивный пользователь",
+        )
     access_token = await create_access_token(user)
     return TokenInfo(
         access_token=access_token,

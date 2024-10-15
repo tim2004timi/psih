@@ -75,6 +75,8 @@ async def update_user(
     session: AsyncSession, user: User, user_update: UserUpdatePartial
 ) -> User:
     for name, value in user_update.model_dump(exclude_unset=True).items():
+        if user.admin and name == "active":
+            continue
         setattr(user, name, value)
     await session.commit()
     return user

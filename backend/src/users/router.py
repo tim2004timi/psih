@@ -65,3 +65,14 @@ async def update_user(
         user_update=user_update,
         user=user,
     )
+
+
+@router.get(
+    path="/me/",
+    response_model=User,
+    description="Get current auth user",
+)
+async def get_current_auth_user(
+    user: User = Depends(get_current_active_auth_user)
+):
+    return user
