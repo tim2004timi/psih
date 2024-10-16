@@ -21,8 +21,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
 
     try {
       await getTokens(loginValue, code);
-
-      // navigate('/warehouse/orders');
+      navigate('/warehouse/orders');
     } catch (e) {
       setErrorText(e.response.data.detail);
       console.error(e);
@@ -85,13 +84,13 @@ const TelegramCodeForm = observer(({ usersData }) => {
             ВОЙТИ
           </button>
         </form>
-        <button 
+        {/* <button 
           type="button" 
           className="tegram-code-btn" 
           onClick={() => checkAuth()}
         >
           checkAuth
-        </button>
+        </button> */}
         <p className="tegram-code__error-text">{errorText}</p>
       </div>
     </div>
