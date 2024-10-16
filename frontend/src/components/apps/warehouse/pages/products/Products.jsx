@@ -281,18 +281,18 @@ const Products = () => {
     }
   }, [categories, productsNA]);
 
-  function toArchive(idArr, key, newValue) {
-    idArr.map(async(id) => {
+  async function toArchive(idArr, key, newValue) {
+    for (const id of idArr) {
       try {
-        // let response = await patchProduct(id, key, newValue);
-        // console.log(response.data);
+        let response = await patchProduct(id, key, newValue);
+        console.log(response.data);
         // fetchProductsNA();
         console.log(id)
       } catch (e) {
         console.error(e);
       }
-    })
-  }
+    }
+}
 
   async function deleteSelectedProducts(idArr) {
     try {

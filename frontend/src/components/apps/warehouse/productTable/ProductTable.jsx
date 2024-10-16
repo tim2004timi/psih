@@ -46,9 +46,9 @@ const ProductTable = ({showArchive}) => {
   const categoriesSettingsInputRef = useRef(null);
   const categoriesSettingsRef = useRef(null);
 
-  useEffect(() => {
-    console.log(showArchive)
-  }, [showArchive])
+  // useEffect(() => {
+  //   console.log(showArchive)
+  // }, [showArchive])
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
     event.stopPropagation();
