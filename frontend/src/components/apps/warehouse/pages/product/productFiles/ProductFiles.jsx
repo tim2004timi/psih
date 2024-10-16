@@ -2,7 +2,36 @@ import React from "react";
 
 const ProductFiles = () => {
   const columnConfig = {
-    
+    url: {
+      className: "product-file-column",
+      content: (row) => {
+        return row.url != null && (
+          <div className="product-file-column__container">
+            {row.url}
+          </div>
+        );
+      },
+    },
+    img: {
+      className: "product-file-column",
+      content: (row) => {
+        return row.img != null && (
+          <div className="product-file-column__container">
+            {row.img}
+          </div>
+        );
+      },
+    },
+    size: {
+      className: "product-file-column",
+      content: (row) => {
+        return row.size != null && (
+          <div className="product-file-column__container">
+            {row.size}
+          </div>
+        );
+      },
+    },
   };
 
   const renderHeaders = () => {

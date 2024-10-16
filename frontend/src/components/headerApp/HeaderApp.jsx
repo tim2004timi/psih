@@ -4,8 +4,9 @@ import logo from '../../assets/img/logo.svg';
 import HeaderButton from './headerButton/HeaderButton';
 import search from '../../assets/img/search_btn.svg';
 import notification from '../../assets/img/notifications_btn.svg';
-import acount from '../../assets/img/acount_btn.svg';
+import account from '../../assets/img/acount_btn.svg';
 import './HeaderApp.css';
+import { Link } from 'react-router-dom';
 
 const HeaderApp = () => {
     return ( 
@@ -19,7 +20,11 @@ const HeaderApp = () => {
                 <AppNavBar />
                 <div className="header-top__btn-container">
                     <HeaderButton img={notification} />
-                    <HeaderButton img={acount} />
+                    <HeaderButton 
+                        img={account} 
+                        as={Link} 
+                        to="/admin" 
+                    />
                 </div>
             </div>
             <div className="separator"></div>

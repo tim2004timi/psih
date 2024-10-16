@@ -102,7 +102,7 @@ const ProductPage = () => {
     <>
       <div className="product__header">
         <div className="back-btn">
-          <Link to={"/warehouse/products"}>
+          <Link to={"/products"}>
             <button className="back-btn__btn">
               <div className="back-btn__arrow"></div>
             </button>

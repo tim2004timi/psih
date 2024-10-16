@@ -383,7 +383,7 @@ const Products = () => {
               ></span>
             </div>
             <div className="column-number__content">
-              <Link to={`/warehouse/products/${row.id}`}>{row.name}</Link>
+              <Link to={`/products/${row.id}`}>{row.name}</Link>
               <div className={`column-name__container-img`}>
                 {row.images.length !== 0 ? (
                   <img

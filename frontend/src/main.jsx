@@ -32,9 +32,13 @@ const router = createBrowserRouter([
     element: <PrivateRoute />,
     children: [
       {
-        path: "warehouse",
+        path: "/",
         element: <Warehouse />,
         children: [
+          {
+            path: "",
+            element: <Navigate to="orders" replace />,
+          },
           {
             path: "orders",
             element: <Orders />,
@@ -129,11 +133,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />, // Страница входа доступна всем
+    element: <Login />,
   },
   {
     path: "/sign-up",
-    element: <RegForm />, // Страница регистрации доступна всем
+    element: <RegForm />, 
   },
 ]);
 

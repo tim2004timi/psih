@@ -1,3 +1,30 @@
+.admin-page-user{
+    width: 716px;
+    display: flex;
+    margin: 0 auto;
+    padding: 70px 0 90px;
+}
+
+.admin-page-user__header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.admin-page-user__login{
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.admin-page-user__logout{
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+}
+
 .admin-page-management {
     display: flex;
     flex-wrap: wrap;

@@ -21,9 +21,10 @@ const LoginForm = observer(({usersData}) => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(isAuth)
-  // }, [isAuth])
+  useEffect(() => {
+    console.log(localStorage)
+    console.log(isAuth)
+  }, [isAuth])
 
   return (
     <div className="authorization">

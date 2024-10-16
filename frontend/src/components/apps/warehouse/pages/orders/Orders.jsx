@@ -98,8 +98,8 @@ const Orders = () => {
   };
 
   // useEffect(() => {
-  //     console.log(inputDateOrderRef.current.value);
-  // }, [inputDateOrderRef]);
+  //     console.log(isAuth);
+  // }, [isAuth]);
 
   const handleIdList = (ids) => {
     setIdList(ids);

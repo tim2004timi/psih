@@ -21,7 +21,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
 
     try {
       await getTokens(loginValue, code);
-      navigate('/warehouse/orders');
+      navigate('/orders');
     } catch (e) {
       setErrorText(e.response.data.detail);
       console.error(e);

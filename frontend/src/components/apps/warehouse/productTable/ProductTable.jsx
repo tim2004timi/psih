@@ -518,16 +518,17 @@ const ProductTable = ({ showArchive, configName }) => {
               </button>
             </div>
             <div className="product-table-content__close">
-              <button
+              <Link
                 className="product-table-content__close-btn"
                 onClick={() => showArchive(false)}
+                to={'/products'}
               >
                 <img
                   src={close}
                   alt="close btn"
                   className="product-table-content__close-btn-img"
                 />
-              </button>
+              </Link>
             </div>
           </div>
           <div className="product-table__separator"></div>

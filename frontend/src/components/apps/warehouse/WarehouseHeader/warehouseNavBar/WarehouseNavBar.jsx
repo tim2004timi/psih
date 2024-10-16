@@ -9,47 +9,47 @@ const WarehouseNavBar = () => {
         <li className={ 
         `WarehouseNavBar__container-li 
         ${
-          location.pathname === '/warehouse/orders' 
-          || location.pathname === '/warehouse/orders/neworder/orderdata' 
-          || location.pathname === '/warehouse/orders/:id/orderdata' 
+          location.pathname === '/orders' 
+          || location.pathname === '/orders/neworder/orderdata' 
+          || location.pathname === '/orders/:id/orderdata' 
           ? 
           'WarehouseNavBar__container-li_active' 
           : 
           ''
         }`}>
-          <Link className='WarehouseNavBar__container-link' to="/warehouse/orders">Заказы</Link>
+          <Link className='WarehouseNavBar__container-link' to="/orders">Заказы</Link>
         </li>
         <li className={
           `WarehouseNavBar__container-li 
           ${
-            location.pathname === '/warehouse/products' 
-            || location.pathname === '/warehouse/productsarchive' 
+            location.pathname === '/products' 
+            || location.pathname === '/productsarchive' 
             ? 
             'WarehouseNavBar__container-li_active' 
             : 
             ''
           }`}>
-          <Link className='WarehouseNavBar__container-link' to="/warehouse/products">Товары</Link>
+          <Link className='WarehouseNavBar__container-link' to="/products">Товары</Link>
         </li>
         <li className={
           `WarehouseNavBar__container-li 
           ${
-            location.pathname === '/warehouse/remains' 
+            location.pathname === '/remains' 
             ? 
             'WarehouseNavBar__container-li_active' 
             : 
             ''
           }`}>
-          <Link className='WarehouseNavBar__container-link' to="/warehouse/remains">Остатки</Link>
+          <Link className='WarehouseNavBar__container-link' to="/remains">Остатки</Link>
         </li>
         <li className={
           `WarehouseNavBar__container-li 
-          ${location.pathname === '/warehouse/parties' 
+          ${location.pathname === '/parties' 
           ? 
           'WarehouseNavBar__container-li_active' 
           : 
           ''}`}>
-          <Link className='WarehouseNavBar__container-link' to="/warehouse/parties">Партии</Link>
+          <Link className='WarehouseNavBar__container-link' to="/parties">Партии</Link>
         </li>
       </ul>
     );

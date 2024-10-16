@@ -3,17 +3,18 @@ import AuthStore from "../../AuthStore";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
-const PrivateRoute = observer((props) => {
-  const { isAuth, isLoadingAuth } = AuthStore;
+const PrivateRoute = observer(() => {
+  const { isAuth, isAuthInProgress } = AuthStore;
 
-  if (isLoadingAuth) {
-    return <div>Checking auth...</div>;
+  // useEffect(() => {
+  //   console.log('private', isAuth);
+  // }, [isAuth]);
+
+  if (isAuthInProgress) {
+    return <div style={{textAlign: "center"}}>Checking auth...</div>;
   }
-  if (isAuth) {
-    return <Outlet />;
-  } else {
-    return <Navigate to="/login" />;
-  }
+
+  return isAuth ? <Outlet /> : <Navigate to="/login" />;
 });
 
 export default PrivateRoute;

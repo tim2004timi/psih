@@ -323,16 +323,17 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
           </div>
           {currentConfig?.showNewProductsBtn && (
             <div className="product__content-close">
-              <button
+              <Link
                 className="product__content-close-btn"
                 onClick={() => showNewProduct(false)}
+                to={'/products'}
               >
                 <img
                   src={close}
                   alt="close product__content"
                   className="product__content-close-img"
                 />
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -341,29 +342,29 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             {currentConfig?.newProductFlag ? (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/warehouse/products/data`
+                  location.pathname === `/products/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/warehouse/products/data`}
+                to={`/products/data`}
               >
               Данные товара
               </Link>
             ) : (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/warehouse/products/${id}/data`
+                  location.pathname === `/products/${id}/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/warehouse/products/${id}/data`}
+                to={`/products/${id}/data`}
               >
                 Данные товара
               </Link>
             )}
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/warehouse/products/${id}/delivery` ? "active" : ""
+                location.pathname === `/products/${id}/delivery` ? "active" : ""
               }`}
               // to={`/products/${id}/delivery`}
             >
@@ -371,15 +372,15 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             </Link>
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/warehouse/products/${id}/files` ? "active" : ""
+                location.pathname === `/products/${id}/files` ? "active" : ""
               }`}
-              to={`/warehouse/products/${id}/files`}
+              to={`/products/${id}/files`}
             >
               Файлы
             </Link>
             <Link
               className={`product__navbar-link ${
-                location.pathname === `/warehouse/products/${id}/history` ? "active" : ""
+                location.pathname === `/products/${id}/history` ? "active" : ""
               }`}
               // to={`/products/${id}/history`}
             >

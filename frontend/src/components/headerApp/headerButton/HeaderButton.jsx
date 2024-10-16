@@ -1,11 +1,13 @@
 import React from 'react';
 import './HeaderButton.css';
- const HeaderButton = ({img, text, ...props}) => {
+
+const HeaderButton = ({ img, text, as: Component = 'button', ...props }) => {
     return ( 
-         <button className="btn" {...props} >
+        <Component className="btn" {...props}>
             <img src={img} alt="btn-img" className="btn_img" /> 
-        </button>
-       )
- }
-  
- export default HeaderButton;
+            {text && <span>{text}</span>}
+        </Component>
+    );
+}
+
+export default HeaderButton;

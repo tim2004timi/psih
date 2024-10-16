@@ -44,6 +44,10 @@ const AuthService = {
             refreshInstance.post("/api/jwt/refresh/")
         );
     },
+
+    logout() {
+        localStorage.clear()
+    }
     
 };
 
