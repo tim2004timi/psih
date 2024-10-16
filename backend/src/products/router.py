@@ -2,10 +2,14 @@ from typing import List
 
 from fastapi import APIRouter, UploadFile, File
 from fastapi.params import Depends
+from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
+from ..auth.dependencies import get_current_token_payload, get_current_active_auth_user
+from ..dependencies import check_permission_storage
+from ..schemas import File as MyFile
 from .schemas import (
     ProductCategoryCreate,
     ProductCategoryWithProducts,
@@ -14,13 +18,30 @@ from .schemas import (
     ProductCategory,
     ProductCategoryUpdatePartial,
     Product,
-    ProductImage,
 )
 
 
-products_router = APIRouter(tags=["Products"], prefix="/products")
+http_bearer = HTTPBearer(auto_error=False)
+products_router = APIRouter(
+    tags=["Products"],
+    prefix="/products",
+    dependencies=[
+        Depends(http_bearer),
+        Depends(get_current_token_payload),
+        Depends(get_current_active_auth_user),
+        Depends(check_permission_storage),
+    ],
+)
 
-categories_router = APIRouter(tags=["Categories"], prefix="/products")
+categories_router = APIRouter(
+    tags=["Categories"],
+    prefix="/products",
+    dependencies=[
+        Depends(http_bearer),
+        Depends(get_current_active_auth_user),
+        Depends(check_permission_storage),
+    ],
+)
 
 
 @categories_router.get(
@@ -175,7 +196,7 @@ async def delete_product_by_id(
 
 @products_router.post(
     "/{product_id}/upload-image/",
-    response_model=ProductImage,
+    response_model=MyFile,
     description="Upload product image",
 )
 async def upload_product_image(
@@ -183,8 +204,23 @@ async def upload_product_image(
     file: UploadFile = File(...),
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
-    return await service.upload_product_image(
-        product_id=product_id, file=file, session=session
+    return await service.upload_product_file(
+        product_id=product_id, file=file, session=session, is_image=True
+    )
+
+
+@products_router.post(
+    "/{product_id}/upload-file/",
+    response_model=MyFile,
+    description="Upload product file",
+)
+async def upload_product_file(
+    product_id: int,
+    file: UploadFile = File(...),
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.upload_product_file(
+        product_id=product_id, file=file, session=session, is_image=False
     )
 
 
@@ -193,7 +229,15 @@ async def delete_product_image_by_id(
     image_id: int,
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
-    return await service.delete_product_image_by_id(session=session, image_id=image_id)
+    return await service.delete_product_file_by_id(session=session, file_id=image_id)
+
+
+@products_router.delete(path="/files/", description="Delete product file by id")
+async def delete_product_file_by_id(
+    file_id: int,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.delete_product_file_by_id(session=session, file_id=file_id)
 
 
 @products_router.delete(

@@ -36,20 +36,19 @@ class Product(Base):
         back_populates="product", cascade="all, delete-orphan", passive_deletes=True
     )
 
-    images: Mapped[List["ProductImage"]] = relationship(
-        back_populates="product", cascade="all, delete-orphan", passive_deletes=True
+    images: Mapped[List["File"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == True)",
     )
 
-
-class ProductImage(Base):
-    __tablename__ = "product_images"
-
-    url: Mapped[str]
-
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id", ondelete="CASCADE")
+    files: Mapped[List["File"]] = relationship(
+        back_populates="product",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+        primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == False)",
     )
-    product: Mapped["Product"] = relationship(back_populates="images")
 
 
 class ProductInOrder(Base):

@@ -16,7 +16,8 @@ from .schemas import (
     ProductUpdatePartial,
     ProductCategoryUpdatePartial,
 )
-from .models import Product, ProductCategory, ProductImage
+from .models import Product, ProductCategory
+from ..models import File as MyFile
 from .utils import create_auto_article
 from ..utils import upload_file, delete_file
 
@@ -95,6 +96,7 @@ async def get_products(
             select(Product)
             .options(selectinload(Product.category))
             .options(selectinload(Product.images))
+            .options(selectinload(Product.files))
             .where(Product.archived == archived)
         )
     else:
@@ -102,6 +104,7 @@ async def get_products(
             select(Product)
             .options(selectinload(Product.category))
             .options(selectinload(Product.images))
+            .options(selectinload(Product.files))
         )
     result: Result = await session.execute(stmt)
     products = result.scalars().all()
@@ -113,6 +116,7 @@ async def get_product_by_id(session: AsyncSession, product_id: int) -> Product:
         select(Product)
         .options(selectinload(Product.category))
         .options(selectinload(Product.images))
+        .options(selectinload(Product.files))
         .where(Product.id == product_id)
     )
     result: Result = await session.execute(stmt)
@@ -161,7 +165,9 @@ async def update_product(
 ) -> Product:
     for name, value in product_update.model_dump(exclude_unset=True).items():
         if name == "category_id":
-            category = await get_product_category_by_id(session=session, product_category_id=value)
+            category = await get_product_category_by_id(
+                session=session, product_category_id=value
+            )
             product.category = category
             continue
         setattr(product, name, value)
@@ -182,26 +188,26 @@ async def delete_product(session: AsyncSession, product: Product) -> None:
     return None
 
 
-async def upload_product_image(
-    session: AsyncSession, product_id: int, file: UploadFile
-) -> ProductImage:
+async def upload_product_file(
+    session: AsyncSession, product_id: int, is_image: bool, file: UploadFile
+) -> MyFile:
     product = await get_product_by_id(session=session, product_id=product_id)
-    url = await upload_file(file=file, dir_name="products")
+    url, human_size = await upload_file(file=file, dir_name="products")
 
-    image = ProductImage(url=url, product_id=product.id)
-    session.add(image)
+    file = MyFile(url=url, owner_id=product.id, image=is_image, owner_type="Product", size=human_size)
+    session.add(file)
     await session.commit()
-    await session.refresh(image)
+    await session.refresh(file)
 
-    return image
+    return file
 
 
-async def delete_product_image_by_id(session: AsyncSession, image_id: int):
-    image = await session.get(ProductImage, image_id)
+async def delete_product_file_by_id(session: AsyncSession, file_id: int):
+    image = await session.get(MyFile, file_id)
     if not image:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Изображение с id({image_id}) не найдено",
+            detail=f"Файл с id({file_id}) не найдено",
         )
     try:
         response = await delete_file(file_path=image.url)
@@ -211,7 +217,7 @@ async def delete_product_image_by_id(session: AsyncSession, image_id: int):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Не удалось удалить изображение",
+            detail="Не удалось удалить файл",
         )
 
 

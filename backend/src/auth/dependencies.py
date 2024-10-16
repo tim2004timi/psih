@@ -94,7 +94,11 @@ async def validate_auth_user(
         detail="Неверный логин или пароль",
     )
 
-    user = await service.get_user_by_username(session=session, username=username)
+    try:
+        user = await service.get_user_by_username(session=session, username=username)
+    except HTTPException:
+        user = None
+
     if user is None:
         raise unauthed_exc
 

@@ -88,7 +88,7 @@ const Order = () => {
         <div>
             <div className="Neworder__header">
                 <div className="back-btn">
-                    <Link to={'/orders'}>
+                    <Link to={'/warehouse/orders'}>
                         {/* <PopularButton img={back} /> */}
                         <button className="back-btn__btn">
                             <div className="back-btn__arrow"></div>

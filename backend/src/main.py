@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .orders.router import router as orders_router
 from .products.router import products_router, categories_router
 from .auth.router import router as auth_router
+from .users.router import router as users_router
 
 from .database import Base
 from .config import UPLOAD_DIR
@@ -47,33 +48,43 @@ from .config import UPLOAD_DIR
 #             )
 #         response = await call_next(request)
 #         return response
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
 
 
 app = FastAPI(title="Psih Clothes")
 main_router = APIRouter(prefix="/api")
-
-if not os.path.exists(UPLOAD_DIR):
-    os.makedirs(UPLOAD_DIR)
-
-# Маршрут для отдачи статических файлов
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.middleware("http")
+async def add_csp_header(request, call_next):
+    response = await call_next(request)
+    # TODO: Изменить та проде
+    # response.headers["Content-Security-Policy"] = (
+    #     "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; object-src 'none'; img-src 'self' https://fastapi.tiangolo.com;"
+    # )
+    return response
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://87.242.85.68:5173",
-                   "http://87.242.85.68:4173",
-                   "http://localhost:5173",
-                   "http://localhost:4173"],
+    allow_origins=[
+        "http://87.242.85.68:5173",
+        "http://87.242.85.68:4173",
+        "http://localhost:5173",
+        "http://localhost:4173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки
 )
-
 # app.add_middleware(LogPostPatchRequestsMiddleware)
 
 main_router.include_router(auth_router)
 main_router.include_router(categories_router)
 main_router.include_router(products_router)
 main_router.include_router(orders_router)
+main_router.include_router(users_router)
 
 app.include_router(main_router)

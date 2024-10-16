@@ -4,11 +4,13 @@ from sqlalchemy import select, desc, Result, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette import status
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 
 from .schemas import OrderCreate, OrderUpdatePartial
 from ..orders.models import Order
 from ..products.models import ProductInOrder, Product
+from ..utils import upload_file, delete_file
+from ..models import File as MyFile
 
 
 async def get_orders(session: AsyncSession) -> List[Order]:
@@ -28,6 +30,10 @@ async def get_order_by_id(session: AsyncSession, order_id: int) -> Order:
             selectinload(Order.products_in_order)
             .selectinload(ProductInOrder.product)
             .selectinload(Product.images),  # Загрузка изображений
+            selectinload(Order.products_in_order)
+            .selectinload(ProductInOrder.product)
+            .selectinload(Product.files),  # Загрузка файлов
+            selectinload(Order.files),  # Загрузка файлов
         )
         .where(Order.id == order_id)
     )
@@ -81,6 +87,22 @@ async def update_order(
     return await get_order_by_id(session=session, order_id=order.id)
 
 
+async def upload_order_file(
+    session: AsyncSession, order_id: int, is_image: bool, file: UploadFile
+) -> MyFile:
+    order = await get_order_by_id(session=session, order_id=order_id)
+    url, human_size = await upload_file(file=file, dir_name="orders")
+
+    file = MyFile(
+        url=url, owner_id=order.id, image=is_image, owner_type="Order", size=human_size
+    )
+    session.add(file)
+    await session.commit()
+    await session.refresh(file)
+
+    return file
+
+
 async def delete_products_in_order(session: AsyncSession, order):
     stmt = delete(ProductInOrder).where(ProductInOrder.id == order.id)
     await session.execute(stmt)
@@ -99,3 +121,22 @@ async def delete_orders(session: AsyncSession, order_ids: List[int]) -> None:
 
     await session.execute(stmt)
     await session.commit()
+
+
+async def delete_order_file_by_id(session: AsyncSession, file_id: int):
+    image = await session.get(MyFile, file_id)
+    if not image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Файл с id({file_id}) не найдено",
+        )
+    try:
+        response = await delete_file(file_path=image.url)
+        await session.delete(image)
+        await session.commit()
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Не удалось удалить файл",
+        )

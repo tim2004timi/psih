@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     db_port: str
     db_name: str
     db_echo: bool
-    # salt: str
+    bot_token: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
@@ -23,8 +23,10 @@ class AuthSettings(BaseModel):
     algorithm: str = "RS256"
     private_key_path: Path = BASE_DIR / "certs" / "jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs" / "jwt-public.pem"
-    access_token_expire_minutes: int = 5  # TODO: изменить
+    access_token_expire_minutes: int = 1  # TODO: изменить
     refresh_token_expire_days: int = 1
+    tg_bot_code_expire_seconds: int = 120
+    tg_bot_code_max_attempts: int = 3
 
 
 settings = Settings()

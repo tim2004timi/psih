@@ -7,26 +7,29 @@ import categoreisClose from "../../../../assets/img/categories_closebtn.svg";
 import {
   getCategories,
   getProductsNA,
+  getProductsA,
   patchProduct,
   deleteCategory,
   createCategory,
-  serverUrl,
+  deleteProducts,
 } from "../../../../API/productsApi";
+import { serverUrl } from "../../../../config.js";
 import getFullImageUrl from "../../../../API/getFullImgUrl";
 import './ProductTable.css';
 import search from '../../../../assets/img/search_btn.svg';
 import close from '../../../../assets/img/close_filter.png';
 
-const ProductTable = ({showArchive}) => {
-//   const productsNA = useSelector((state) => state.productsNA.productsNA);
-    const [productsNA, setProductsNA] = useState([]);
+const ProductTable = ({ showArchive, configName }) => {
+  //   const productsNA = useSelector((state) => state.productsNA.productsNA);
+  const [productsNA, setProductsNA] = useState([]);
+  const [productsA, setProductsA] = useState([]);
 
-    const [selectedColumns, setSelectedColumns] = useState([
-        "название",
-        "артикул",
-        "цена",
-        "остаток",
-      ]);
+  const [selectedColumns, setSelectedColumns] = useState([
+    "название",
+    "артикул",
+    "цена",
+    "остаток",
+  ]);
 
   const [checkboxStates, setCheckboxStates] = useState({});
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
@@ -46,9 +49,92 @@ const ProductTable = ({showArchive}) => {
   const categoriesSettingsInputRef = useRef(null);
   const categoriesSettingsRef = useRef(null);
 
+  const [currentConfig, setCurrentConfig] = useState(null);
+
   // useEffect(() => {
-  //   console.log(showArchive)
-  // }, [showArchive])
+  //   console.log(configName)
+  // }, [configName])
+
+  useEffect(() => {
+    setCurrentConfig(returnConfig(configName));
+  }, [configName]);
+
+  const returnConfig = (configName) => {
+    switch (configName) {
+      case "archiveConfig":
+        return {
+          fetchFunc: fetchProductsA,
+          isShowComponentHeader: true,
+          // getCurrentProducts: getProducts,
+        };
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+
+    if (currentConfig) {
+      fetchCategories();
+      currentConfig.fetchFunc();
+    }
+
+  }, [currentConfig]);
+
+  useEffect(() => {
+    
+    if (categories.length > 0) {
+      filterProductsByCategories(categories[0]);
+      setSelectedCategory(categories[0]);
+    }
+
+  }, [categories, productsA, productsNA]);
+
+  async function fetchCategories() {
+    try {
+      const response = await getCategories();
+      const newCategoriesObj = response.data.reduce((acc, category) => {
+        acc[category.name] = category.id;
+        return acc;
+      }, {});
+      setCategoriesObj(newCategoriesObj);
+      const newCategories = Object.keys(newCategoriesObj);
+      setCategories((prevCategories) => [
+        ...new Set([...prevCategories, ...newCategories]),
+      ]);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function fetchProductsNA() {
+    try {
+      const response = await getProductsNA();
+      // console.log(response.data)
+      setProductsNA(response.data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function fetchProductsA() {
+    try {
+      const response = await getProductsA();
+      setProductsA(response.data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // const getProducts = () => {
+  //   switch (configName) {
+  //     case "archiveConfig":
+  //       return productsA;
+  //     default:
+  //       return productsNA;
+  //   }
+  // };
+
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
     event.stopPropagation();
@@ -112,56 +198,57 @@ const ProductTable = ({showArchive}) => {
     );
   }, [activeCheckboxCount]);
 
-  async function fetchCategories() {
-    try {
-      const response = await getCategories();
-      const newCategoriesObj = response.data.reduce((acc, category) => {
-        acc[category.name] = category.id;
-        return acc;
-      }, {});
-      setCategoriesObj(newCategoriesObj);
-      const newCategories = Object.keys(newCategoriesObj);
-      setCategories((prevCategories) => [
-        ...new Set([...prevCategories, ...newCategories]),
-      ]);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  async function fetchProductsNA() {
-    try {
-      const response = await getProductsNA();
-      setProductsNA(response.data);
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  // useEffect(() => {
+  //   if (currentConfig) {
+  //     console.log(currentConfig.getCurrentProducts());
+  //   }
+  // }, [productsA, currentConfig]);
 
   const filterProductsByCategories = (category) => {
-    const newProducts = productsNA.filter(
+    const products = currentConfig.isShowComponentHeader ? productsA : productsNA;
+    const newProducts = products.filter(
       (product) => product.category.name === category
     );
     setFilteredProducts(newProducts);
   };
 
-  useEffect(() => {
-    fetchCategories();
-    fetchProductsNA();
-  }, []);
-
-  useEffect(() => {
-    if (categories.length > 0) {
-      filterProductsByCategories(categories[0]);
-      setSelectedCategory(categories[0]);
-    }
-  }, [categories, productsNA]);
-
-  async function toArchive(id, key, newValue) {
+  async function toArchive(idArr) {
     try {
-      let response = await patchProduct(id, key, newValue);
-      console.log(response.data);
-      fetchProductsNA();
+      const promises = idArr.map(async (id) => {
+        const product = productsNA.find(product => product.id === id);
+        const updatedProduct = { ...product, "archived": true };
+        return patchProduct(id, updatedProduct);
+      });
+  
+      const responses = await Promise.all(promises);
+      // fetchCategories();
+      currentConfig.fetchFunc();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function fromArchive(idArr) {
+    try {
+      const promises = idArr.map(async (id) => {
+        const product = productsA.find(product => product.id === id);
+        const updatedProduct = { ...product, "archived": false };
+        return patchProduct(id, updatedProduct);
+      });
+  
+      const responses = await Promise.all(promises);
+      // fetchCategories();
+      currentConfig.fetchFunc();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteSelectedProducts(idArr) {
+    try {
+      const response = await deleteProducts(idArr);
+      // fetchCategories();
+      currentConfig.fetchFunc();
     } catch (e) {
       console.error(e);
     }
@@ -358,123 +445,132 @@ const ProductTable = ({showArchive}) => {
 
   return (
     <div className="product-table">
-      <div className="product-table__navbar">
-        <div className="product-table__saveBtn">
-          <button className="product-table__saveBtn-button">Сохранить</button>
-        </div>
-        <div className="product-table__navbar-container">
-          {renderCategoriesBtn()}
-          <div className="product-table__navbar-add">
-            <span
-              className="product-table__navbar-addBtn"
-              onClick={() =>
-                setIsCategoriesSettingsOpen(!isCategoriesSettingsOpen)
-              }
-            ></span>
+      <div className="product-table__wrapper">
+        <div className="product-table__navbar">
+          <div className="product-table__saveBtn">
+            <button className="product-table__saveBtn-button">Сохранить</button>
           </div>
-          {isCategoriesSettingsOpen && (
-            <div className="categories-settings" ref={categoriesSettingsRef}>
-              <div className="categories-settings-content">
-                <div className="categories-settings__close">
-                  <button
-                    className="categories-settings__close-btn"
-                    onClick={() => setIsCategoriesSettingsOpen(false)}
-                  >
-                    <img
-                      src={categoreisClose}
-                      alt="close"
-                      className="categories-settings__close-img"
+          <div className="product-table__navbar-container">
+            {renderCategoriesBtn()}
+            {/* <div className="product-table__navbar-add">
+              <span
+                className="product-table__navbar-addBtn"
+                onClick={() =>
+                  setIsCategoriesSettingsOpen(!isCategoriesSettingsOpen)
+                }
+              ></span>
+            </div> */}
+            {isCategoriesSettingsOpen && (
+              <div className="categories-settings" ref={categoriesSettingsRef}>
+                <div className="categories-settings-content">
+                  <div className="categories-settings__close">
+                    <button
+                      className="categories-settings__close-btn"
+                      onClick={() => setIsCategoriesSettingsOpen(false)}
+                    >
+                      <img
+                        src={categoreisClose}
+                        alt="close"
+                        className="categories-settings__close-img"
+                      />
+                    </button>
+                  </div>
+                  <div className="categories-settings__input">
+                    <p className="categories-settings__input-text">
+                      Добавить категорию
+                    </p>
+                    <input
+                      type="text"
+                      className="categories-settings__input-input"
+                      ref={categoriesSettingsInputRef}
                     />
-                  </button>
-                </div>
-                <div className="categories-settings__input">
-                  <p className="categories-settings__input-text">
-                    Добавить категорию
-                  </p>
-                  <input
-                    type="text"
-                    className="categories-settings__input-input"
-                    ref={categoriesSettingsInputRef}
-                  />
-                </div>
-                <div className="categories-settings__btn">
-                  {renderCategoriesSettingsBtn()}
-                </div>
-                <div className="categories-settings-add">
-                  <button
-                    className="categories-settings-add__btn"
-                    onClick={() => {
-                      createCategoryName(
-                        categoriesSettingsInputRef.current.value
-                      );
-                    }}
-                  >
-                    Добавить
-                  </button>
+                  </div>
+                  <div className="categories-settings__btn">
+                    {renderCategoriesSettingsBtn()}
+                  </div>
+                  <div className="categories-settings-add">
+                    <button
+                      className="categories-settings-add__btn"
+                      onClick={() => {
+                        createCategoryName(
+                          categoriesSettingsInputRef.current.value
+                        );
+                      }}
+                    >
+                      Добавить
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-      <div className="product-table__content">
-        <div className="product-table__content-header">
+        <div className="product-table__content">
+          <div className="product-table__content-header">
             <div className="product-table-content__search">
-                <button className="product-table-content__search-btn">
-                  <img src={search} alt="search btn" className="product-table-content__search-img" />
-                  Поиск
-                </button>
+              <button className="product-table-content__search-btn">
+                <img
+                  src={search}
+                  alt="search btn"
+                  className="product-table-content__search-img"
+                />
+                Поиск
+              </button>
             </div>
             <div className="product-table-content__close">
-                <button
-                    className="product-table-content__close-btn"
-                    onClick={() => showArchive(false)}
-                >
-                  <img src={close} alt="close btn" className="product-table-content__close-btn-img" />
-                </button>
+              <button
+                className="product-table-content__close-btn"
+                onClick={() => showArchive(false)}
+              >
+                <img
+                  src={close}
+                  alt="close btn"
+                  className="product-table-content__close-btn-img"
+                />
+              </button>
             </div>
-        </div>
-        <div className="product-table__separator"></div>
-        <div className="product-table__table-btn">
+          </div>
+          <div className="product-table__separator"></div>
+          <div className="product-table__table-btn">
             <div className="warehouse-table-btn__counter">
-            {activeCheckboxCount}
+              {activeCheckboxCount}
             </div>
             <button
-            className="column-archive__btn"
-            onClick={() => toArchive(row.id, "archived", true)}
+              className="column-archive__btn"
+              onClick={() => fromArchive(activeCheckboxIds)}
             >
-            <img
+              <img
                 src={archiveBtn}
                 alt="archive-btn"
                 className="column-archive__img"
-            />
-            <img
+              />
+              <img
                 src={archiveBtnHover}
                 alt="archive-btn"
                 className="column-archive__img--hover"
-            />
+              />
             </button>
             <button
-            className="warehouse-table-btn  warehouse-table-btn__delete-table"
-            onClick={() => {
-                deleteSelectedOrders(activeCheckboxIds);
-                setIsFetchData(true);
-            }}
+              className="warehouse-table-btn  warehouse-table-btn__delete-table"
+              onClick={() => {
+                deleteSelectedProducts(activeCheckboxIds);
+              }}
             >
-            <img
+              <img
                 className="warehouse-table-btn__img"
                 src={deleteTable}
                 alt="deleteTable"
-            />
+              />
             </button>
-        </div>
-        <div className="product-table__separator"></div>
-        <table className="product-table__table">
+          </div>
+          <div className="product-table__separator"></div>
+          <table className="product-table__table">
             <thead>
-                <tr>{renderHeaders()}</tr>
+              <tr>{renderHeaders()}</tr>
             </thead>
             <tbody>{renderRows()}</tbody>
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );
