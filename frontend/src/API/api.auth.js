@@ -1,6 +1,6 @@
 import { instance, refreshInstance } from "./api.config.js";
 import axios from 'axios';
-import { serverUrl } from './config.js';
+import { serverUrl } from '../config.js';
 
 const AuthService = {
     validateLogin(username, password) {

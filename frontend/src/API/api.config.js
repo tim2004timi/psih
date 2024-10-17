@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { serverUrl } from './config.js';
+import { serverUrl } from '../config.js';
 
 export const refreshInstance = axios.create({
     baseURL: serverUrl,

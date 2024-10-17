@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import AuthService from "./api.auth.js";
+import AuthService from "./API/api.auth";
 
 class AuthStore {   
   isAuth = false;
