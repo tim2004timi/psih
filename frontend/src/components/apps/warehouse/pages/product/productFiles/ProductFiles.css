@@ -1,0 +1,9 @@
+.product-files-table{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    width: 100%;
+}
+
+.product-files-table__header{
+    margin-bottom: 6px;
+}

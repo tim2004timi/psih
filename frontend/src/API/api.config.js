@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { serverUrl } from './config.js';
+import { serverUrl } from '../config.js';
 
 export const refreshInstance = axios.create({
     baseURL: serverUrl,
@@ -8,7 +8,6 @@ export const refreshInstance = axios.create({
 refreshInstance.interceptors.request.use(
     (config) => {
         config.headers.Authorization = `Bearer ${localStorage.getItem("refresh_token")}`;
-        console.log('refresh токен: ', config.headers.Authorization);
         return config;
     }
 );
@@ -21,7 +20,6 @@ export const instance = axios.create({
 instance.interceptors.request.use(
     (config) => {
         config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
-        console.log('access токен: ', config.headers.Authorization);
         return config;
     }
 );
@@ -31,7 +29,7 @@ instance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
                 const refreshToken = localStorage.getItem("refresh_token");

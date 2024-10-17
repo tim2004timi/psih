@@ -323,16 +323,17 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
           </div>
           {currentConfig?.showNewProductsBtn && (
             <div className="product__content-close">
-              <button
+              <Link
                 className="product__content-close-btn"
                 onClick={() => showNewProduct(false)}
+                to={'/products'}
               >
                 <img
                   src={close}
                   alt="close product__content"
                   className="product__content-close-img"
                 />
-              </button>
+              </Link>
             </div>
           )}
         </div>
@@ -341,24 +342,24 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             {currentConfig?.newProductFlag ? (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/productdata`
+                  location.pathname === `/products/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/products/productdata`}
+                to={`/products/data`}
               >
-                Данные товара
+              Данные товара
               </Link>
             ) : (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/${id}/productdata`
+                  location.pathname === `/products/${id}/data`
                     ? "active"
                     : ""
                 }`}
-                to={`/products/${id}/productdata`}
+                to={`/products/${id}/data`}
               >
-                Данные
+                Данные товара
               </Link>
             )}
             <Link
@@ -373,7 +374,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
               className={`product__navbar-link ${
                 location.pathname === `/products/${id}/files` ? "active" : ""
               }`}
-              // to={`/products/${id}/files`}
+              to={`/products/${id}/files`}
             >
               Файлы
             </Link>

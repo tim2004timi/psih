@@ -1,4 +1,4 @@
-.authorization{
+.authorization {
     width: 100%;
     height: 100vh;
     margin: 0 auto;
@@ -8,38 +8,37 @@
     position: relative;
 }
 
-.authorization__content{
+.authorization__content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 24px;
     width: 320px;
-    /* position: relative; */
 }
 
-.authorization__logo{
+.authorization__logo {
     margin-bottom: 50px;
 }
 
-.authorization__logo-img{
+.authorization__logo-img {
     width: 72px;
 }
 
-.authorization__form{
+.authorization__form {
     display: flex;
     flex-direction: column;
     gap: 24px;
     width: 100%;
 }
 
-.authorization__form-input{
+.authorization__form-input {
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
     width: 100%;
     padding: 4px 7px;
 }
 
-.authorization__form-btn{
+.authorization__form-btn {
     background-color: transparent;
     border: 1px solid rgba(0, 0, 0, 1);
     border-radius: 7px;
@@ -47,12 +46,12 @@
     padding: 4px 0;
 }
 
-.authorization__form-btn:hover{
+.authorization__form-btn:hover {
     transition: all 0.3s;
     color: #fff;
 }
 
-.authorization__content-dont-acc{
+.authorization__content-dont-acc {
     background-color: transparent;
     border: none;
     font-size: 16px;
@@ -60,40 +59,59 @@
     cursor: pointer;
 }
 
-.authorization__content-dont-acc:hover{
+.authorization__content-dont-acc:hover {
     color: rgba(0, 0, 0, 1);
     transition: all 0.3s;
 }
 
-.tegram-code__text{
+.tegram-code__text {
     color: rgba(0, 0, 0, 0.5);
     font-size: 13px;
     text-align: center;
     line-height: 19px;
+    position: relative;
 }
 
-.tegram-code__link{
+.tegram-code__link {
     color: rgba(0, 0, 0, 0.5);
     text-decoration: underline;
 }
 
-.tegram-code__img{
-    padding-left: 10px;
+.tegram-code-img{
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid red;
 }
 
-.telegram-overlay{
-    position: absolute;
+/* .tegram-code-img__img {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid red;
+} */
+
+.telegram-overlay {
+    position: fixed;
+    z-index: 1;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
 }
 
-.tegram-code-btn{
+.telegram-overlay__qr {
+    max-width: 80%;
+    max-height: 80%;
+}
+
+.tegram-code-img:hover > .telegram-overlay {
+    display: flex;
+}
+
+.tegram-code-btn {
     color: rgb(0, 0, 0);
     background-color: transparent;
     border: none;
@@ -102,12 +120,12 @@
     padding: 0;
 }
 
-.tegram-code-btn[disabled]{
+.tegram-code-btn[disabled] {
     border-bottom: 1px solid transparent;
     cursor: default;
 }
 
-.tegram-code__error-text{
+.tegram-code__error-text {
     color: red;
     font-size: 13px;
     position: absolute;

@@ -1,6 +1,6 @@
 import { instance, refreshInstance } from "./api.config.js";
 import axios from 'axios';
-import { serverUrl } from './config.js';
+import { serverUrl } from '../config.js';
 
 const AuthService = {
     validateLogin(username, password) {
@@ -44,10 +44,11 @@ const AuthService = {
             refreshInstance.post("/api/jwt/refresh/")
         );
     },
-    
-    checkMe() {
-        return instance.get("/api/jwt/users/me/");
+
+    logout() {
+        localStorage.clear()
     }
+    
 };
 
 export default AuthService;

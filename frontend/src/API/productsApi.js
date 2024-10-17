@@ -1,5 +1,5 @@
 import axios from "axios";
-import { instance } from "../api.config";
+import { instance } from "./api.config";
 import {serverUrl} from '../config.js'
 
 export async function getCategories() {

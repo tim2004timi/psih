@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";    
+import { Link, useNavigate } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
 import AuthStore from '../../AuthStore';
 import '../login/Login.css';
-import { useNavigate } from "react-router-dom";
 import telegram_qr_img from '../../assets/img/telegram-qr-img.png';
 import telegram_qr from '../../assets/img/telegram-qr.png';
 
@@ -13,7 +12,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
   const [errorText, setErrorText] = useState("");
   const [timer, setTimer] = useState(0);
   const { loginValue, password } = usersData;
-  const { messageFromBot, getTokens } = AuthStore;
+  const { messageFromBot, getTokens, isAuth, checkAuth } = AuthStore;
   const navigate = useNavigate();
   const isTimerActive = timer > 0;
 
@@ -21,8 +20,8 @@ const TelegramCodeForm = observer(({ usersData }) => {
     e.preventDefault();
 
     try {
-      getTokens(loginValue, code);
-      navigate('/');
+      await getTokens(loginValue, code);
+      navigate('/orders');
     } catch (e) {
       setErrorText(e.response.data.detail);
       console.error(e);
@@ -63,10 +62,6 @@ const TelegramCodeForm = observer(({ usersData }) => {
           <a href="https://t.me/psihsystem_bot" className="tegram-code__link">
             @psihsystem_bot
           </a>
-          <img src={telegram_qr_img} alt="telegram qr img" className="tegram-code__img" />
-          {/* <div className="telegram-overlay">
-            <img src={telegram_qr} alt="telegram qr" className="telegram-overlay__qr" />
-          </div> */}
         </p>
         <button 
           type="button" 
@@ -89,6 +84,13 @@ const TelegramCodeForm = observer(({ usersData }) => {
             ВОЙТИ
           </button>
         </form>
+        {/* <button 
+          type="button" 
+          className="tegram-code-btn" 
+          onClick={() => checkAuth()}
+        >
+          checkAuth
+        </button> */}
         <p className="tegram-code__error-text">{errorText}</p>
       </div>
     </div>
