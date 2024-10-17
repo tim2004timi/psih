@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
 from . import service, dependencies
-from ..auth.dependencies import get_current_token_payload, get_current_active_auth_user
+from ..auth.dependencies import get_current_active_auth_user
 from ..dependencies import check_permission, Permission
 from ..schemas import File as MyFile
 from .schemas import (
@@ -19,7 +19,7 @@ from .schemas import (
     ProductCategoryUpdatePartial,
     Product,
 )
-
+from ..users.schemas import User
 
 http_bearer = HTTPBearer(auto_error=False)
 products_router = APIRouter(
@@ -27,7 +27,6 @@ products_router = APIRouter(
     prefix="/products",
     dependencies=[
         Depends(http_bearer),
-        Depends(get_current_token_payload),
         Depends(get_current_active_auth_user),
         Depends(check_permission(Permission.STORAGE)),
     ],
@@ -120,9 +119,9 @@ async def delete_product_category_by_id(
     path="/",
     response_model=Product,
     description="Get product by id",
+    response_model_exclude={"user"},
 )
 async def get_product_by_id(
-    session: AsyncSession = Depends(db_manager.session_dependency),
     product: Product = Depends(dependencies.product_by_id_dependency),
 ):
     return product
@@ -132,6 +131,7 @@ async def get_product_by_id(
     path="/all/",
     response_model=List[Product],
     description="Get all products",
+    response_model_exclude={"user", "files"},
 )
 async def get_all_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -154,6 +154,7 @@ async def get_not_archived_products(
     path="/archived/",
     response_model=List[Product],
     description="Get archived products",
+    response_model_exclude={"user", "files"},
 )
 async def get_archived_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -162,7 +163,10 @@ async def get_archived_products(
 
 
 @products_router.post(
-    path="/", response_model=Product | None, description="Create new product"
+    path="/",
+    response_model=Product | None,
+    description="Create new product",
+    response_model_exclude={"user"},
 )
 async def create_product(
     product_create: ProductCreate,
@@ -203,9 +207,10 @@ async def upload_product_image(
     product_id: int,
     file: UploadFile = File(...),
     session: AsyncSession = Depends(db_manager.session_dependency),
+    user: User = Depends(get_current_active_auth_user),
 ):
     return await service.upload_product_file(
-        product_id=product_id, file=file, session=session, is_image=True
+        product_id=product_id, user=user, file=file, session=session, is_image=True
     )
 
 
@@ -218,9 +223,10 @@ async def upload_product_file(
     product_id: int,
     file: UploadFile = File(...),
     session: AsyncSession = Depends(db_manager.session_dependency),
+    user: User = Depends(get_current_active_auth_user),
 ):
     return await service.upload_product_file(
-        product_id=product_id, file=file, session=session, is_image=False
+        product_id=product_id, user=user, file=file, session=session, is_image=False
     )
 
 

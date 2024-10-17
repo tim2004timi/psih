@@ -19,6 +19,7 @@ from .schemas import (
 from .models import Product, ProductCategory
 from ..models import File as MyFile
 from .utils import create_auto_article
+from ..users.schemas import User
 from ..utils import upload_file, delete_file
 
 
@@ -189,12 +190,12 @@ async def delete_product(session: AsyncSession, product: Product) -> None:
 
 
 async def upload_product_file(
-    session: AsyncSession, product_id: int, is_image: bool, file: UploadFile
+    session: AsyncSession, product_id: int, user: User, is_image: bool, file: UploadFile
 ) -> MyFile:
     product = await get_product_by_id(session=session, product_id=product_id)
     url, human_size = await upload_file(file=file, dir_name="products")
 
-    file = MyFile(url=url, owner_id=product.id, image=is_image, owner_type="Product", size=human_size)
+    file = MyFile(url=url, owner_id=product.id, user_id=user.id, image=is_image, owner_type="Product", size=human_size)
     session.add(file)
     await session.commit()
     await session.refresh(file)

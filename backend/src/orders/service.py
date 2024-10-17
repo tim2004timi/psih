@@ -9,6 +9,7 @@ from fastapi import HTTPException, UploadFile
 from .schemas import OrderCreate, OrderUpdatePartial
 from ..orders.models import Order
 from ..products.models import ProductInOrder, Product
+from ..users.schemas import User
 from ..utils import upload_file, delete_file
 from ..models import File as MyFile
 
@@ -88,13 +89,13 @@ async def update_order(
 
 
 async def upload_order_file(
-    session: AsyncSession, order_id: int, is_image: bool, file: UploadFile
+    session: AsyncSession, order_id: int, user: User, is_image: bool, file: UploadFile
 ) -> MyFile:
     order = await get_order_by_id(session=session, order_id=order_id)
     url, human_size = await upload_file(file=file, dir_name="orders")
 
     file = MyFile(
-        url=url, owner_id=order.id, image=is_image, owner_type="Order", size=human_size
+        url=url, owner_id=order.id, user_id=user.id, image=is_image, owner_type="Order", size=human_size
     )
     session.add(file)
     await session.commit()

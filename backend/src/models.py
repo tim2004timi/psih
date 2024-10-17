@@ -1,7 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from .database import Base
+from .users import User
 
 
 class File(Base):
@@ -10,10 +13,16 @@ class File(Base):
     url: Mapped[str]
     size: Mapped[str] = mapped_column(nullable=True, default="?")
     image: Mapped[bool]  # image or file
+    created_at: Mapped[datetime | None] = mapped_column(
+        DateTime, default=datetime.utcnow
+    )
 
     # Полиморфная связь (тип владельца и ID владельца)
     owner_id: Mapped[int] = mapped_column()
     owner_type: Mapped[str]
+
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    user: Mapped[User | None] = relationship(back_populates="files")
 
     # Связь с Order
     order: Mapped["Order"] = relationship(
