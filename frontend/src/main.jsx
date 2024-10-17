@@ -19,12 +19,13 @@ import Order from "./components/apps/warehouse/pages/neworder/Order.jsx";
 import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx';
 import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
 import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
+import ProductFiles from './components/apps/warehouse/pages/product/productFiles/ProductFiles.jsx';
 import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
 import Login from './components/login/Login.jsx';
 import RegForm from './components/regForm/RegForm.jsx';
-import AdminPage from './components/apps/adminPage/AdminPage.jsx';
 import PrivateRoute from './components/apps/PrivateRoute.jsx';
 import AuthStore from "./AuthStore.js";
+import ProfilePage from './components/apps/adminPage/ProfilePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -99,7 +100,7 @@ const router = createBrowserRouter([
               },
               {
                 path: "files",
-                element: <ProductData />,
+                element: <ProductFiles />,
               }
             ]
           },
@@ -126,8 +127,8 @@ const router = createBrowserRouter([
         element: <Crm />,
       },
       {
-        path: "/admin",
-        element: <AdminPage />,
+        path: "/profile",
+        element: <ProfilePage />,
       },
     ],
   },

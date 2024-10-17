@@ -10,12 +10,12 @@ const UserService = {
         return instance.post(`${serverUrl}/api/users/`);
     },
 
-    patchUser(id) {
-        return instance.patch(`${serverUrl}/api/users/?user_id=${id}`);
+    patchUser(id, obj) {
+        return instance.patch(`${serverUrl}/api/users/?user_id=${id}`, obj);
     },
 
-    getCurrentUSer() {
-        return instance.get(`${serverUrl}api/users/me/`);
+    getCurrentUser() {
+        return instance.get(`${serverUrl}/api/users/me/`);
     }
 }
 

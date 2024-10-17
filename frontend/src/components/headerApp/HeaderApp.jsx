@@ -23,7 +23,7 @@ const HeaderApp = () => {
                     <HeaderButton 
                         img={account} 
                         as={Link} 
-                        to="/admin" 
+                        to="/profile" 
                     />
                 </div>
             </div>

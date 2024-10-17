@@ -13,15 +13,14 @@ class UserStore {
         this.usersArr = arr
     }
 
-    setCurrentUser(obj) {
-        this.currentUser = obj
+    setCurrentUser(user) {
+        this.currentUser = user;
     }
 
     async getUsers() {
         try {
-            const resp = UserService.getUsers()
+            const resp = await UserService.getUsers()
             this.setUsersArr(resp.data)
-            console.log(this.usersArr)
         } catch(e) {
             console.log(e)
         }
@@ -29,30 +28,30 @@ class UserStore {
 
     async createUser() {
         try {
-            const resp = UserService.createUser()
+            const resp = await UserService.createUser()
             console.log(resp.data)
         } catch(e) {
             console.log(e)
         }
     }
 
-    async patchUser(id) {
+    async patchUser(id, obj) {
         try {
-            const resp = UserService.patchUser(id)
+            const resp = await UserService.patchUser(id, obj)
             console.log(resp.data)
         } catch(e) {
             console.log(e)
         }
     }
 
-    async getCurrentUSer() {
+    async getCurrentUser() {
         try {
-            const resp = UserService.getCurrentUSer()
-            console.log(resp.data)
+            const resp = await UserService.getCurrentUser()
+            this.setCurrentUser(resp.data)
         } catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 }
 
-export default UserStore;
+export default new UserStore();
