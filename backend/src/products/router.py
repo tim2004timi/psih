@@ -143,6 +143,7 @@ async def get_all_products(
     path="/not-archived/",
     response_model=List[Product],
     description="Get not archived products",
+    response_model_exclude={"user", "files"},
 )
 async def get_not_archived_products(
     session: AsyncSession = Depends(db_manager.session_dependency),

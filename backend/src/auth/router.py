@@ -1,6 +1,7 @@
 from fastapi import (
     APIRouter,
-    Depends, HTTPException,
+    Depends,
+    HTTPException,
 )
 from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -83,24 +84,3 @@ async def auth_refresh_jwt(
     return TokenInfo(
         access_token=access_token,
     )
-
-
-# @router.get("/users/me/", dependencies=[Depends(http_bearer)])
-# async def auth_user_check_self_info(
-#     payload: dict = Depends(get_current_token_payload),
-#     user: UserSchema = Depends(get_current_active_auth_user),
-# ):
-#     iat = payload.get("iat")
-#     return {
-#         "username": user.username,
-#         "tg_username": user.tg_username,
-#         "logged_in_at": iat,
-#     }
-
-
-@router.post("/sign-in/", response_model=UserSchema)
-async def create_user(
-    user: UserCreateSchema,
-    session: AsyncSession = Depends(db_manager.session_dependency),
-):
-    return await service.create_user(session=session, user=user)

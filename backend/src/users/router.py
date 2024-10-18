@@ -67,12 +67,28 @@ async def update_user(
     )
 
 
+@router.delete(
+    path="/",
+    response_model=User,
+    description="Delete user for admin",
+    dependencies=[Depends(check_permission(Permission.ADMIN))],
+)
+async def delete_user(
+    user_update: UserUpdatePartial,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+    user: User = Depends(user_by_id_dependency),
+):
+    return await service.update_user(
+        session=session,
+        user_update=user_update,
+        user=user,
+    )
+
+
 @router.get(
     path="/me/",
     response_model=User,
     description="Get current auth user",
 )
-async def get_current_auth_user(
-    user: User = Depends(get_current_active_auth_user)
-):
+async def get_current_auth_user(user: User = Depends(get_current_active_auth_user)):
     return user
