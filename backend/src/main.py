@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI, Request, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from .orders.router import router as orders_router
 from .products.router import products_router, categories_router
@@ -10,8 +11,7 @@ from .auth.router import router as auth_router
 from .users.router import router as users_router
 
 from .database import Base
-from .config import UPLOAD_DIR
-
+from .config import UPLOAD_DIR, DEV
 
 # class LogPostPatchRequestsMiddleware(BaseHTTPMiddleware):
 #     async def dispatch(self, request: Request, call_next):
@@ -60,11 +60,22 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.middleware("http")
 async def add_csp_header(request, call_next):
     response = await call_next(request)
-    # TODO: Изменить та проде
-    # response.headers["Content-Security-Policy"] = (
-    #     "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; object-src 'none'; img-src 'self' https://fastapi.tiangolo.com;"
-    # )
+    if not DEV:
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' "
+            "https://cdn.jsdelivr.net; object-src 'none'; img-src 'self' https://fastapi.tiangolo.com;"
+        )
     return response
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    if not DEV:
+        return
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error", "details": str(exc)},
+    )
 
 
 app.add_middleware(
@@ -74,6 +85,8 @@ app.add_middleware(
         "http://87.242.85.68:4173",
         "http://localhost:5173",
         "http://localhost:4173",
+        "http://psihsystem.com:4173",
+        "http://psihsystem.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы

@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import db_manager
 from . import service, dependencies
 from ..auth.dependencies import get_current_active_auth_user
-from ..dependencies import check_permission_storage
+from ..dependencies import check_permission, Permission
 from ..schemas import File as MyFile
 from src.orders.schemas import (
     Order,
@@ -16,7 +16,7 @@ from src.orders.schemas import (
     OrderUpdatePartial,
     OrderWithoutProducts,
 )
-
+from ..users.schemas import User
 
 http_bearer = HTTPBearer(auto_error=False)
 router = APIRouter(
@@ -25,7 +25,7 @@ router = APIRouter(
     dependencies=[
         Depends(http_bearer),
         Depends(get_current_active_auth_user),
-        Depends(check_permission_storage),
+        Depends(check_permission(Permission.STORAGE)),
     ],
 )
 
@@ -76,9 +76,10 @@ async def upload_order_file(
     order_id: int,
     file: UploadFile = File(...),
     session: AsyncSession = Depends(db_manager.session_dependency),
+    user: User = Depends(get_current_active_auth_user),
 ):
     return await service.upload_order_file(
-        order_id=order_id, file=file, session=session, is_image=False
+        order_id=order_id, user=user, file=file, session=session, is_image=False
     )
 
 

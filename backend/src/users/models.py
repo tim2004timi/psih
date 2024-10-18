@@ -32,6 +32,8 @@ class User(Base):
     access_message: Mapped[bool] = mapped_column(default=False)
     access_analytics: Mapped[bool] = mapped_column(default=False)
 
+    files: Mapped[list["File"]] = relationship(back_populates="user")
+
     # roles: Mapped[list["Role"]] = relationship(
     #     "Role",
     #     secondary=user_role_association_table,

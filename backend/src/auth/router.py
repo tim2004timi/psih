@@ -74,7 +74,7 @@ async def login_2_step(user: UserSchema = Depends(verify_code)):
 async def auth_refresh_jwt(
     user: UserSchema = Depends(get_current_auth_user_for_refresh),
 ):
-    if not user.is_active:
+    if not user.active:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Неактивный пользователь",

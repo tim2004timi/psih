@@ -10,7 +10,7 @@ from ..database import db_manager
 from . import service
 from .service import get_user_by_id
 from ..auth.dependencies import get_current_active_auth_user
-from ..dependencies import check_permission_admin
+from ..dependencies import check_permission, Permission
 from .schemas import User, UserCreate, UserUpdatePartial
 
 http_bearer = HTTPBearer(auto_error=False)
@@ -28,7 +28,7 @@ router = APIRouter(
     path="/",
     response_model=List[User],
     description="Get all users for admin",
-    dependencies=[Depends(check_permission_admin)],
+    dependencies=[Depends(check_permission(Permission.ADMIN))],
 )
 async def get_users(
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -40,7 +40,7 @@ async def get_users(
     path="/",
     response_model=User,
     description="Create new user for admin",
-    dependencies=[Depends(check_permission_admin)],
+    dependencies=[Depends(check_permission(Permission.ADMIN))],
 )
 async def create_user(
     user_create: UserCreate,
@@ -53,7 +53,7 @@ async def create_user(
     path="/",
     response_model=User,
     description="Update partial user for admin",
-    dependencies=[Depends(check_permission_admin)],
+    dependencies=[Depends(check_permission(Permission.ADMIN))],
 )
 async def update_user(
     user_update: UserUpdatePartial,
