@@ -85,6 +85,8 @@ app.add_middleware(
         "http://87.242.85.68:4173",
         "http://localhost:5173",
         "http://localhost:4173",
+        "http://psihsystem.com:4173",
+        "http://psihsystem.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы
