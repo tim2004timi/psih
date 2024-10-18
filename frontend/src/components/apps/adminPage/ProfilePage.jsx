@@ -11,10 +11,21 @@ import { toJS } from "mobx";
 
 const ProfilePage = observer(() => {
   const { logout } = AuthStore;
-  const { currentUser, getCurrentUser, usersArr, getUsers, patchUser } = UserStore;
+  const {
+    currentUser,
+    getCurrentUser,
+    usersArr,
+    getUsers,
+    patchUser,
+    createUser,
+  } = UserStore;
   const navigate = useNavigate();
 
   const [toggleStates, setToggleStates] = useState({});
+  const [isShowPasswordPopup, setIsShowPasswordPopup] = useState(false);
+  const [isShowNewUserPopup, setIsShowNewUserPopup] = useState(false);
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
 
   const logoutOfSystem = () => {
     logout();
@@ -33,11 +44,11 @@ const ProfilePage = observer(() => {
         access_crm: user.access_crm,
         access_message: user.access_message,
         access_storage: user.access_storage,
-        active: user.active
+        active: user.active,
       };
       return acc;
     }, {});
-  
+
     setToggleStates(initialToggleStates);
   }, [usersArr]);
 
@@ -65,7 +76,9 @@ const ProfilePage = observer(() => {
                   className="toggle-checkbox"
                   type="checkbox"
                   checked={toggleStates[user.id]?.active || false}
-                  onChange={(e) => handleToggleChange(user.id, "active", e.target.checked)}
+                  onChange={(e) =>
+                    handleToggleChange(user.id, "active", e.target.checked)
+                  }
                 />
                 <div className="toggle-switch"></div>
               </label>
@@ -78,7 +91,13 @@ const ProfilePage = observer(() => {
                     className="toggle-checkbox"
                     type="checkbox"
                     checked={toggleStates[user.id]?.access_storage || false}
-                    onChange={(e) => handleToggleChange(user.id, "access_storage", e.target.checked)}
+                    onChange={(e) =>
+                      handleToggleChange(
+                        user.id,
+                        "access_storage",
+                        e.target.checked
+                      )
+                    }
                   />
                   <div className="toggle-switch"></div>
                 </label>
@@ -90,7 +109,13 @@ const ProfilePage = observer(() => {
                     className="toggle-checkbox"
                     type="checkbox"
                     checked={toggleStates[user.id]?.access_message || false}
-                    onChange={(e) => handleToggleChange(user.id, "access_message", e.target.checked)}
+                    onChange={(e) =>
+                      handleToggleChange(
+                        user.id,
+                        "access_message",
+                        e.target.checked
+                      )
+                    }
                   />
                   <div className="toggle-switch"></div>
                 </label>
@@ -102,7 +127,13 @@ const ProfilePage = observer(() => {
                     className="toggle-checkbox"
                     type="checkbox"
                     checked={toggleStates[user.id]?.access_crm || false}
-                    onChange={(e) => handleToggleChange(user.id, "access_crm", e.target.checked)}
+                    onChange={(e) =>
+                      handleToggleChange(
+                        user.id,
+                        "access_crm",
+                        e.target.checked
+                      )
+                    }
                   />
                   <div className="toggle-switch"></div>
                 </label>
@@ -114,7 +145,13 @@ const ProfilePage = observer(() => {
                     className="toggle-checkbox"
                     type="checkbox"
                     checked={toggleStates[user.id]?.access_analytics || false}
-                    onChange={(e) => handleToggleChange(user.id, "access_analytics", e.target.checked)}
+                    onChange={(e) =>
+                      handleToggleChange(
+                        user.id,
+                        "access_analytics",
+                        e.target.checked
+                      )
+                    }
                   />
                   <div className="toggle-switch"></div>
                 </label>
@@ -122,7 +159,9 @@ const ProfilePage = observer(() => {
             </div>
             <div className="admin-page-management__login">
               <p className="admin-page-management__login-title">Логин</p>
-              <p className="admin-page-management__login-content">{user.username}</p>
+              <p className="admin-page-management__login-content">
+                {user.username}
+              </p>
             </div>
             <div className="admin-page-management__email">
               <p className="admin-page-management__email-title">Telegram</p>
@@ -137,10 +176,88 @@ const ProfilePage = observer(() => {
     );
   };
 
+  const checkPassword = (password, repeatPassword) => {
+    if (password === repeatPassword) {
+      // patchUser(currentUser.id, { [toggleName]: checked })
+    } else {
+      alert("Пароли не совпадают!");
+    }
+  };
+
+  const passwordPopup = () => {
+    return (
+      <div className="admin-page-user-popup">
+        <input
+          type="text"
+          className="admin-page-user-popup__input"
+          placeholder="Новый пароль"
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          type="text"
+          className="admin-page-user-popup__input"
+          placeholder="Повторите пароль"
+          onChange={(e) => setRepeatPassword(e.target.value)}
+        />
+        <div className="admin-page-user-popup__btn">
+          <button
+            className="admin-page-user__button admin-page-user__button--p43"
+            onClick={() => setIsShowPasswordPopup(false)}
+          >
+            Отмена
+          </button>
+          <button
+            className="admin-page-user__button admin-page-user__button--p30"
+            onClick={() => checkPassword(password, repeatPassword)}
+          >
+            Сохранить
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const newUserPopup = () => {
+    return (
+      <div className="admin-page-user-popup">
+        <input
+          type="text"
+          className="admin-page-user-popup__input"
+          placeholder="Имя"
+        />
+        <input
+          type="text"
+          className="admin-page-user-popup__input"
+          placeholder="Логин"
+        />
+        <input
+          type="text"
+          className="admin-page-user-popup__input"
+          placeholder="Телеграм"
+        />
+        {/* <label className="toggle">
+          <input className="toggle-checkbox" type="checkbox" />
+          <div className="toggle-switch"></div>
+        </label> */}
+        <div className="admin-page-user-popup__btn">
+          <button
+            className="admin-page-user__button admin-page-user__button--p43"
+            onClick={() => setIsShowNewUserPopup(false)}
+          >
+            Отмена
+          </button>
+          <button className="admin-page-user__button admin-page-user__button--p30">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="admin-page-user">
-        <div className="admin-page-user__header">
+        <div className="admin-page-user__wrapper">
           <div className="admin-page-user__login">
             <img
               src={userImg}
@@ -162,16 +279,36 @@ const ProfilePage = observer(() => {
             />
           </button>
         </div>
-        {/* <div className="admin-page-management__login">
-          <p className="admin-page-management__login-title">Логин</p>
-          <p className="admin-page-management__login-content">Nikitan</p>
+        <div className="admin-page-user__wrapper">
+          <div className="admin-page-user__login">
+            <p className="admin-page-management__login-title">Логин</p>
+            <p className="admin-page-management__login-content">
+              {currentUser.username}
+            </p>
+          </div>
+          <button
+            className="admin-page-user__button"
+            onClick={() => setIsShowPasswordPopup(!isShowPasswordPopup)}
+          >
+            изменить пароль
+          </button>
         </div>
-        <div className="admin-page-management__email">
-          <p className="admin-page-management__email-title">Telegram</p>
-          <p className="admin-page-management__email-content">
-            nnn202@gmail.com
-          </p>
-        </div> */}
+        {isShowPasswordPopup && passwordPopup()}
+        <div className="admin-page-user__wrapper">
+          <div className="admin-page-user__email">
+            <p className="admin-page-management__email-title">Telegram</p>
+            <p className="admin-page-management__email-content">
+              {currentUser.tg_username}
+            </p>
+          </div>
+          <button
+            className="admin-page-user__button"
+            onClick={() => setIsShowNewUserPopup(!isShowNewUserPopup)}
+          >
+            + добавить сотрудника
+          </button>
+        </div>
+        {isShowNewUserPopup && newUserPopup()}
       </div>
       {currentUser.admin && listOfEmployees()}
     </>

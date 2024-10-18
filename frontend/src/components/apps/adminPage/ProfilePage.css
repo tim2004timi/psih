@@ -1,15 +1,22 @@
 .admin-page-user{
     width: 716px;
     display: flex;
+    flex-direction: column;
     margin: 0 auto;
-    padding: 70px 0 90px;
+    padding: 70px 0 60px;
 }
 
-.admin-page-user__header{
+.admin-page-user__wrapper{
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    margin-bottom: 30px;
+}
+
+.admin-page-management__login-title,
+.admin-page-management__email-title{
+    padding-right: 20px;
 }
 
 .admin-page-user__login{
@@ -25,12 +32,39 @@
     cursor: pointer;
 }
 
+.admin-page-user__login,
+.admin-page-user__email{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-page-user__button{
+    padding: 0;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    padding: 2px 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.admin-page-user__button:active{
+    background-color: black;
+    color: #fff;
+}
+
+.admin-page-user__button:hover{
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
 .admin-page-management {
     display: flex;
     flex-wrap: wrap;
     gap: 50px;
     width: 1111px;
     margin: 0 auto;
+    position: relative;
 }
 
 .admin-page-management__item {
@@ -138,7 +172,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 30px;
+    margin-bottom: 26px;
 }
 
 .admin-page-management__email-title{
@@ -169,4 +203,45 @@
 
 .admin-page-management__link:hover{
     background-color: rgba(230, 230, 230, 1);
+}
+
+.admin-page-user-popup{
+    position: absolute;
+    left: 50%;
+    top: 25%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(40px);
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 60px 70px 40px;
+    z-index: 2;
+}
+
+.admin-page-user-popup__input{
+    width: 100%;
+}
+
+.admin-page-user-popup__input{
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+    padding: 2px 7px;
+}
+
+.admin-page-user-popup__btn{
+    display: flex;
+    /* justify-content: space-between; */
+    gap: 20px;
+    align-items: center;
+}
+
+.admin-page-user__button--p43{
+    padding: 2px 43px;
+}
+
+.admin-page-user__button--p30{
+    padding: 2px 30px;
 }
