@@ -22,6 +22,15 @@ const ProfilePage = observer(() => {
   const navigate = useNavigate();
 
   const [toggleStates, setToggleStates] = useState({});
+  const [newUserState, setNewUserState] = useState({
+    "access_storage": false,
+    "access_crm": false,
+    "access_message": false,
+    "access_analytics": false,
+    "username": "string",
+    "tg_username": "string",
+    "password": "string"
+  })
   const [isShowPasswordPopup, setIsShowPasswordPopup] = useState(false);
   const [isShowNewUserPopup, setIsShowNewUserPopup] = useState(false);
   const [password, setPassword] = useState("");
@@ -62,6 +71,13 @@ const ProfilePage = observer(() => {
     }));
 
     patchUser(userId, { [toggleName]: checked });
+  };
+
+  const handleNewUserToggleChange = (toggleName, checked) => {
+    setNewUserState((prevState) => ({
+      ...prevState,
+      [toggleName]: checked,
+    }));
   };
 
   const listOfEmployees = () => {
@@ -224,31 +240,86 @@ const ProfilePage = observer(() => {
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Имя"
+          value={newUserState.username}
+          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Логин"
+          value={newUserState.username}
+          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Телеграм"
+          value={newUserState.tg_username}
+          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
         />
-        {/* <label className="toggle">
-          <input className="toggle-checkbox" type="checkbox" />
-          <div className="toggle-switch"></div>
-        </label> */}
-        <div className="admin-page-user-popup__btn">
-          <button
-            className="admin-page-user__button admin-page-user__button--p43"
-            onClick={() => setIsShowNewUserPopup(false)}
-          >
-            Отмена
-          </button>
-          <button className="admin-page-user__button admin-page-user__button--p30">
-            Сохранить
-          </button>
+        <div className="admin-page-management__switch">
+          <div className="admin-page-management__switch-item">
+            <p className="admin-page-management__switch-text">Склад</p>
+            <label className="toggle">
+              <input
+                className="toggle-checkbox"
+                type="checkbox"
+                checked={newUserState.access_storage || false}
+                onChange={(e) => handleNewUserToggleChange("access_storage", e.target.checked)}
+              />
+              <div className="toggle-switch"></div>
+            </label>
+          </div>
+          <div className="admin-page-management__switch-item">
+            <p className="admin-page-management__switch-text">Сообщения</p>
+            <label className="toggle">
+              <input
+                className="toggle-checkbox"
+                type="checkbox"
+                checked={newUserState.access_message || false}
+                onChange={(e) => handleNewUserToggleChange("access_message", e.target.checked)}
+              />
+              <div className="toggle-switch"></div>
+            </label>
+          </div>
+          <div className="admin-page-management__switch-item">
+            <p className="admin-page-management__switch-text">CRM</p>
+            <label className="toggle">
+              <input
+                className="toggle-checkbox"
+                type="checkbox"
+                checked={newUserState.access_crm || false}
+                onChange={(e) => handleNewUserToggleChange("access_crm", e.target.checked)}
+              />
+              <div className="toggle-switch"></div>
+            </label>
+          </div>
+          <div className="admin-page-management__switch-item">
+            <p className="admin-page-management__switch-text">Аналитика</p>
+            <label className="toggle">
+              <input
+                className="toggle-checkbox"
+                type="checkbox"
+                checked={newUserState.access_analytics || false}
+                onChange={(e) => handleNewUserToggleChange("access_analytics", e.target.checked)}
+              />
+              <div className="toggle-switch"></div>
+            </label>
+          </div>
+          <div className="admin-page-user-popup__btn">
+            <button
+              className="admin-page-user__button admin-page-user__button--p43"
+              onClick={() => setIsShowNewUserPopup(false)}
+            >
+              Отмена
+            </button>
+            <button
+              className="admin-page-user__button admin-page-user__button--p30"
+              onClick={() => createUser(newUserState)}
+            >
+              Сохранить
+            </button>
+          </div>
         </div>
       </div>
     );
