@@ -239,7 +239,7 @@ const ProfilePage = observer(() => {
         <input
           type="text"
           className="admin-page-user-popup__input"
-          placeholder="Имя"
+          placeholder="Логин"
           value={newUserState.username}
           required 
           onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
@@ -247,7 +247,7 @@ const ProfilePage = observer(() => {
         <input
           type="text"
           className="admin-page-user-popup__input"
-          placeholder="Логин"
+          placeholder="Телеграм"
           value={newUserState.tg_username}
           required 
           onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
