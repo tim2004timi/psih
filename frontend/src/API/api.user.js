@@ -6,8 +6,8 @@ const UserService = {
         return instance.get(`${serverUrl}/api/users/`);
     },
 
-    createUser() {
-        return instance.post(`${serverUrl}/api/users/`);
+    createUser(obj) {
+        return instance.post(`${serverUrl}/api/users/`, obj);
     },
 
     patchUser(id, obj) {
