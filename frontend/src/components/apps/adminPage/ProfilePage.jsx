@@ -27,9 +27,9 @@ const ProfilePage = observer(() => {
     "access_crm": false,
     "access_message": false,
     "access_analytics": false,
-    "username": "string",
-    "tg_username": "string",
-    "password": "string"
+    "username": "",
+    "tg_username": "",
+    "password": ""
   })
   const [isShowPasswordPopup, setIsShowPasswordPopup] = useState(false);
   const [isShowNewUserPopup, setIsShowNewUserPopup] = useState(false);
@@ -235,29 +235,32 @@ const ProfilePage = observer(() => {
 
   const newUserPopup = () => {
     return (
-      <div className="admin-page-user-popup">
+      <form className="admin-page-user-popup">
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Имя"
           value={newUserState.username}
+          required 
           onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Логин"
-          value={newUserState.username}
-          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
+          value={newUserState.tg_username}
+          required 
+          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
-          placeholder="Телеграм"
-          value={newUserState.tg_username}
-          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
+          placeholder="Пароль"
+          value={newUserState.password}
+          required 
+          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, password: e.target.value }))}
         />
-        <div className="admin-page-management__switch">
+        <div className="admin-page-newUser__switch">
           <div className="admin-page-management__switch-item">
             <p className="admin-page-management__switch-text">Склад</p>
             <label className="toggle">
@@ -314,14 +317,19 @@ const ProfilePage = observer(() => {
               Отмена
             </button>
             <button
+              type="button"
               className="admin-page-user__button admin-page-user__button--p30"
-              onClick={() => createUser(newUserState)}
+              onClick={(e) => {
+                // console.log(newUserState)
+                createUser(newUserState); 
+                setIsShowNewUserPopup(false);
+              }}
             >
               Сохранить
             </button>
           </div>
         </div>
-      </div>
+      </form>
     );
   };
 

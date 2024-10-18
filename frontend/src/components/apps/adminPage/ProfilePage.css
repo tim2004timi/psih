@@ -98,6 +98,12 @@
     margin-bottom: 60px;
 }
 
+.admin-page-newUser__switch{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 .admin-page-management__switch-item {
     display: flex;
     align-items: center;

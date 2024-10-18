@@ -26,9 +26,9 @@ class UserStore {
         }
     }
 
-    async createUser() {
+    async createUser(obj) {
         try {
-            const resp = await UserService.createUser()
+            const resp = await UserService.createUser(obj)
             console.log(resp.data)
         } catch(e) {
             console.log(e)
