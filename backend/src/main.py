@@ -51,6 +51,10 @@ from .config import UPLOAD_DIR, DEV
 if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
+origins = ["http://psihsystem.com"]
+if not DEV:
+    origins.extend(["http://localhost:5173", "http://localhost:4173"])
+
 
 app = FastAPI(title="Psih Clothes")
 main_router = APIRouter(prefix="/api")
@@ -80,14 +84,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://87.242.85.68:5173",
-        "http://87.242.85.68:4173",
-        "http://localhost:5173",
-        "http://localhost:4173",
-        "http://psihsystem.com:4173",
-        "http://psihsystem.com"
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы
     allow_headers=["*"],  # Разрешить все заголовки
