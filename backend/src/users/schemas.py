@@ -18,6 +18,8 @@ class UserCreate(UserBase):
 
 
 class UserUpdatePartial(UserBase):
+    tg_username: str | None = None
+    password: str | None = None
     access_storage: bool | None = None
     access_crm: bool | None = None
     access_message: bool | None = None
