@@ -52,7 +52,7 @@ if not os.path.exists(UPLOAD_DIR):
     os.makedirs(UPLOAD_DIR)
 
 origins = ["http://psihsystem.com"]
-if not DEV:
+if DEV:
     origins.extend(["http://localhost:5173", "http://localhost:4173"])
 
 
