@@ -1,1 +1,1 @@
-export const serverUrl = 'https://87.242.85.68';
+export const serverUrl = 'https://psihsystem.com';
