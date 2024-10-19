@@ -1,13 +1,8 @@
-import requests
-from .utils import get_jwt_token, session
-
-token = get_jwt_token()
+from .utils import headers, check_statuses
+import pytest
 
 
-def test_get_categories():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(
-        "http://localhost:8000/api/products/categories/", headers=headers
-    )
-
-    assert response.status_code == 200
+@pytest.mark.asyncio
+async def test_get_categories():
+    url = "http://localhost:8000/api/products/categories/"
+    await check_statuses(url=url)

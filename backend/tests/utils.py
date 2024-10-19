@@ -1,8 +1,5 @@
-import pytest
+import aiohttp
 import requests
-from src.main import app
-from sqlalchemy.orm import Session
-from src.database import db_manager
 
 
 def get_jwt_token():
@@ -18,13 +15,14 @@ def get_jwt_token():
     )
 
     assert response.status_code == 200
-    token = response.json()["access_token"]
-    return token
+    return response.json()["access_token"]
 
 
-# Фикстура для создания синхронной сессии базы данных
-@pytest.fixture
-def session():
-    with Session(bind=db_manager.engine) as session:
-        yield session
-        session.close()
+token = get_jwt_token()
+headers = {"Authorization": f"Bearer {token}"}
+
+
+async def check_statuses(url: str, statuses: tuple = (200,)):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=url, headers=headers) as response:
+            assert response.status in statuses

@@ -1,18 +1,14 @@
-import requests
-from .utils import get_jwt_token
-
-token = get_jwt_token()
+import pytest
+from .utils import check_statuses
 
 
-def test_get_users():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/users/", headers=headers)
+@pytest.mark.asyncio
+async def test_get_users():
+    url = "http://localhost:8000/api/users/"
+    await check_statuses(url=url, statuses=(200, 403))
 
-    assert response.status_code in [200, 403]
 
-
-def test_get_users_me():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/users/me", headers=headers)
-
-    assert response.status_code == 200
+@pytest.mark.asyncio
+async def test_get_users_me():
+    url = "http://localhost:8000/api/users/me"
+    await check_statuses(url=url)

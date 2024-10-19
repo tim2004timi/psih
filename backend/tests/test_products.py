@@ -1,50 +1,37 @@
+import aiohttp
+import pytest
 import requests
-from .utils import get_jwt_token, session
-
-token = get_jwt_token()
+from .utils import headers, check_statuses
 
 
-def test_get_not_archived_products():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(
-        "http://localhost:8000/api/products/not-archived/", headers=headers
-    )
-
-    assert response.status_code == 200
+@pytest.mark.asyncio
+async def test_get_not_archived_products():
+    url = "http://localhost:8000/api/products/not-archived/"
+    await check_statuses(url)
 
 
-def test_get_archived_products():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(
-        "http://localhost:8000/api/products/archived/", headers=headers
-    )
-
-    assert response.status_code == 200
+@pytest.mark.asyncio
+async def test_get_archived_products():
+    url = "http://localhost:8000/api/products/archived/"
+    await check_statuses(url)
 
 
-def test_get_all_products():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/products/all/", headers=headers)
+@pytest.mark.asyncio
+async def test_get_all_products():
+    url = "http://localhost:8000/api/products/all/"
+    await check_statuses(url)
 
-    assert response.status_code == 200
 
+@pytest.mark.asyncio
+async def test_get_products_by_id():
+    url = "http://localhost:8000/api/products/all/"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=url, headers=headers) as response:
+            assert response.status == 200
+            data = await response.json()
 
-def test_get_products_by_id():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/products/all/", headers=headers)
-
-    assert response.status_code == 200
-
-    data = response.json()
     for product in data:
         product_id = product["id"]
-        headers = {"Authorization": f"Bearer {token}"}
-        response = requests.get(
-            f"http://localhost:8000/api/products/?product_id={product_id}",
-            headers=headers,
-        )
-        try:
-            assert response.status_code == 200
-        except AssertionError:
-            print(f"Ошибка при проверке продукта с ID: {product_id}")
-            raise
+
+        url = f"http://localhost:8000/api/products/?product_id={product_id}"
+        await check_statuses(url)

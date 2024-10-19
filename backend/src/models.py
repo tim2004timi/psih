@@ -30,6 +30,7 @@ class File(Base):
         back_populates="files",
         primaryjoin="and_(foreign(File.owner_id) == Order.id, File.owner_type == 'Order')",
         foreign_keys=[owner_id],
+        overlaps="order,files",
     )
 
     # Связь с Product
@@ -38,4 +39,5 @@ class File(Base):
         back_populates="files",
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product')",
         foreign_keys=[owner_id],
+        overlaps="product,files",
     )

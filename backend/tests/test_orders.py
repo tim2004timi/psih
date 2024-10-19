@@ -1,24 +1,24 @@
+import aiohttp
+import pytest
 import requests
-from .utils import get_jwt_token, session
-
-token = get_jwt_token()
+from .utils import check_statuses, headers
 
 
-def test_get_orders():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/orders/", headers=headers)
+@pytest.mark.asyncio
+async def test_get_orders():
+    url = "http://localhost:8000/api/orders/"
+    await check_statuses(url=url)
 
-    assert response.status_code == 200
 
+@pytest.mark.asyncio
+async def test_get_orders_by_id():
+    url = "http://localhost:8000/api/orders/"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url=url, headers=headers) as response:
+            assert response.status == 200
+            data = await response.json()
 
-def test_get_orders_by_id():
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get("http://localhost:8000/api/orders/", headers=headers)
-
-    assert response.status_code == 200
-
-    for order in response.json():
+    for order in data:
         order_id = order["id"]
-        response = requests.get(
-            f"http://localhost:8000/api/orders/{order_id}/", headers=headers
-        )
+        url = f"http://localhost:8000/api/orders/{order_id}/"
+        await check_statuses(url=url)

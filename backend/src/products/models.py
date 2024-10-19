@@ -41,6 +41,7 @@ class Product(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == True)",
+        overlaps="files",
     )
 
     files: Mapped[List["File"]] = relationship(
@@ -48,6 +49,7 @@ class Product(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == False)",
+        overlaps="images"
     )
 
 
