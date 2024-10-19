@@ -18,6 +18,7 @@ from .schemas import (
     ProductCategory,
     ProductCategoryUpdatePartial,
     Product,
+    ProductWithoutUser,
 )
 from ..users.schemas import User
 
@@ -119,7 +120,6 @@ async def delete_product_category_by_id(
     path="/",
     response_model=Product,
     description="Get product by id",
-    response_model_exclude={"user"},
 )
 async def get_product_by_id(
     product: Product = Depends(dependencies.product_by_id_dependency),
@@ -129,9 +129,8 @@ async def get_product_by_id(
 
 @products_router.get(
     path="/all/",
-    response_model=List[Product],
+    response_model=List[ProductWithoutUser],
     description="Get all products",
-    response_model_exclude={"user", "files"},
 )
 async def get_all_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -141,9 +140,8 @@ async def get_all_products(
 
 @products_router.get(
     path="/not-archived/",
-    response_model=List[Product],
+    response_model=List[ProductWithoutUser],
     description="Get not archived products",
-    response_model_exclude={"user", "files"},
 )
 async def get_not_archived_products(
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -153,9 +151,8 @@ async def get_not_archived_products(
 
 @products_router.get(
     path="/archived/",
-    response_model=List[Product],
+    response_model=List[ProductWithoutUser],
     description="Get archived products",
-    response_model_exclude={"user", "files"},
 )
 async def get_archived_products(
     session: AsyncSession = Depends(db_manager.session_dependency),

@@ -34,7 +34,8 @@ async def get_order_by_id(session: AsyncSession, order_id: int) -> Order:
             selectinload(Order.products_in_order)
             .selectinload(ProductInOrder.product)
             .selectinload(Product.files),  # Загрузка файлов
-            selectinload(Order.files),  # Загрузка файлов
+            selectinload(Order.files)
+            .selectinload(MyFile.user),  # Загрузка файлов
         )
         .where(Order.id == order_id)
     )

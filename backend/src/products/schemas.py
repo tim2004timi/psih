@@ -5,7 +5,7 @@ from datetime import datetime
 from enum import Enum
 
 from ..orders.schemas import Order
-from ..schemas import File as MyFile
+from ..schemas import File as MyFile, FileWithoutUser as MyFileWithoutUser
 
 
 class ProductCategoryBase(BaseModel):
@@ -102,6 +102,15 @@ class Product(ProductBase):
     category: ProductCategory
     images: List["MyFile"]
     files: List["MyFile"]
+
+
+class ProductWithoutUser(ProductBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    category: ProductCategory
+    images: List["MyFileWithoutUser"]
+    files: List["MyFileWithoutUser"]
 
 
 class ProductInOrderBase(BaseModel):

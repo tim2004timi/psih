@@ -115,9 +115,11 @@ async def get_products(
 async def get_product_by_id(session: AsyncSession, product_id: int) -> Product:
     stmt = (
         select(Product)
-        .options(selectinload(Product.category))
-        .options(selectinload(Product.images))
-        .options(selectinload(Product.files))
+        .options(
+            selectinload(Product.category),
+            selectinload(Product.images).selectinload(MyFile.user),
+            selectinload(Product.files).selectinload(MyFile.user),
+        )
         .where(Product.id == product_id)
     )
     result: Result = await session.execute(stmt)
@@ -195,7 +197,14 @@ async def upload_product_file(
     product = await get_product_by_id(session=session, product_id=product_id)
     url, human_size = await upload_file(file=file, dir_name="products")
 
-    file = MyFile(url=url, owner_id=product.id, user_id=user.id, image=is_image, owner_type="Product", size=human_size)
+    file = MyFile(
+        url=url,
+        owner_id=product.id,
+        user_id=user.id,
+        image=is_image,
+        owner_type="Product",
+        size=human_size,
+    )
     session.add(file)
     await session.commit()
     await session.refresh(file)
