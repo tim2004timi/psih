@@ -1,4 +1,4 @@
-from .utils import headers, check_statuses
+from tests.utils import check_statuses
 import pytest
 
 

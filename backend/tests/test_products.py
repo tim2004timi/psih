@@ -1,7 +1,6 @@
 import aiohttp
 import pytest
-import requests
-from .utils import headers, check_statuses
+from tests.utils import headers, check_statuses
 
 
 @pytest.mark.asyncio

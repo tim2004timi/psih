@@ -1,5 +1,5 @@
 import pytest
-from .utils import check_statuses
+from tests.utils import check_statuses
 
 
 @pytest.mark.asyncio
