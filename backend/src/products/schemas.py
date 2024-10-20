@@ -1,11 +1,17 @@
-from typing import Optional, List
+from typing import List
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
-from datetime import datetime
 from enum import Enum
 
-from ..orders.schemas import Order
-from ..schemas import File as MyFile
+from ..schemas import File as MyFile, FileWithoutUser as MyFileWithoutUser
+
+
+class SizeEnum(str, Enum):
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
+    XXL = "XXL"
 
 
 class ProductCategoryBase(BaseModel):
@@ -33,14 +39,6 @@ class ProductCategoryWithProducts(ProductCategoryBase):
     products: List["Product"]
 
 
-class SizeEnum(str, Enum):
-    S = "S"
-    M = "M"
-    L = "L"
-    XL = "XL"
-    XXL = "XXL"
-
-
 class ProductBase(BaseModel):
     name: str = Field(example="Шмотка")
     description: str | None = Field(default=None, example="Описание шмотки")
@@ -49,10 +47,7 @@ class ProductBase(BaseModel):
     price: float = Field(example=100.0)
     discount_price: float = Field(example=100.0)
     category_id: int
-    article: str | None = Field(default=None, example="ARTICLE")
     measure: str | None = "шт."
-    size: SizeEnum = SizeEnum.S.value
-    remaining: int = 0
     archived: bool = False
 
     @field_validator("min_price", "cost_price", "price", "discount_price")
@@ -64,7 +59,7 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    pass
+    sizes: List[SizeEnum]
 
 
 class ProductDelete(BaseModel):
@@ -74,25 +69,15 @@ class ProductDelete(BaseModel):
 class ProductUpdatePartial(ProductBase):
     name: str | None = None
     description: str | None = None
-    min_price: float | None = Field(example=100.0)
-    cost_price: float | None = Field(example=100.0)
-    price: float | None = Field(example=100.0)
-    discount_price: float | None = Field(example=100.0)
+    min_price: float | None = Field(default=None, example=100.0)
+    cost_price: float | None = Field(default=None, example=100.0)
+    price: float | None = Field(default=None, example=100.0)
+    discount_price: float | None = Field(default=None, example=100.0)
     category_id: int | None = None
-    article: str | None = None
     measure: str | None = Field(
         default=None, description="Описание товара", example="шт."
     )
-    size: SizeEnum | None = SizeEnum.S.value
-    remaining: int | None = None
     archived: bool | None = False
-
-    @field_validator("min_price", "cost_price", "price", "discount_price")
-    @classmethod
-    def check_positive_prices(cls, value):
-        if (value is not None) and (value <= 0):
-            raise ValueError("Цена должна быть больше нуля")
-        return value
 
 
 class Product(ProductBase):
@@ -102,26 +87,66 @@ class Product(ProductBase):
     category: ProductCategory
     images: List["MyFile"]
     files: List["MyFile"]
+    modifications: List["Modification"]
 
 
-class ProductInOrderBase(BaseModel):
+class ProductWithoutUser(Product):
+    images: List["MyFileWithoutUser"]
+    files: List["MyFileWithoutUser"]
+
+
+class ProductWithoutModifications(ProductBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    category: ProductCategory
+    images: List["MyFile"]
+    files: List["MyFile"]
+
+
+class ModificationBase(BaseModel):
+    size: SizeEnum = SizeEnum.S.value
+    article: str | None = Field(default=None, example="ARTICLE")
+    remaining: int = 0
+
+
+class ModificationCreate(ModificationBase):
+    product_id: int
+
+
+class ModificationUpdate(ModificationBase):
+    size: SizeEnum | None = SizeEnum.S.value
+    article: str | None = None
+    remaining: int | None = None
+
+
+class Modification(ModificationBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
+    product: "ProductWithoutModifications"
+
+
+class ModificationInOrderBase(BaseModel):
     amount: int
 
 
-class ProductInOrderCreate(ProductInOrderBase):
-    product_id: int
+class ModificationInOrderCreate(ModificationInOrderBase):
+    modification_id: int
     order_id: int
 
 
-class ProductInOrderCreateWithoutOrder(ProductInOrderBase):
-    product_id: int
+class ModificationInOrderCreateWithoutOrder(ModificationInOrderBase):
+    modification_id: int
 
 
-class ProductInOrder(ProductInOrderBase):
+class ModificationInOrder(ModificationInOrderBase):
     model_config = ConfigDict(from_attributes=True)
 
-    product: "Product"
+    modification: "Modification"
     # order: "Order"
     id: int
+
 
 from ..orders.schemas import Order

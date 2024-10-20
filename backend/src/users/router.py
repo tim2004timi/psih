@@ -11,7 +11,7 @@ from . import service
 from .service import get_user_by_id
 from ..auth.dependencies import get_current_active_auth_user
 from ..dependencies import check_permission, Permission
-from .schemas import User, UserCreate, UserUpdatePartial
+from .schemas import User, UserCreate, UserUpdatePartial, UserMeUpdatePartial
 
 http_bearer = HTTPBearer(auto_error=False)
 router = APIRouter(
@@ -67,12 +67,43 @@ async def update_user(
     )
 
 
+@router.delete(
+    path="/",
+    response_model=User,
+    description="Delete user for admin",
+    dependencies=[Depends(check_permission(Permission.ADMIN))],
+)
+async def delete_user(
+    session: AsyncSession = Depends(db_manager.session_dependency),
+    user: User = Depends(user_by_id_dependency),
+):
+    return await service.delete_user(
+        session=session,
+        user=user,
+    )
+
+
 @router.get(
     path="/me/",
     response_model=User,
     description="Get current auth user",
 )
-async def get_current_auth_user(
-    user: User = Depends(get_current_active_auth_user)
-):
+async def get_current_auth_user(user: User = Depends(get_current_active_auth_user)):
     return user
+
+
+@router.patch(
+    path="/me/",
+    response_model=User,
+    description="Update current auth user",
+)
+async def update_current_auth_user(
+    user_update: UserMeUpdatePartial,
+    user: User = Depends(get_current_active_auth_user),
+    session: AsyncSession = Depends(db_manager.session_dependency),
+):
+    return await service.update_user(
+        session=session,
+        user_update=user_update,
+        user=user,
+    )

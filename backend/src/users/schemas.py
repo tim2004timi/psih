@@ -27,6 +27,10 @@ class UserUpdatePartial(UserBase):
     active: bool | None = None
 
 
+class UserMeUpdatePartial(BaseModel):
+    password: str | None = None
+
+
 class User(UserBase):
     username: str
     # email: EmailStr

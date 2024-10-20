@@ -8,7 +8,7 @@ def string_id(value: int) -> str:
     return value[-2:]
 
 
-def create_auto_article(product: Product) -> str:
+def create_auto_article(product: Product, size: str) -> str:
     eng_vowels = "aeiouy"
     rus_letters = "йцукенгшщзхъфывапролджэячсмитьбю"
     forbidden_letters = eng_vowels + rus_letters
@@ -18,6 +18,6 @@ def create_auto_article(product: Product) -> str:
     full_string = "_" if full_string == "" else full_string
     upper_full_string = full_string.upper()
     new_product_id = string_id(product.id)
-    result_article = upper_full_string[:6] + f"+{new_product_id}" + f"-{product.size}"
+    result_article = upper_full_string[:6] + f"+{new_product_id}" + f"-{size}"
 
     return result_article

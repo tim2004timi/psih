@@ -23,17 +23,14 @@ class Product(Base):
     cost_price: Mapped[float]
     price: Mapped[float]
     discount_price: Mapped[float]
-    article: Mapped[str] = mapped_column(nullable=False)  # TODO: Сделать уникальным
     measure: Mapped[str] = mapped_column(nullable=False, default="шт.")
-    size: Mapped[str]
-    remaining: Mapped[int] = mapped_column(nullable=False, default=0)
     archived: Mapped[bool] = mapped_column(nullable=False, default=False)
 
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     category: Mapped["ProductCategory"] = relationship(back_populates="products")
 
-    products_in_order: Mapped[List["ProductInOrder"]] = relationship(
-        back_populates="product", cascade="all, delete-orphan", passive_deletes=True
+    modifications: Mapped[List["Modification"]] = relationship(
+        back_populates="product", cascade="all, delete-orphan"
     )
 
     images: Mapped[List["File"]] = relationship(
@@ -41,6 +38,7 @@ class Product(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == True)",
+        overlaps="files, order",
     )
 
     files: Mapped[List["File"]] = relationship(
@@ -48,18 +46,38 @@ class Product(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == False)",
+        overlaps="images, order, files",
     )
 
 
-class ProductInOrder(Base):
-    __tablename__ = "products_in_order"
+class Modification(Base):
+    __tablename__ = "modifications"
+
+    article: Mapped[str] = mapped_column(nullable=False)  # TODO: Сделать уникальным
+    size: Mapped[str]
+    remaining: Mapped[int] = mapped_column(nullable=False, default=0)
+
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product: Mapped["Product"] = relationship(back_populates="modifications")
+
+    modifications_in_order: Mapped[List["ModificationInOrder"]] = relationship(
+        back_populates="modification",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )  # TODO: убрать
+
+
+class ModificationInOrder(Base):
+    __tablename__ = "modifications_in_order"
 
     amount: Mapped[int]
 
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id", ondelete="CASCADE")
+    modification_id: Mapped[int] = mapped_column(
+        ForeignKey("modifications.id", ondelete="CASCADE")
     )
-    product: Mapped["Product"] = relationship(back_populates="products_in_order")
+    modification: Mapped["Modification"] = relationship(
+        back_populates="modifications_in_order"
+    )
 
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
-    order: Mapped["Order"] = relationship(back_populates="products_in_order")
+    order: Mapped["Order"] = relationship(back_populates="modifications_in_order")

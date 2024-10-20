@@ -15,8 +15,10 @@ from .schemas import (
     ProductCreate,
     ProductUpdatePartial,
     ProductCategoryUpdatePartial,
+    ModificationCreate,
+    ProductWithoutUser,
 )
-from .models import Product, ProductCategory
+from .models import Product, ProductCategory, Modification
 from ..models import File as MyFile
 from .utils import create_auto_article
 from ..users.schemas import User
@@ -91,13 +93,14 @@ async def get_product_categories_with_products(
 
 async def get_products(
     session: AsyncSession, archived: bool | None = None
-) -> List[Product]:
+) -> List[ProductWithoutUser]:
     if archived is not None:
         stmt = (
             select(Product)
             .options(selectinload(Product.category))
             .options(selectinload(Product.images))
             .options(selectinload(Product.files))
+            .options(selectinload(Product.modifications))
             .where(Product.archived == archived)
         )
     else:
@@ -106,6 +109,7 @@ async def get_products(
             .options(selectinload(Product.category))
             .options(selectinload(Product.images))
             .options(selectinload(Product.files))
+            .options(selectinload(Product.modifications))
         )
     result: Result = await session.execute(stmt)
     products = result.scalars().all()
@@ -115,9 +119,12 @@ async def get_products(
 async def get_product_by_id(session: AsyncSession, product_id: int) -> Product:
     stmt = (
         select(Product)
-        .options(selectinload(Product.category))
-        .options(selectinload(Product.images))
-        .options(selectinload(Product.files))
+        .options(
+            selectinload(Product.category),
+            selectinload(Product.images).selectinload(MyFile.user),
+            selectinload(Product.files).selectinload(MyFile.user),
+            selectinload(Product.modifications),
+        )
         .where(Product.id == product_id)
     )
     result: Result = await session.execute(stmt)
@@ -134,19 +141,25 @@ async def create_product(
     session: AsyncSession, product_create: ProductCreate
 ) -> Product:
     try:
-        product = Product(**product_create.model_dump())
+        product = Product(**product_create.model_dump(exclude={"sizes"}))
+        sizes = set(product_create.sizes)
 
-        if not product.article:
-            product.article = "temporary"
+        # if not product.article:
+        #     product.article = "temporary"
 
         session.add(product)
         await session.flush()
 
-        if product.article == "temporary":
-            product.article = create_auto_article(product)
+        # if product.article == "temporary":
+        #     product.article = create_auto_article(product)
+        for size in sizes:
+            article = create_auto_article(product, size=size.value)
+            modification_create = ModificationCreate(
+                size=size, product_id=product.id, article=article
+            )
+            session.add(Modification(**modification_create.model_dump()))
 
         await session.commit()
-        await session.refresh(product)
 
         product_with_category = await get_product_by_id(
             session=session, product_id=product.id
@@ -154,11 +167,9 @@ async def create_product(
 
         return product_with_category
 
-    except IntegrityError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Категория с id '{product_create.category_id}' не существует",
-        )
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
 
 
 async def update_product(
@@ -195,7 +206,14 @@ async def upload_product_file(
     product = await get_product_by_id(session=session, product_id=product_id)
     url, human_size = await upload_file(file=file, dir_name="products")
 
-    file = MyFile(url=url, owner_id=product.id, user_id=user.id, image=is_image, owner_type="Product", size=human_size)
+    file = MyFile(
+        url=url,
+        owner_id=product.id,
+        user_id=user.id,
+        image=is_image,
+        owner_type="Product",
+        size=human_size,
+    )
     session.add(file)
     await session.commit()
     await session.refresh(file)

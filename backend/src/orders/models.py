@@ -30,7 +30,7 @@ class Order(Base):
     email: Mapped[str | None]
     # summ: Mapped[int | None] = mapped_column(nullable=True, default=0)
 
-    products_in_order: Mapped[list["ProductInOrder"]] = relationship(
+    modifications_in_order: Mapped[list["ModificationInOrder"]] = relationship(
         back_populates="order", cascade="all, delete-orphan", passive_deletes=True
     )
 
@@ -39,6 +39,7 @@ class Order(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Order.id, File.owner_type == 'Order', File.image == False)",
+        overlaps="product, images",
     )
 
     # другая инфа для суммы
