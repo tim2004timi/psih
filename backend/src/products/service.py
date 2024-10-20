@@ -169,7 +169,7 @@ async def create_product(
 
     except Exception as e:
         await session.rollback()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Что-то пошло не так...")
 
 
 async def update_product(

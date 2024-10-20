@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .dependencies import user_by_id_dependency
 from ..database import db_manager
 from . import service
-from .service import get_user_by_id
 from ..auth.dependencies import get_current_active_auth_user
 from ..dependencies import check_permission, Permission
 from .schemas import User, UserCreate, UserUpdatePartial, UserMeUpdatePartial
