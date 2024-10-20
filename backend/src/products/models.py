@@ -81,3 +81,19 @@ class ModificationInOrder(Base):
 
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
     order: Mapped["Order"] = relationship(back_populates="modifications_in_order")
+
+
+class ModificationInParty(Base):
+    __tablename__ = "modifications_in_party"
+
+    amount: Mapped[int]
+
+    modification_id: Mapped[int] = mapped_column(
+        ForeignKey("modifications.id", ondelete="CASCADE")
+    )
+    modification: Mapped["Modification"] = relationship(
+        back_populates="modifications_in_party"
+    )
+
+    party_id: Mapped[int] = mapped_column(ForeignKey("parties.id", ondelete="CASCADE"))
+    party: Mapped["Party"] = relationship(back_populates="modifications_in_party")

@@ -1,15 +1,11 @@
-from typing import Type
-
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 from starlette import status
 
-from . import models, schemas
+from . import schemas
 from .models import User
 from .schemas import UserUpdatePartial, UserMeUpdatePartial
-from ..database import db_manager
 from ..utils import hash_password
 
 

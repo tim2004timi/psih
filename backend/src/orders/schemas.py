@@ -27,18 +27,6 @@ class OrderBase(BaseModel):
     phone_number: str | None = None
     email: EmailStr | None = None
 
-    # class Config:
-    #     json_schema_extra = {
-    #         "example": {
-    #             "full_name": "Иванов Иван Иванович",
-    #             "status": "в обработке",
-    #             "tag": None,
-    #         }
-    #     }
-
-    # products
-    # files
-
 
 class OrderCreate(OrderBase):
     modifications_in_order: List["ModificationInOrderCreateWithoutOrder"] = []
