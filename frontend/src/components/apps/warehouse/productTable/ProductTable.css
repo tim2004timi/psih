@@ -1,12 +1,21 @@
+.product-table-overlay{
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0);
+  top: 192px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
 .product-table {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 120%;
   width: 1612px;
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 7px;
   z-index: 4;
+
 }
 
 .product-table__wrapper{
@@ -40,6 +49,30 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  width: 100%;
+}
+
+.productTable__nav-btn{
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 3px 27px;
+  font-size: 16px;
+  transition: all 0.7s ease-in;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+}
+
+.productTable__nav-btn:hover{
+  border: 1px solid rgba(0, 0, 0, 1);
+  transition: all 0.1s;
+}
+
+.productTable__nav-btn--selected{
+  border: 1px solid rgba(0, 0, 0, 1);
 }
 
 .product-table__navbar-add {

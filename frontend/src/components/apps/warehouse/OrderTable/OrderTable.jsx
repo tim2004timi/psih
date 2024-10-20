@@ -505,7 +505,7 @@ const OrderTable = ({
           selectedFilterItems.status.includes(row.status);
         const nameMatches =
           selectedFilterItems.full_name.length === 0 ||
-          selectedFilterItems.full_name.includes(row.full_name);
+          row.full_name.includes(selectedFilterItems.full_name);
         const tagMatches =
           selectedFilterItems.tag.length === 0 ||
           selectedFilterItems.tag.includes(row.tag);

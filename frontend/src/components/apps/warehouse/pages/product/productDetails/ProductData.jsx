@@ -195,7 +195,7 @@ const ProductData = () => {
           </div>
           <div className="product-data__personal-info">
             <div className="product-data__personal-info-container">
-              <div className="product-data__article product-data__item">
+              {/* <div className="product-data__article product-data__item">
                 <p className="product-data__article-text product-data__item-text">
                   Артикул
                 </p>
@@ -206,7 +206,7 @@ const ProductData = () => {
                   onChange={(e) => handleChange(e.target.value, "article")}
                   onBlur={(e) => handleUpdate(e.target.value, "article")}
                 />
-              </div>
+              </div> */}
               <div className="product-data__measure-unit product-data__item">
                 <p className="product-data__measure-unit-text product-data__item-text">
                   Единица измерения

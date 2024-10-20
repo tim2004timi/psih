@@ -259,6 +259,8 @@ const Orders = () => {
     setSelectedStatus([]);
     setSelectedTag([]);
     setIsClearFDDlistSelectedItems(true);
+    inputPokupatelRef.current.value = '';
+    inputDateOrderRef.current.value = '';
   };
 
   const isClearDone = () => {
@@ -404,7 +406,7 @@ const Orders = () => {
               onClick={() => setIsNewOrder(isNewOrder => !isNewOrder)}
             />
             {isNewOrder && <OrderData configName='newOrderConfig' showNewOrder={setIsNewOrder} />}
-            <div className="search">
+            {/* <div className="search">
               <div className="search__btn">
                 <button
                   className="search__btn-button"
@@ -467,7 +469,7 @@ const Orders = () => {
                   </button>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           <div
             className="warehouse-table-btn__container"
@@ -476,7 +478,7 @@ const Orders = () => {
             <div className="warehouse-table-btn__counter">
               {activeCheckboxCount}
             </div>
-            <button className="warehouse-table-btn warehouse-table-btn__szhatie">
+            {/* <button className="warehouse-table-btn warehouse-table-btn__szhatie">
               <img
                 className="warehouse-table-btn__img"
                 src={szhatie}
@@ -485,7 +487,7 @@ const Orders = () => {
             </button>
             <button className="warehouse-table-btn warehouse-table-btn__editor">
               <img className="orderTable-btn__img" src={editor} alt="editor" />
-            </button>
+            </button> */}
             <button
               className="warehouse-table-btn warehouse-table-btn__delete-table"
               onClick={() => {
@@ -626,8 +628,8 @@ const Orders = () => {
                   text={"Применить"}
                   isHover={true}
                   onClick={() => {
-                    clearSelectedItems();
                     handleFilterSelection();
+                    clearSelectedItems();
                     setIsFilterOpen(false);
                     // console.log(inputDateOrderRef.current.value);
                   }}

@@ -412,10 +412,15 @@ button {
     width: 165px;
 }
 
+.filter__input--date::-webkit-calendar-picker-indicator{
+    cursor: pointer;
+}
+
 .filter__input--pokupatel{
     overflow-x: scroll;
     overflow-y: hidden;
     width: 356px;
+    cursor: text;
 }
 
 .filter-btn-container{

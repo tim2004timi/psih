@@ -14,6 +14,7 @@
     align-items: center;
     gap: 24px;
     width: 320px;
+    position: relative;
 }
 
 .authorization__logo {
@@ -129,6 +130,6 @@
     color: red;
     font-size: 13px;
     position: absolute;
-    bottom: -60px;
+    bottom: -40px;
     text-align: center;
 }

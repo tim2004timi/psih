@@ -1,34 +1,42 @@
-import React, { useEffect, useState } from "react";
-import './ProductFiles.css'
-import { useOutletContext } from 'react-router-dom';
-import tshirts from '../../../../../../assets/img/tshirts.svg'
+import React, { useEffect, useState, useRef } from "react";
+import "./ProductFiles.css";
+import { useOutletContext } from "react-router-dom";
+import tshirts from "../../../../../../assets/img/tshirts.svg";
+import download from "../../../../../../assets/img/product_file_download.png";
+import { uploadProductFile } from "../../../../../../API/productsApi";
+import { formatDateTime } from "../../../../../../API/formateDateTime";
 
 const ProductFiles = () => {
-  const { currentProduct, setCurrentProduct, currentConfig } = useOutletContext();
-  const columnFilesHeaders = ['изображение', 'название', 'размер', 'дата', 'сотрудник'];
-  const [currentProductsFiles, setCurrentProductsFiles] = useState([])
+  const { currentProduct, setCurrentProduct, currentConfig } =
+    useOutletContext();
+  const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с"];
+  const [currentProductsFiles, setCurrentProductsFiles] = useState([]);
+  const [isFilesShowDragandDrop, setIsFilesShowDragandDrop] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
   const columnConfig = {
-    изображение: {
+    // изображение: {
+    //   className: "product-file-column",
+    //   content: (row) => {
+    //     return (
+    //     // (row.image != false && row.url != null) &&
+    //       <div className="product-file-column__container">
+    //         {/* <img src={tshirts} alt="img" className="product-file-column__img"/> */}
+    //         {row.img}
+    //         {/* src={getFullImageUrl(serverUrl, image.url)} */}
+    //       </div>
+    //     );
+    //   },
+    // },
+    название: {
       className: "product-file-column",
       content: (row) => {
         return (
-        // (row.image != false && row.url != null) && 
+          // (row.image != false && row.url != null) &&
           <div className="product-file-column__container">
-            {/* <img src={tshirts} alt="img" className="product-file-column__img"/> */}
-            {row.img}
-            {/* src={getFullImageUrl(serverUrl, image.url)} */}
-          </div>
-        );
-      },
-    },
-    название:{
-      className: "product-file-column",
-      content: (row) => {
-        return (
-        // (row.image != false && row.url != null) && 
-          <div className="product-file-column__container">
-            {row.url}
+            {/* {row.url} */}
+            файл
           </div>
         );
       },
@@ -36,10 +44,10 @@ const ProductFiles = () => {
     размер: {
       className: "product-file-column",
       content: (row) => {
-        return row.size != null && (
-          <div className="product-file-column__container">
-            {row.size}
-          </div>
+        return (
+          row.size != null && (
+            <div className="product-file-column__container">{row.size}</div>
+          )
         );
       },
     },
@@ -47,10 +55,8 @@ const ProductFiles = () => {
       className: "product-file-column",
       content: (row) => {
         return (
-        // row.size != null && 
-          <div className="product-file-column__container">
-            {row.date}
-          </div>
+          // row.size != null &&
+          <div className="product-file-column__container">{formatDateTime(row.created_at)}</div>
         );
       },
     },
@@ -58,9 +64,29 @@ const ProductFiles = () => {
       className: "product-file-column",
       content: (row) => {
         return (
-        // row.size != null && 
+          // row.size != null &&
           <div className="product-file-column__container">
-            {row.employer}
+            {row.user.username}
+          </div>
+        );
+      },
+    },
+    с: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          <div className="product-file-column__container">
+            <a
+              href={row.url}
+              download={row.url}
+              className="product-file-column__btn"
+            >
+              <img
+                src={download}
+                alt="download"
+                className="product-file-column__img"
+              />
+            </a>
           </div>
         );
       },
@@ -68,18 +94,26 @@ const ProductFiles = () => {
   };
 
   useEffect(() => {
-    setCurrentProductsFiles(currentProduct.files)
-  }, [currentProduct])
+    setCurrentProductsFiles(currentProduct.files);
+  }, [currentProduct]);
 
-  const mocData = [
-    {
-      "img": tshirts,
-      'url': 'smuta.png',
-      'size': 10,
-      'date': '18.09.2024',
-      "employer": 'сотрудник',
-    }
-]
+  const handleClick = () => fileInputRef.current.click();
+
+  const uploadFiles = (files, id) =>
+    files.map(async (file) => {
+      try {
+        const response = await uploadProductFile(id, file);
+        setCurrentProductsFiles((prevFiles) => [...prevFiles, response]);
+      } catch (error) {
+        console.error("Ошибка при загрузке файла:", error);
+      }
+    });
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || e.dataTransfer.files);
+
+    uploadFiles(files, currentProduct.id);
+  };
 
   const renderHeaders = () => {
     return columnFilesHeaders.map((column, index) => (
@@ -90,7 +124,7 @@ const ProductFiles = () => {
   };
 
   const renderRows = () => {
-    return mocData.map((row, rowIndex) => (
+    return currentProductsFiles.map((row, rowIndex) => (
       <tr key={rowIndex}>
         {columnFilesHeaders.map((column, colIndex) => {
           const className = columnConfig[column]?.className;
@@ -105,12 +139,51 @@ const ProductFiles = () => {
   };
 
   return (
-    <table className="product-files-table">
+    <div className="product-files-wrapper">
+      <table className="product-files-table">
         <thead className="product-files-table__header">
           <tr>{renderHeaders()}</tr>
         </thead>
-        <tbody>{renderRows()}</tbody>
-    </table>
+        <tbody>{currentProductsFiles && renderRows()}</tbody>
+      </table>
+      <div className="product-files-table__add">
+        <span
+          className="product-files-table__add-btn"
+          // onClick={() => setIsFilesShowDragandDrop(!isFilesShowDragandDrop)}
+          onClick={() => handleClick()}
+        ></span>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+          multiple
+          accept="image/*"
+        />
+      </div>
+      {/* {isFilesShowDragandDrop && (
+        <form className="files-dragAndDrop">
+          <div
+            className={`files-dragAndDrop__upload-zone ${
+              isDragging ? "dragging" : ""
+            }`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            <p className="files-dragAndDrop__upload-zone-plus">+</p>
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              style={{ display: "none" }}
+              id="file-input"
+            />
+          </div>
+        </form>
+      )} */}
+    </div>
   );
 };
 

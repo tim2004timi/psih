@@ -14,6 +14,11 @@
     margin-bottom: 30px;
 }
 
+.admin-page-user__back-btn{
+    position: absolute;
+    left: 100px;
+}
+
 .admin-page-management__login-title,
 .admin-page-management__email-title{
     padding-right: 20px;
@@ -65,6 +70,7 @@
     width: 1111px;
     margin: 0 auto;
     position: relative;
+    padding-bottom: 50px;
 }
 
 .admin-page-management__item {
