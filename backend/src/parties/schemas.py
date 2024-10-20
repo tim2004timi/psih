@@ -50,3 +50,6 @@ class PartyWithoutProducts(PartyBase):
 
 class ModificationsInPartyCreateWithoutParty:
     pass
+
+class ModificationsInParty:
+    pass
