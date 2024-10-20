@@ -30,7 +30,7 @@ class Order(Base):
     email: Mapped[str | None]
     # summ: Mapped[int | None] = mapped_column(nullable=True, default=0)
 
-    products_in_order: Mapped[list["ProductInOrder"]] = relationship(
+    modifications_in_order: Mapped[list["ModificationInOrder"]] = relationship(
         back_populates="order", cascade="all, delete-orphan", passive_deletes=True
     )
 

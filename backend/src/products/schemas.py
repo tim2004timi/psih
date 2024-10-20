@@ -1,11 +1,17 @@
-from typing import Optional, List
+from typing import List
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
-from datetime import datetime
 from enum import Enum
 
-from ..orders.schemas import Order
 from ..schemas import File as MyFile, FileWithoutUser as MyFileWithoutUser
+
+
+class SizeEnum(str, Enum):
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
+    XXL = "XXL"
 
 
 class ProductCategoryBase(BaseModel):
@@ -31,14 +37,6 @@ class ProductCategoryWithProducts(ProductCategoryBase):
 
     id: int
     products: List["Product"]
-
-
-class SizeEnum(str, Enum):
-    S = "S"
-    M = "M"
-    L = "L"
-    XL = "XL"
-    XXL = "XXL"
 
 
 class ProductBase(BaseModel):
@@ -71,22 +69,15 @@ class ProductDelete(BaseModel):
 class ProductUpdatePartial(ProductBase):
     name: str | None = None
     description: str | None = None
-    min_price: float | None = Field(example=100.0)
-    cost_price: float | None = Field(example=100.0)
-    price: float | None = Field(example=100.0)
-    discount_price: float | None = Field(example=100.0)
+    min_price: float | None = Field(default=None, example=100.0)
+    cost_price: float | None = Field(default=None, example=100.0)
+    price: float | None = Field(default=None, example=100.0)
+    discount_price: float | None = Field(default=None, example=100.0)
     category_id: int | None = None
     measure: str | None = Field(
         default=None, description="Описание товара", example="шт."
     )
     archived: bool | None = False
-
-    @field_validator("min_price", "cost_price", "price", "discount_price")
-    @classmethod
-    def check_positive_prices(cls, value):
-        if (value is not None) and (value <= 0):
-            raise ValueError("Цена должна быть больше нуля")
-        return value
 
 
 class Product(ProductBase):
@@ -99,14 +90,18 @@ class Product(ProductBase):
     modifications: List["Modification"]
 
 
-class ProductWithoutUser(ProductBase):
+class ProductWithoutUser(Product):
+    images: List["MyFileWithoutUser"]
+    files: List["MyFileWithoutUser"]
+
+
+class ProductWithoutModifications(ProductBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     category: ProductCategory
-    images: List["MyFileWithoutUser"]
-    files: List["MyFileWithoutUser"]
-    modifications: List["Modification"]
+    images: List["MyFile"]
+    files: List["MyFile"]
 
 
 class ModificationBase(BaseModel):
@@ -130,25 +125,26 @@ class Modification(ModificationBase):
 
     id: int
     product_id: int
+    product: "ProductWithoutModifications"
 
 
-class ProductInOrderBase(BaseModel):
+class ModificationInOrderBase(BaseModel):
     amount: int
 
 
-class ProductInOrderCreate(ProductInOrderBase):
-    product_id: int
+class ModificationInOrderCreate(ModificationInOrderBase):
+    modification_id: int
     order_id: int
 
 
-class ProductInOrderCreateWithoutOrder(ProductInOrderBase):
-    product_id: int
+class ModificationInOrderCreateWithoutOrder(ModificationInOrderBase):
+    modification_id: int
 
 
-class ProductInOrder(ProductInOrderBase):
+class ModificationInOrder(ModificationInOrderBase):
     model_config = ConfigDict(from_attributes=True)
 
-    product: "Product"
+    modification: "Modification"
     # order: "Order"
     id: int
 

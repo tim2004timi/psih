@@ -117,52 +117,58 @@ async def delete_product_category_by_id(
 
 
 @products_router.get(
-    path="/",
+    path="/{product_id}/",
     response_model=Product,
+    response_model_exclude_none=True,
     description="Get product by id",
 )
 async def get_product_by_id(
-    product: Product = Depends(dependencies.product_by_id_dependency),
+    product_id: int,
+    session: AsyncSession = Depends(db_manager.session_dependency),
 ):
-    return product
+    return await service.get_product_by_id(session=session, product_id=product_id)
 
 
 @products_router.get(
-    path="/all/",
+    path="/",
     response_model=List[ProductWithoutUser],
+    response_model_exclude_none=True,
     description="Get all products",
 )
 async def get_all_products(
+    archived: bool | None = None,
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
-    return await service.get_products(session=session)
+    return await service.get_products(session=session, archived=archived)
 
 
-@products_router.get(
-    path="/not-archived/",
-    response_model=List[ProductWithoutUser],
-    description="Get not archived products",
-)
-async def get_not_archived_products(
-    session: AsyncSession = Depends(db_manager.session_dependency),
-):
-    return await service.get_products(session=session, archived=False)
-
-
-@products_router.get(
-    path="/archived/",
-    response_model=List[ProductWithoutUser],
-    description="Get archived products",
-)
-async def get_archived_products(
-    session: AsyncSession = Depends(db_manager.session_dependency),
-):
-    return await service.get_products(session=session, archived=True)
+#
+# @products_router.get(
+#     path="/not-archived/",
+#     response_model=List[ProductWithoutUser],
+#     description="Get not archived products",
+# )
+# async def get_not_archived_products(
+#     session: AsyncSession = Depends(db_manager.session_dependency),
+# ):
+#     return await service.get_products(session=session, archived=False)
+#
+#
+# @products_router.get(
+#     path="/archived/",
+#     response_model=List[ProductWithoutUser],
+#     description="Get archived products",
+# )
+# async def get_archived_products(
+#     session: AsyncSession = Depends(db_manager.session_dependency),
+# ):
+#     return await service.get_products(session=session, archived=True)
 
 
 @products_router.post(
     path="/",
     response_model=Product,
+    response_model_exclude_none=True,
     description="Create new product",
 )
 async def create_product(

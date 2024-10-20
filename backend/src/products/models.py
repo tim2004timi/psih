@@ -33,10 +33,6 @@ class Product(Base):
         back_populates="product", cascade="all, delete-orphan"
     )
 
-    products_in_order: Mapped[List["ProductInOrder"]] = relationship(
-        back_populates="product", cascade="all, delete-orphan", passive_deletes=True
-    )  # TODO: убрать
-
     images: Mapped[List["File"]] = relationship(
         back_populates="product",
         cascade="all, delete-orphan",
@@ -64,16 +60,24 @@ class Modification(Base):
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     product: Mapped["Product"] = relationship(back_populates="modifications")
 
+    modifications_in_order: Mapped[List["ModificationInOrder"]] = relationship(
+        back_populates="modification",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )  # TODO: убрать
 
-class ProductInOrder(Base):
-    __tablename__ = "products_in_order"
+
+class ModificationInOrder(Base):
+    __tablename__ = "modifications_in_order"
 
     amount: Mapped[int]
 
-    product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id", ondelete="CASCADE")
+    modification_id: Mapped[int] = mapped_column(
+        ForeignKey("modifications.id", ondelete="CASCADE")
     )
-    product: Mapped["Product"] = relationship(back_populates="products_in_order")
+    modification: Mapped["Modification"] = relationship(
+        back_populates="modifications_in_order"
+    )
 
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
-    order: Mapped["Order"] = relationship(back_populates="products_in_order")
+    order: Mapped["Order"] = relationship(back_populates="modifications_in_order")

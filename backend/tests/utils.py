@@ -4,7 +4,7 @@ import requests
 
 def get_jwt_token():
     user_data = {
-        "username": "string1",
+        "username": "string",
         "password": "string",
     }
 

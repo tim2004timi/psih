@@ -41,14 +41,14 @@ class OrderBase(BaseModel):
 
 
 class OrderCreate(OrderBase):
-    products_in_order: List["ProductInOrderCreateWithoutOrder"]
+    modifications_in_order: List["ModificationInOrderCreateWithoutOrder"] = []
 
 
 class OrderUpdatePartial(OrderBase):
     full_name: str | None = None
     address: str | None = None
-    status: StatusEnum | None = StatusEnum.PROCESSING.value
-    products_in_order: List["ProductInOrderCreateWithoutOrder"] = []
+    status: StatusEnum | None = None
+    modifications_in_order: List["ModificationInOrderCreateWithoutOrder"] | None = None
 
 
 class Order(OrderBase):
@@ -59,7 +59,7 @@ class Order(OrderBase):
     # summ: int
     order_date: datetime
 
-    products_in_order: List["ProductInOrder"]
+    modifications_in_order: List["ModificationInOrder"]
     files: List["MyFile"]
 
 
@@ -72,4 +72,7 @@ class OrderWithoutProducts(OrderBase):
     order_date: datetime
 
 
-from ..products.schemas import ProductInOrder, ProductInOrderCreateWithoutOrder
+from ..products.schemas import (
+    ModificationInOrder,
+    ModificationInOrderCreateWithoutOrder,
+)
