@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import close from '../../assets/img/close_filter.png';
-import './Notification.css'
 
-const Notification = ({ message }) => {
+const Notification = ({ message, onClose }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    setIsVisible(true);
-  }, [message]);
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      onClose();
+    }, 5000);
 
-  const handleClose = () => {
-    setIsVisible(false);
-  };
+    return () => clearTimeout(timer);
+  }, [onClose]);
 
   return (
-    <div className={`notification ${isVisible ? "" : "hidden"}`}>
-      {/* <div className="notification__btn">
-        <button className="notification__btn-button" onClick={handleClose}>
-          <img src={close} alt="close" className="notification__btn-img" />
-        </button>
-      </div> */}
-      <p className="notification__text">{message}</p>
+    <div className={`notification ${isVisible ? '' : 'hidden'}`}>
+      <p className='notification__text'>{message}</p>
+      <button className='notification__btn' onClick={() => setIsVisible(false)}>Закрыть</button>
     </div>
   );
 };

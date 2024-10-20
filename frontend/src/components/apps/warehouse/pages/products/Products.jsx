@@ -30,7 +30,7 @@ import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
-import Notification from "../../../../notification/Notification.jsx";
+import NotificationManager from '../../../../notificationManager/NotificationManager';
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -75,7 +75,8 @@ const Products = () => {
 
   const warehouseTableBtnContainerRef = useRef(null);
 
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+  const [addNotification, setAddNotification] = useState(null);
 
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
@@ -106,7 +107,6 @@ const Products = () => {
   };
 
   const handleCheckboxChange = (rowId, event) => {
-    console.log(rowId)
     event.stopPropagation();
     setLastSelectedIndex(rowId);
 
@@ -360,7 +360,10 @@ const Products = () => {
         [name]: response.data.id,
       }));
     } catch (e) {
-      setError(e.response.data.detail)
+      console.error(e)
+      // if (addNotification) {
+        setAddNotification(e.response.data.detail);
+      // }
     }
   };
 
@@ -800,7 +803,7 @@ const Products = () => {
         </div>
         <Tooltip id="category-tooltip" />
       </div>
-      {error && <Notification message={error} />}
+      <NotificationManager addNotification={addNotification} />
     </>
   );
 };
