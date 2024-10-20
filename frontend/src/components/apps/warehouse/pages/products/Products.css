@@ -1,3 +1,11 @@
+.newProduct-overlay {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0);
+    top: 192px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
 .products-header-vert-separator{
     width: 1px;
     height: 21px;
@@ -52,7 +60,7 @@
     padding-right: 14px;
 }
 
-.productTable__nav-btn{
+.products__nav-btn{
     border: 1px solid transparent;
     border-radius: 7px;
     background-color: transparent;
@@ -60,14 +68,17 @@
     padding: 3px 27px;
     font-size: 16px;
     transition: all 0.7s ease-in;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-.productTable__nav-btn:hover{
+.products__nav-btn:hover{
     border: 1px solid rgba(0, 0, 0, 1);
     transition: all 0.1s;
 }
 
-.productTable__nav-btn--selected{
+.products__nav-btn--selected{
     border: 1px solid rgba(0, 0, 0, 1);
 }
 

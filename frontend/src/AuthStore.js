@@ -37,7 +37,10 @@ class AuthStore {
       const resp = await AuthService.validateLogin(email, password);
       this.setValidated(true);
     } catch (err) {
-      throw err;
+      if (err.response.status === 401) {
+        throw err;
+      }
+      console.error(err);
     } finally {
       this.setAuthInProgress(false);
     } 

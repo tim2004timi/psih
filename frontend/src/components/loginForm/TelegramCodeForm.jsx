@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";    
+import { Link, useNavigate, Navigate } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
 import AuthStore from '../../AuthStore';
@@ -12,7 +12,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
   const [errorText, setErrorText] = useState("");
   const [timer, setTimer] = useState(0);
   const { loginValue, password } = usersData;
-  const { messageFromBot, getTokens, isAuth, checkAuth } = AuthStore;
+  const { messageFromBot, getTokens, isAuth, checkAuth, isAuthInProgress } = AuthStore;
   const navigate = useNavigate();
   const isTimerActive = timer > 0;
 
@@ -48,7 +48,12 @@ const TelegramCodeForm = observer(({ usersData }) => {
     }
   }, [timer]);
 
+  // if (isAuthInProgress) {
+  //   return <div style={{textAlign: "center"}}>Checking auth...</div>;
+  // }
+
   return (
+    !isAuth ? 
     <div className="authorization">
       <div className="authorization__content">
         <a className="authorization__logo">
@@ -94,6 +99,8 @@ const TelegramCodeForm = observer(({ usersData }) => {
         <p className="tegram-code__error-text">{errorText}</p>
       </div>
     </div>
+    :
+    <Navigate to="/" />
   );
 });
 

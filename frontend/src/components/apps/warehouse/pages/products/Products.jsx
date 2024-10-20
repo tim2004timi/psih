@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import "./Products.css";
+import "../../../../../../node_modules/react-tooltip/dist/react-tooltip.css";
+import { Tooltip } from "react-tooltip";
 import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
 import HeaderButton from "../../../../headerApp/headerButton/HeaderButton";
@@ -16,11 +18,11 @@ import archiveBtnHover from "../../../../../assets/img/fromArchive-btn.png";
 import categoreisClose from "../../../../../assets/img/categories_closebtn.svg";
 import {
   getCategories,
-  getProductsNA,
   patchProduct,
   deleteCategory,
   createCategory,
   deleteProducts,
+  getProducts,
 } from "../../../../../API/productsApi";
 import { serverUrl } from "../../../../../config.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,6 +30,7 @@ import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
+import Notification from "../../../../notification/Notification.jsx";
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -71,6 +74,8 @@ const Products = () => {
   const categoriesSettingsRef = useRef(null);
 
   const warehouseTableBtnContainerRef = useRef(null);
+
+  const [error, setError] = useState(null);
 
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
@@ -257,13 +262,16 @@ const Products = () => {
         ...new Set([...prevCategories, ...newCategories]),
       ]);
     } catch (e) {
-      console.error(e);
+      // <Notification message={`${e.response.data.detail}`} />
+      setError(e.response.data.detail)
+      console.log(e)
     }
   }
 
-  async function fetchProductsNA() {
+
+  async function fetchProducts(isArchived) {
     try {
-      const response = await getProductsNA();
+      const response = await getProducts(isArchived);
       // console.log(response.data)
       dispatch(setProductsNA(response.data));
     } catch (e) {
@@ -280,7 +288,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchCategories();
-    fetchProductsNA();
+    fetchProducts(false);
   }, []);
 
   useEffect(() => {
@@ -301,7 +309,7 @@ const Products = () => {
   
       const responses = await Promise.all(promises);
       fetchCategories();
-      fetchProductsNA();
+      fetchProducts(false);
     } catch (e) {
       console.error(e);
     }
@@ -352,7 +360,7 @@ const Products = () => {
         [name]: response.data.id,
       }));
     } catch (e) {
-      console.error(e);
+      setError(e.response.data.detail)
     }
   };
 
@@ -398,21 +406,21 @@ const Products = () => {
         ) : null;
       },
     },
-    артикул: {
-      className: "products-column column-article",
-      content: (row) => {
-        const isChecked = checkboxStates[row.id] || false;
-        return row.article ? (
-          <div
-            className={`products-column-container column-article__container ${
-              isChecked ? "product-colums-selected" : ""
-            }`}
-          >
-            {row.article}
-          </div>
-        ) : null;
-      },
-    },
+    // артикул: {
+    //   className: "products-column column-article",
+    //   content: (row) => {
+    //     const isChecked = checkboxStates[row.id] || false;
+    //     return row.article ? (
+    //       <div
+    //         className={`products-column-container column-article__container ${
+    //           isChecked ? "product-colums-selected" : ""
+    //         }`}
+    //       >
+    //         {row.article}
+    //       </div>
+    //     ) : null;
+    //   },
+    // },
     цена: {
       className: "products-column column-price",
       content: (row) => {
@@ -475,13 +483,15 @@ const Products = () => {
     return categories.map((category, index) => (
       <button
         key={index}
-        className={`productTable__nav-btn  ${
-          selectedCategory === category ? "productTable__nav-btn--selected" : ""
+        className={`products__nav-btn  ${
+          selectedCategory === category ? "products__nav-btn--selected" : ""
         }`}
         onClick={() => {
           filterProductsByCategories(category);
           setSelectedCategory(category);
         }}
+        data-tooltip-id="category-tooltip"
+        data-tooltip-content={category}
       >
         {category}
       </button>
@@ -550,11 +560,13 @@ const Products = () => {
               onClick={() => setIsNewProduct(!isNewProduct)}
             />
             {isNewProduct && (
-              <Product
-                configName="newProductConfig"
-                currentProductObj={null}
-                showNewProduct={setIsNewProduct}
-              />
+              <div className="newProduct-overlay">
+                <Product
+                  configName="newProductConfig"
+                  currentProductObj={null}
+                  showNewProduct={setIsNewProduct}
+                />
+              </div>
             )}
             <div className="products-header-vert-separator"></div>
             <PopularButton
@@ -562,7 +574,12 @@ const Products = () => {
               isHover={true}
               onClick={() => setIsShowArchive(!isShowArchive)}
             />
-            {isShowArchive && <ProductTable showArchive={setIsShowArchive} configName='archiveConfig' />}
+            {isShowArchive && (
+              <ProductTable
+                showArchive={setIsShowArchive}
+                configName="archiveConfig"
+              />
+            )}
           </div>
           <div
             className="warehouse-table-btn__container"
@@ -590,7 +607,7 @@ const Products = () => {
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
               onClick={() => {
                 deleteSelectedProducts(activeCheckboxIds);
-                fetchProductsNA()
+                fetchProductsNA();
               }}
             >
               <img
@@ -781,7 +798,9 @@ const Products = () => {
             <tbody>{renderRows()}</tbody>
           </table>
         </div>
+        <Tooltip id="category-tooltip" />
       </div>
+      {error && <Notification message={error} />}
     </>
   );
 };

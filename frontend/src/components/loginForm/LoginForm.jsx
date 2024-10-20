@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";    
+import React, { useEffect, useState } from "react";
+import { Link, Navigate } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
 import AuthStore from '../../AuthStore';
@@ -7,7 +7,8 @@ import '../login/Login.css';
 
 const LoginForm = observer(({usersData}) => {
   const { loginValue, setLoginValue, password, setPassword } = usersData;
-  const { validateLogin, isAuth } = AuthStore;
+  const { validateLogin, isAuth, isAuthInProgress } = AuthStore;
+  const [errorText, setErrorText] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,16 +18,16 @@ const LoginForm = observer(({usersData}) => {
       // await checkMe()
       // await checkAuth()
     } catch (e) {
-      console.log(e);
+      setErrorText(e.response.data.detail);
     }
   };
 
-  // useEffect(() => {
-  //   console.log(localStorage)
-  //   console.log(isAuth)
-  // }, [isAuth])
+  // if (isAuthInProgress) {
+  //   return <div style={{textAlign: "center"}}>Checking auth...</div>;
+  // }
 
   return (
+    !isAuth ? 
     <div className="authorization">
       <div className="authorization__content">
         <a className="authorization__logo">
@@ -69,8 +70,11 @@ const LoginForm = observer(({usersData}) => {
         {/* <Link to="/sign-up" className="authorization__content-dont-acc">
           Нет аккаунта?
         </Link> */}
+        <p className="tegram-code__error-text">{errorText}</p>
       </div>
     </div>
+    :
+    <Navigate to="/" />
   );
 });
 

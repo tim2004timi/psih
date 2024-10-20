@@ -17,7 +17,6 @@ import Remains from "./components/apps/warehouse/pages/remains/Remains.jsx";
 import Parties from "./components/apps/warehouse/pages/parties/Parties.jsx";
 import Order from "./components/apps/warehouse/pages/neworder/Order.jsx";
 import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx';
-import ProductsArchive from './components/apps/warehouse/pages/products/ProductsArchive.jsx';
 import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
 import ProductFiles from './components/apps/warehouse/pages/product/productFiles/ProductFiles.jsx';
 import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
@@ -25,7 +24,7 @@ import Login from './components/login/Login.jsx';
 import RegForm from './components/regForm/RegForm.jsx';
 import PrivateRoute from './components/apps/PrivateRoute.jsx';
 import AuthStore from "./AuthStore.js";
-import ProfilePage from './components/apps/adminPage/ProfilePage.jsx';
+import ProfilePage from './components/apps/profilePage/ProfilePage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -103,10 +102,6 @@ const router = createBrowserRouter([
                 element: <ProductFiles />,
               }
             ]
-          },
-          {
-            path: "productsarchive",
-            element: <ProductsArchive />,
           },
           {
             path: "remains",

@@ -10,11 +10,9 @@ import "./ProductPage.css";
 import DropDownList from "../../../../dropDownList/DropDownList";
 import { useSelector } from "react-redux";
 import {
-  getProductsNA,
   deleteProduct,
-  patchProduct,
-  uploadProductImg,
-  deleteProductImg,
+  getProductById,
+  getProducts,
 } from "../../../../../API/productsApi";
 import { serverUrl } from "../../../../../config.js";
 import tshirts from "../../../../../assets/img/tshirts.svg";
@@ -33,34 +31,48 @@ const ProductPage = () => {
   const location = useLocation();
   const fileInputRef = useRef(null);
 
-  async function fetchProductsNA() {
+  // async function fetchProductsNA() {
+  //   try {
+  //     const response = await getProductsNA();
+  //     // console.log(response.data);
+  //     setProducts(response.data);
+
+  //     setIsLoading(false);
+  //   } catch (e) {
+  //     console.error(e);
+  //     setIsLoading(false);
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   fetchProductsNA();
+  // }, []);
+
+  async function fetchProducts(isArchived) {
     try {
-      const response = await getProductsNA();
+      const response = await getProducts(isArchived);
       // console.log(response.data);
       setProducts(response.data);
 
-      setIsLoading(false);
     } catch (e) {
       console.error(e);
-      setIsLoading(false);
+    }
+  }
+
+  async function fetchProduct(id) {
+    try {
+      const response = await getProductById(id);
+      setCurrentProduct(response.data);
+    } catch (e) {
+      console.error(e);
     }
   }
 
   useEffect(() => {
-    fetchProductsNA();
-  }, []);
-
-  useEffect(() => {
-    if (products.length > 0) {
-      const product = products.find((product) => product.id == id);
-      setCurrentProduct(product);
-      // console.log(product);
-    }
-  }, [products, id]);
-
-  // useEffect(() => {
-  //   console.log('product page', currentProduct)
-  // }, [currentProduct])
+    fetchProducts(null);
+    fetchProduct(id)
+    setIsLoading(false)
+  }, [id]);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -75,7 +87,6 @@ const ProductPage = () => {
     try {
       const response = await deleteProduct(id);
       navigate("/products");
-      // console.log(response.data);
     } catch (error) {
       console.error(error);
     }

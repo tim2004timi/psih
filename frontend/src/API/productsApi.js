@@ -29,23 +29,36 @@ export async function createCategory(name) {
     }
 }
 
-export async function getProductsNA() {
+export async function getProducts(isArchived = false) {
     try {
-        let response = await instance.get(`${serverUrl}/api/products/not-archived/`);
+        let url = `${serverUrl}/api/products/`;
+        if (isArchived !== undefined && isArchived !== null) {
+            url += `?archived=${isArchived}`;
+        }
+        let response = await instance.get(url);
         return response;
     } catch (e) {
         throw e;
     }
 }
 
-export async function getProductsA() {
-    try {
-        let response = await instance.get(`${serverUrl}/api/products/archived/`);
-        return response;
-    } catch (e) {
-        throw e;
-    }
-}
+// export async function getProductsNA() {
+//     try {
+//         let response = await instance.get(`${serverUrl}/api/products/not-archived/`);
+//         return response;
+//     } catch (e) {
+//         throw e;
+//     }
+// }
+
+// export async function getProductsA() {
+//     try {
+//         let response = await instance.get(`${serverUrl}/api/products/archived/`);
+//         return response;
+//     } catch (e) {
+//         throw e;
+//     }
+// }
 
 export async function createProduct(obj) {
     try {
@@ -85,8 +98,8 @@ export async function deleteProducts(idsArr) {
 
 export async function getProductById(productId) {
     try {
-        let response = await instance.get(`${serverUrl}/api/products/?product_id=${productId}`);
-        // console.log(response)
+        let response = await instance.get(`${serverUrl}/api/products/${productId}/`);
+        return response
     } catch (e) {
         throw e;
     }
@@ -117,6 +130,27 @@ export async function deleteProductImg(productId) {
     try {
         let response = await instance.delete(`${serverUrl}/api/products/images/?image_id=${productId}`);
         // console.log(response)
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function uploadProductFile(productId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await instance.post(
+            `${serverUrl}/api/products/${productId}/upload-file/`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+        // console.log(response);
+        return response.data;
     } catch (e) {
         throw e;
     }

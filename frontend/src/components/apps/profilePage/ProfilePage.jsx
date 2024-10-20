@@ -194,7 +194,8 @@ const ProfilePage = observer(() => {
 
   const checkPassword = (password, repeatPassword) => {
     if (password === repeatPassword) {
-      // patchUser(currentUser.id, { [toggleName]: checked })
+      patchUser(currentUser.id, { ['password']: password })
+      setIsShowPasswordPopup(false)
     } else {
       alert("Пароли не совпадают!");
     }
@@ -247,7 +248,7 @@ const ProfilePage = observer(() => {
         <input
           type="text"
           className="admin-page-user-popup__input"
-          placeholder="Телеграм"
+          placeholder="Телеграм @username"
           value={newUserState.tg_username}
           required 
           onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
@@ -358,6 +359,13 @@ const ProfilePage = observer(() => {
             />
           </button>
         </div>
+        <div className="admin-page-user__back-btn">
+          <Link to={"/"}>
+            <button className="back-btn__btn">
+              <div className="back-btn__arrow"></div>
+            </button>
+          </Link>
+        </div>
         <div className="admin-page-user__wrapper">
           <div className="admin-page-user__login">
             <p className="admin-page-management__login-title">Логин</p>
@@ -388,6 +396,21 @@ const ProfilePage = observer(() => {
           </button>
         </div>
         {isShowNewUserPopup && newUserPopup()}
+        {/* <div className="admin-page-user__wrapper">
+          <div className="admin-page-user__email">
+            <p className="admin-page-management__email-title">Telegram</p>
+            <p className="admin-page-management__email-content">
+              {currentUser.tg_username}
+            </p>
+          </div>
+          <button
+            className="admin-page-user__button"
+            onClick={() => setIsShowNewUserPopup(!isShowNewUserPopup)}
+          >
+            + добавить сотрудника
+          </button>
+        </div>
+        {isShowNewUserPopup && newUserPopup()} */}
       </div>
       {currentUser.admin && listOfEmployees()}
     </>
