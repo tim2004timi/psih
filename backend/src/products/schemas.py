@@ -49,10 +49,7 @@ class ProductBase(BaseModel):
     price: float = Field(example=100.0)
     discount_price: float = Field(example=100.0)
     category_id: int
-    article: str | None = Field(default=None, example="ARTICLE")
     measure: str | None = "шт."
-    size: SizeEnum = SizeEnum.S.value
-    remaining: int = 0
     archived: bool = False
 
     @field_validator("min_price", "cost_price", "price", "discount_price")
@@ -64,7 +61,7 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    pass
+    sizes: List[SizeEnum]
 
 
 class ProductDelete(BaseModel):
@@ -79,12 +76,9 @@ class ProductUpdatePartial(ProductBase):
     price: float | None = Field(example=100.0)
     discount_price: float | None = Field(example=100.0)
     category_id: int | None = None
-    article: str | None = None
     measure: str | None = Field(
         default=None, description="Описание товара", example="шт."
     )
-    size: SizeEnum | None = SizeEnum.S.value
-    remaining: int | None = None
     archived: bool | None = False
 
     @field_validator("min_price", "cost_price", "price", "discount_price")
@@ -102,6 +96,7 @@ class Product(ProductBase):
     category: ProductCategory
     images: List["MyFile"]
     files: List["MyFile"]
+    modifications: List["Modification"]
 
 
 class ProductWithoutUser(ProductBase):
@@ -111,6 +106,30 @@ class ProductWithoutUser(ProductBase):
     category: ProductCategory
     images: List["MyFileWithoutUser"]
     files: List["MyFileWithoutUser"]
+    modifications: List["Modification"]
+
+
+class ModificationBase(BaseModel):
+    size: SizeEnum = SizeEnum.S.value
+    article: str | None = Field(default=None, example="ARTICLE")
+    remaining: int = 0
+
+
+class ModificationCreate(ModificationBase):
+    product_id: int
+
+
+class ModificationUpdate(ModificationBase):
+    size: SizeEnum | None = SizeEnum.S.value
+    article: str | None = None
+    remaining: int | None = None
+
+
+class Modification(ModificationBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    product_id: int
 
 
 class ProductInOrderBase(BaseModel):
@@ -132,5 +151,6 @@ class ProductInOrder(ProductInOrderBase):
     product: "Product"
     # order: "Order"
     id: int
+
 
 from ..orders.schemas import Order

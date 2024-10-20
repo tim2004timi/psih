@@ -162,9 +162,8 @@ async def get_archived_products(
 
 @products_router.post(
     path="/",
-    response_model=Product | None,
+    response_model=Product,
     description="Create new product",
-    response_model_exclude={"user"},
 )
 async def create_product(
     product_create: ProductCreate,

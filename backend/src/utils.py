@@ -29,7 +29,7 @@ async def upload_file(file: UploadFile, dir_name: str) -> tuple[str, str]:
         os.makedirs(full_dir_path)
 
     file_extension = os.path.splitext(file.filename)[1]  # Получаем расширение файла
-    unique_filename = f"{uuid.uuid4()}{file_extension}"  # Генерируем UUID + расширение
+    unique_filename = f"{uuid.uuid4()}_{file.filename}{file_extension}"  # Генерируем UUID + расширение
 
     file_path = get_file_path(full_dir_path, unique_filename)
 

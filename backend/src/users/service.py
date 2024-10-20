@@ -8,7 +8,7 @@ from starlette import status
 
 from . import models, schemas
 from .models import User
-from .schemas import UserUpdatePartial
+from .schemas import UserUpdatePartial, UserMeUpdatePartial
 from ..database import db_manager
 from ..utils import hash_password
 
@@ -72,7 +72,9 @@ async def get_users(session: AsyncSession) -> list[User]:
 
 
 async def update_user(
-    session: AsyncSession, user: User, user_update: UserUpdatePartial
+    session: AsyncSession,
+    user: User,
+    user_update: UserUpdatePartial | UserMeUpdatePartial,
 ) -> User:
     for name, value in user_update.model_dump(exclude_unset=True).items():
         if name == "password":
