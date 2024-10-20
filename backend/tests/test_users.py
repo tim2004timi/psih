@@ -16,16 +16,16 @@ async def test_get_users_me():
 
 
 @pytest.mark.asyncio
-async def test_delete_product():
-    try:
-        user_id = await post_user()
-        await patch_user(user_id)
-    except AssertionError as e:
-        raise e
-    finally:
-        url = f"http://localhost:8000/api/users/?user_id={user_id}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url=url, headers=headers) as response:
+async def test_delete_user():
+    async with aiohttp.ClientSession() as session:
+        try:
+            user_id = await post_user()
+            await patch_user(user_id)
+        except AssertionError as e:
+            raise e
+        finally:
+            url = f"http://localhost:8000/api/users/?user_id={user_id}"
+            async with session.delete(url=url, headers=headers) as response:
                 assert 200 <= response.status < 400
 
 
@@ -40,8 +40,8 @@ async def post_user() -> int:
         async with session.post(url=url, headers=headers, json=data) as response:
             assert 200 <= response.status < 400
             data = await response.json()
-    assert isinstance(data["id"], int)
-    return data["id"]
+            assert isinstance(data["id"], int)
+            return data["id"]
 
 
 async def patch_user(user_id: int):

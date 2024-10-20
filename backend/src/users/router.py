@@ -74,13 +74,11 @@ async def update_user(
     dependencies=[Depends(check_permission(Permission.ADMIN))],
 )
 async def delete_user(
-    user_update: UserUpdatePartial,
     session: AsyncSession = Depends(db_manager.session_dependency),
     user: User = Depends(user_by_id_dependency),
 ):
-    return await service.update_user(
+    return await service.delete_user(
         session=session,
-        user_update=user_update,
         user=user,
     )
 
