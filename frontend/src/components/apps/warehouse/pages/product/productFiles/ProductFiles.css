@@ -2,6 +2,7 @@
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
     width: 100%;
+    padding: 0 20px;
 }
 
 .product-files-table{
@@ -22,6 +23,7 @@
 .product-file-column{
     padding-bottom: 16px;
     font-size: 14px;
+    vertical-align: middle;
 }
 
 
@@ -48,10 +50,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    text-overflow: ellipsis;
+    /* text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: hidden; */
     width: 100%;
+    text-align: center;
 }
 
 .product-file-column__btn{

@@ -4,6 +4,7 @@ import UserService from './API/api.user';
 class UserStore {
     usersArr = []
     currentUser = {}
+    errorText = ''
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
@@ -17,12 +18,17 @@ class UserStore {
         this.currentUser = user;
     }
 
+    setErrorText(text) {
+        this.errorText = text;
+    }
+
     async getUsers() {
         try {
             const resp = await UserService.getUsers()
             this.setUsersArr(resp.data)
         } catch(e) {
-            console.log(e)
+            // console.error(e)
+            this.setErrorText(e.response.data.detail)
         }
     }
 
@@ -32,6 +38,7 @@ class UserStore {
             console.log(resp.data)
         } catch(e) {
             console.log(e)
+            this.setErrorText(e.response.data.detail)
         }
     }
 
@@ -41,6 +48,7 @@ class UserStore {
             console.log(resp.data)
         } catch(e) {
             console.log(e)
+            this.setErrorText(e.response.data.detail)
         }
     }
 
@@ -50,6 +58,7 @@ class UserStore {
             this.setCurrentUser(resp.data)
         } catch(e) {
             console.error(e)
+            this.setErrorText(e.response.data.detail)
         }
     }
 }

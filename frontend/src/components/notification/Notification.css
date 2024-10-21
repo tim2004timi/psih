@@ -1,6 +1,5 @@
 .notification {
     background-color: #f8d7da;
-    color: #721c24;
     padding: 10px;
     border: 1px solid #f5c6cb;
     border-radius: 4px;
@@ -8,14 +7,25 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    animation: slideIn 0.5s, fadeOut 0.5s 4.5s;
+    gap: 10px;
+    animation: slideIn 0.5s, fadeOut 5s;
 }
+
+.notification.errorItem{
+    border: 1px solid #f5c6cb;
+    background-color: #f8d7da;
+}
+
+.notification.succeessItem{
+    background-color: #daf8d7;
+    border: 1px solid #bcf5ad;
+}
+
 .notification.hidden {
     display: none;
 }
 
 .notification__btn {
-    background-color: #721c24;
     color: #fff;
     border: none;
     padding: 5px 10px;
@@ -23,17 +33,29 @@
     cursor: pointer;
 }
 
-.notification__btn:hover {
+.notification__btn.errorItem{
+    background-color: #721c24;
+}
+
+.notification__btn:hover.notification__btn.errorItem {
     background-color: #5a1a1f;
+}
+
+.notification__btn.succeessItem{
+    background-color: #1d721c;
+}
+
+.notification__btn:hover.notification__btn.succeessItem {
+    background-color: #295a1a;
 }
 
 @keyframes slideIn {
     from {
-        transform: translateX(100%);
+        transform: translateY(100%);
     }
 
     to {
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
