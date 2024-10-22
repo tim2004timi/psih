@@ -30,7 +30,7 @@ class Product(Base):
     category: Mapped["ProductCategory"] = relationship(back_populates="products")
 
     modifications: Mapped[List["Modification"]] = relationship(
-        back_populates="product", cascade="all, delete-orphan"
+        back_populates="product", cascade="all, delete-orphan", passive_deletes=True,
     )
 
     images: Mapped[List["File"]] = relationship(
@@ -57,7 +57,7 @@ class Modification(Base):
     size: Mapped[str]
     remaining: Mapped[int] = mapped_column(nullable=False, default=0)
 
-    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id", ondelete="CASCADE"))
     product: Mapped["Product"] = relationship(back_populates="modifications")
 
     modifications_in_order: Mapped[List["ModificationInOrder"]] = relationship(
