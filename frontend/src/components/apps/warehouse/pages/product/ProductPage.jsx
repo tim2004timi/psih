@@ -18,6 +18,7 @@ import { serverUrl } from "../../../../../config.js";
 import tshirts from "../../../../../assets/img/tshirts.svg";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "./Product";
+import NotificationManager from "../../../../notificationManager/NotificationManager.jsx";
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -30,6 +31,7 @@ const ProductPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const fileInputRef = useRef(null);
+  const [errorText, setErrorText] = useState('')
 
   // async function fetchProductsNA() {
   //   try {
@@ -56,6 +58,7 @@ const ProductPage = () => {
 
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -65,6 +68,7 @@ const ProductPage = () => {
       setCurrentProduct(response.data);
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -88,7 +92,8 @@ const ProductPage = () => {
       const response = await deleteProduct(id);
       navigate("/products");
     } catch (error) {
-      console.error(error);
+      console.error(error)
+      setErrorText(error.response.data.detail)
     }
   }
 
@@ -160,6 +165,7 @@ const ProductPage = () => {
         </div>
       </div>
       <div className="product__separator"></div>
+      {errorText && <NotificationManager errorMessage={errorText} />}
       <Product currentProductArr={[currentProduct, setCurrentProduct]} configName='productPageConfig'/>
     </>
   );

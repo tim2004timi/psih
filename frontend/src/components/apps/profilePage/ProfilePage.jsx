@@ -24,19 +24,19 @@ const ProfilePage = observer(() => {
 
   const [toggleStates, setToggleStates] = useState({});
   const [newUserState, setNewUserState] = useState({
-    "access_storage": false,
-    "access_crm": false,
-    "access_message": false,
-    "access_analytics": false,
-    "username": "",
-    "tg_username": "",
-    "password": ""
-  })
+    access_storage: false,
+    access_crm: false,
+    access_message: false,
+    access_analytics: false,
+    username: "",
+    tg_username: "",
+    password: "",
+  });
   const [isShowPasswordPopup, setIsShowPasswordPopup] = useState(false);
   const [isShowNewUserPopup, setIsShowNewUserPopup] = useState(false);
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [profilePageErrorText, setProfilePageErrorText] = useState('')
+  const [profilePageErrorText, setProfilePageErrorText] = useState("");
 
   const logoutOfSystem = () => {
     logout();
@@ -48,10 +48,9 @@ const ProfilePage = observer(() => {
     getUsers();
   }, []);
 
-
   useEffect(() => {
-    setProfilePageErrorText(errorText)
-  }, [errorText])
+    setProfilePageErrorText(errorText);
+  }, [errorText]);
 
   useEffect(() => {
     const initialToggleStates = usersArr.reduce((acc, user) => {
@@ -86,6 +85,10 @@ const ProfilePage = observer(() => {
       [toggleName]: checked,
     }));
   };
+
+  const resetProfilePageErrorText =() => {
+    setProfilePageErrorText('')
+  }
 
   const listOfEmployees = () => {
     return (
@@ -200,21 +203,20 @@ const ProfilePage = observer(() => {
   };
 
   const checkPassword = (password, repeatPassword) => {
-
     if (password === repeatPassword) {
-      patchUser(currentUser.id, { ['password']: password })
+      patchUser(currentUser.id, { ["password"]: password });
     } else {
-      setProfilePageErrorText("Пароли не совпадают!")
+      setProfilePageErrorText("Пароли не совпадают!");
     }
-    
-    setIsShowPasswordPopup(false)
+
+    setIsShowPasswordPopup(false);
   };
 
   useEffect(() => {
     if (profilePageErrorText) {
-      console.log(profilePageErrorText)
+      console.log(profilePageErrorText);
     }
-  }, [profilePageErrorText])
+  }, [profilePageErrorText]);
 
   const passwordPopup = () => {
     return (
@@ -257,24 +259,39 @@ const ProfilePage = observer(() => {
           className="admin-page-user-popup__input"
           placeholder="Логин"
           value={newUserState.username}
-          required 
-          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, username: e.target.value }))}
+          required
+          onChange={(e) =>
+            setNewUserState((prevState) => ({
+              ...prevState,
+              username: e.target.value,
+            }))
+          }
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Телеграм @username"
           value={newUserState.tg_username}
-          required 
-          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, tg_username: e.target.value }))}
+          required
+          onChange={(e) =>
+            setNewUserState((prevState) => ({
+              ...prevState,
+              tg_username: e.target.value,
+            }))
+          }
         />
         <input
           type="text"
           className="admin-page-user-popup__input"
           placeholder="Пароль"
           value={newUserState.password}
-          required 
-          onChange={(e) => setNewUserState((prevState) => ({ ...prevState, password: e.target.value }))}
+          required
+          onChange={(e) =>
+            setNewUserState((prevState) => ({
+              ...prevState,
+              password: e.target.value,
+            }))
+          }
         />
         <div className="admin-page-newUser__switch">
           <div className="admin-page-management__switch-item">
@@ -284,7 +301,9 @@ const ProfilePage = observer(() => {
                 className="toggle-checkbox"
                 type="checkbox"
                 checked={newUserState.access_storage || false}
-                onChange={(e) => handleNewUserToggleChange("access_storage", e.target.checked)}
+                onChange={(e) =>
+                  handleNewUserToggleChange("access_storage", e.target.checked)
+                }
               />
               <div className="toggle-switch"></div>
             </label>
@@ -296,7 +315,9 @@ const ProfilePage = observer(() => {
                 className="toggle-checkbox"
                 type="checkbox"
                 checked={newUserState.access_message || false}
-                onChange={(e) => handleNewUserToggleChange("access_message", e.target.checked)}
+                onChange={(e) =>
+                  handleNewUserToggleChange("access_message", e.target.checked)
+                }
               />
               <div className="toggle-switch"></div>
             </label>
@@ -308,7 +329,9 @@ const ProfilePage = observer(() => {
                 className="toggle-checkbox"
                 type="checkbox"
                 checked={newUserState.access_crm || false}
-                onChange={(e) => handleNewUserToggleChange("access_crm", e.target.checked)}
+                onChange={(e) =>
+                  handleNewUserToggleChange("access_crm", e.target.checked)
+                }
               />
               <div className="toggle-switch"></div>
             </label>
@@ -320,7 +343,12 @@ const ProfilePage = observer(() => {
                 className="toggle-checkbox"
                 type="checkbox"
                 checked={newUserState.access_analytics || false}
-                onChange={(e) => handleNewUserToggleChange("access_analytics", e.target.checked)}
+                onChange={(e) =>
+                  handleNewUserToggleChange(
+                    "access_analytics",
+                    e.target.checked
+                  )
+                }
               />
               <div className="toggle-switch"></div>
             </label>
@@ -337,7 +365,7 @@ const ProfilePage = observer(() => {
               className="admin-page-user__button admin-page-user__button--p30"
               onClick={(e) => {
                 // console.log(newUserState)
-                createUser(newUserState); 
+                createUser(newUserState);
                 setIsShowNewUserPopup(false);
               }}
             >
@@ -428,7 +456,9 @@ const ProfilePage = observer(() => {
         {isShowNewUserPopup && newUserPopup()} */}
       </div>
       {currentUser.admin && listOfEmployees()}
-      {profilePageErrorText && <NotificationManager errorMessage={profilePageErrorText} />}
+      {profilePageErrorText && (
+        <NotificationManager errorMessage={profilePageErrorText} resetFunc={resetProfilePageErrorText}/>
+      )}
     </>
   );
 });

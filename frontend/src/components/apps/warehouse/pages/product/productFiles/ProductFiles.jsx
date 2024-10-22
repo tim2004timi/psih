@@ -3,19 +3,22 @@ import "./ProductFiles.css";
 import { useOutletContext } from "react-router-dom";
 import tshirts from "../../../../../../assets/img/tshirts.svg";
 import download from "../../../../../../assets/img/product_file_download.png";
-import { uploadProductFile } from "../../../../../../API/productsApi";
+import close from '../../../../../../assets/img/close_filter.png'
+import { uploadProductFile, deleteProductFile } from "../../../../../../API/productsApi";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
 import getImgName from '../../../../../../API/getImgName'
 import { Tooltip } from "react-tooltip";
+import NotificationManager from "../../../../../notificationManager/NotificationManager";
 
 const ProductFiles = () => {
   const { currentProduct, setCurrentProduct, currentConfig } =
     useOutletContext();
-  const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с"];
+  const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с", 'x'];
   const [currentProductsFiles, setCurrentProductsFiles] = useState([]);
   const [isFilesShowDragandDrop, setIsFilesShowDragandDrop] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const [errorText, setErrorText] = useState('')
 
   const columnConfig = {
     // изображение: {
@@ -34,7 +37,7 @@ const ProductFiles = () => {
     название: {
       className: "product-file-column",
       content: (row) => {
-        const fileName = getImgName(row.url)
+        const fileName = getImgName(row.url);
         return (
           // (row.image != false && row.url != null) &&
           <div
@@ -99,7 +102,51 @@ const ProductFiles = () => {
         );
       },
     },
+    x: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          <div className="product-file-column__container">
+            <button
+              className="product-file-column__btn"
+              onClick={() => {
+                removeFile(row.id);
+              }}
+            >
+              <img
+                src={close}
+                alt="close"
+                className="product-file-column__img"
+              />
+            </button>
+          </div>
+        );
+      },
+    },
   };
+
+  const removeFile = async(fileId) => {
+    // if (currentConfig.newProductFlag) {
+    //   try {
+    //     setProductsImages((prevImages) =>
+    //       prevImages.filter((img) => img.name !== cnt)
+    //     );
+    //   } catch (e) {
+    //     console.error(e);
+    //     setErrorText(e.response.data.detail)
+    //   }
+    // } else {
+      try {
+        await deleteProductFile(fileId);
+        setCurrentProductsFiles((prevFiles) =>
+          prevFiles.filter((file) => file.id !== fileId)
+        );
+      } catch (e) {
+        console.error(e);
+        setErrorText(e.response.data.detail)
+      }
+    }
+  // }
 
   useEffect(() => {
     setCurrentProductsFiles(currentProduct.files);
@@ -114,6 +161,7 @@ const ProductFiles = () => {
         setCurrentProductsFiles((prevFiles) => [...prevFiles, response]);
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
+        setErrorText(error.response.data.detail)
       }
     });
 
@@ -170,6 +218,7 @@ const ProductFiles = () => {
           accept="image/*"
         />
       </div>
+      {errorText && <NotificationManager errorMessage={errorText} />}
       {/* {isFilesShowDragandDrop && (
         <form className="files-dragAndDrop">
           <div

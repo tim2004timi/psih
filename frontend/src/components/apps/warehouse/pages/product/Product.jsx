@@ -38,6 +38,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
   const [productsImages, setProductsImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
+  const [errorText, setErrorText] = useState('')
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
@@ -102,6 +103,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
         setProductsImages((prevImages) => [...prevImages, response]);
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
+        setErrorText(error.response.data.detail)
       }
     });
 
@@ -204,6 +206,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
         );
       } catch (e) {
         console.error(e);
+        setErrorText(e.response.data.detail)
       }
     } else {
       try {
@@ -213,6 +216,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
         );
       } catch (e) {
         console.error(e);
+        setErrorText(e.response.data.detail)
       }
     }
   };
@@ -245,6 +249,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       // console.log(response.data);
     } catch (error) {
       console.error(error);
+      setErrorText(error.response.data.detail)
     }
   };
 
@@ -275,7 +280,9 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       showNewProduct(false)
     } catch (error) {
       console.error(error);
+      setErrorText(error.response.data.detail)
     }
+
   }
 
   return (
@@ -388,6 +395,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             </Link>
           </div>
         </div>
+        {errorText && <NotificationManager errorMessage={errorText} />}
         <Outlet context={{ currentProduct, setCurrentProduct, currentConfig }} />
       </div>
     </div>

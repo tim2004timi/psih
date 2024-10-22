@@ -31,6 +31,7 @@ import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
 import NotificationManager from '../../../../notificationManager/NotificationManager';
+import getArticleName from '../../../../../API/getArticleName.js'
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -322,7 +323,7 @@ const Products = () => {
       console.log('успешно', response)
     } catch (e) {
       console.error(e);
-      setNotificationMessage(e.response.data.detail);
+      // setNotificationMessage(e.response.data.detail);
     }
   }
 
@@ -363,7 +364,7 @@ const Products = () => {
         [name]: response.data.id,
       }));
     } catch (e) {
-      // console.error(e)
+      console.error(e)
       setNotificationMessage(e.response.data.detail);
       // console.log(e.response.data.detail)
     }
@@ -411,21 +412,21 @@ const Products = () => {
         ) : null;
       },
     },
-    // артикул: {
-    //   className: "products-column column-article",
-    //   content: (row) => {
-    //     const isChecked = checkboxStates[row.id] || false;
-    //     return row.article ? (
-    //       <div
-    //         className={`products-column-container column-article__container ${
-    //           isChecked ? "product-colums-selected" : ""
-    //         }`}
-    //       >
-    //         {row.article}
-    //       </div>
-    //     ) : null;
-    //   },
-    // },
+    артикул: {
+      className: "products-column column-article",
+      content: (row) => {
+        const isChecked = checkboxStates[row.id] || false;
+        return row?.modifications[0]?.article ? (
+          <div
+            className={`products-column-container column-article__container ${
+              isChecked ? "product-colums-selected" : ""
+            }`}
+          >
+            {getArticleName(row?.modifications[0]?.article)}
+          </div>
+        ) : null;
+      },
+    },
     цена: {
       className: "products-column column-price",
       content: (row) => {
@@ -445,13 +446,14 @@ const Products = () => {
       className: "products-column column-product-remains",
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
+        const remainingSum = row.modifications.reduce((acc, modification) => acc + modification.remaining, 0);
         return (
           <div
             className={`products-column-container column-remains__container ${
               isChecked ? "product-colums-selected" : ""
             }`}
           >
-            {row.remaining + " " + row.measure}
+            {remainingSum + " " + row.measure}
           </div>
         );
       },
@@ -612,7 +614,7 @@ const Products = () => {
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
               onClick={() => {
                 deleteSelectedProducts(activeCheckboxIds);
-                fetchProductsNA();
+                fetchProducts(false);
               }}
             >
               <img

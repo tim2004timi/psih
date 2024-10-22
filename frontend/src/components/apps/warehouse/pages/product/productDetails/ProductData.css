@@ -158,3 +158,33 @@
 .product-data__remains-content{
     font-size: 14px;
 }
+
+.product-data__size{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.product-data__size-text{
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+}
+
+.product-data__size-items{
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.product-data__size-item{
+    border-radius: 7px;
+    font-size: 14px;
+    padding: 11.5px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.product-data__size-item:hover{
+    background-color: rgba(230, 230, 230, 1);
+}
