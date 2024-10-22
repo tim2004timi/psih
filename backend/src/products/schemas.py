@@ -125,7 +125,7 @@ class Modification(ModificationBase):
 
     id: int
     product_id: int
-    product: "ProductWithoutModifications"
+    # product: "ProductWithoutModifications"
 
 
 class ModificationInOrderBase(BaseModel):

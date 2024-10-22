@@ -44,7 +44,7 @@ class File(Base):
 
     # Связь с Party
     party: Mapped["Party"] = relationship(
-        "Product",
+        "Party",
         back_populates="files",
         primaryjoin="and_(foreign(File.owner_id) == Party.id, File.owner_type == 'Party')",
         foreign_keys=[owner_id],
