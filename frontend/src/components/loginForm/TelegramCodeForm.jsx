@@ -48,10 +48,6 @@ const TelegramCodeForm = observer(({ usersData }) => {
     }
   }, [timer]);
 
-  // if (isAuthInProgress) {
-  //   return <div style={{textAlign: "center"}}>Checking auth...</div>;
-  // }
-
   return (
     !isAuth ? 
     <div className="authorization">
@@ -66,6 +62,12 @@ const TelegramCodeForm = observer(({ usersData }) => {
           Введите код. Мы отправим его на ваш телеграм.{" "}
           <a href="https://t.me/psihsystem_bot" className="tegram-code__link">
             @psihsystem_bot
+            <div className="tegram-code-img">
+              <img className='tegram-code-img__img' src={telegram_qr_img} alt="qr" />
+              <div className="telegram-overlay">
+                <img src={telegram_qr} alt="qr" className="telegram-overlay__qr" />
+              </div>
+            </div>
           </a>
         </p>
         <button 
@@ -89,13 +91,6 @@ const TelegramCodeForm = observer(({ usersData }) => {
             ВОЙТИ
           </button>
         </form>
-        {/* <button 
-          type="button" 
-          className="tegram-code-btn" 
-          onClick={() => checkAuth()}
-        >
-          checkAuth
-        </button> */}
         <p className="tegram-code__error-text">{errorText}</p>
       </div>
     </div>

@@ -30,7 +30,7 @@ import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
-import Notification from "../../../../notification/Notification.jsx";
+import NotificationManager from '../../../../notificationManager/NotificationManager';
 
 const Products = () => {
   const dispatch = useDispatch();
@@ -75,7 +75,8 @@ const Products = () => {
 
   const warehouseTableBtnContainerRef = useRef(null);
 
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
@@ -106,7 +107,6 @@ const Products = () => {
   };
 
   const handleCheckboxChange = (rowId, event) => {
-    console.log(rowId)
     event.stopPropagation();
     setLastSelectedIndex(rowId);
 
@@ -262,9 +262,8 @@ const Products = () => {
         ...new Set([...prevCategories, ...newCategories]),
       ]);
     } catch (e) {
-      // <Notification message={`${e.response.data.detail}`} />
-      setError(e.response.data.detail)
-      console.log(e)
+      console.error(e);
+      setNotificationMessage(e.response.data.detail);
     }
   }
 
@@ -276,6 +275,7 @@ const Products = () => {
       dispatch(setProductsNA(response.data));
     } catch (e) {
       console.error(e);
+      setNotificationMessage(e.response.data.detail);
     }
   }
 
@@ -312,6 +312,7 @@ const Products = () => {
       fetchProducts(false);
     } catch (e) {
       console.error(e);
+      setNotificationMessage(e.response.data.detail);
     }
   }
 
@@ -320,7 +321,8 @@ const Products = () => {
       const response = await deleteProducts(idArr);
       console.log('успешно', response)
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      setNotificationMessage(e.response.data.detail);
     }
   }
 
@@ -344,7 +346,8 @@ const Products = () => {
         });
         categoriesSettingsInputRef.current.value = "";
       } catch (e) {
-        console.error(e);
+        console.error(e)
+        setNotificationMessage(e.response.data.detail);
       }
     },
     [categoriesObj]
@@ -360,7 +363,9 @@ const Products = () => {
         [name]: response.data.id,
       }));
     } catch (e) {
-      setError(e.response.data.detail)
+      // console.error(e)
+      setNotificationMessage(e.response.data.detail);
+      // console.log(e.response.data.detail)
     }
   };
 
@@ -800,7 +805,7 @@ const Products = () => {
         </div>
         <Tooltip id="category-tooltip" />
       </div>
-      {error && <Notification message={error} />}
+      {notificationMessage && <NotificationManager errorMessage={notificationMessage} />}
     </>
   );
 };

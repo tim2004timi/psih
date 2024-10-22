@@ -81,14 +81,22 @@
 .tegram-code-img{
     padding: 10px;
     cursor: pointer;
-    border: 1px solid red;
+    /* border: 1px solid red; */
+    display: inline;
 }
 
-/* .tegram-code-img__img {
-    padding: 10px;
+.tegram-code-img__img {
+    /* padding: 10px; */
     cursor: pointer;
-    border: 1px solid red;
-} */
+    /* border: 1px solid red; */
+    /* width: 15px; */
+    height: 15px;
+    vertical-align: middle;
+}
+
+.tegram-code-img__img:hover ~ .telegram-overlay {
+    display: flex;
+}
 
 .telegram-overlay {
     position: fixed;
@@ -106,10 +114,6 @@
 .telegram-overlay__qr {
     max-width: 80%;
     max-height: 80%;
-}
-
-.tegram-code-img:hover > .telegram-overlay {
-    display: flex;
 }
 
 .tegram-code-btn {

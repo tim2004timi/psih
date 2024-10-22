@@ -252,15 +252,6 @@
     position: relative;
 }
 
-.column-number__container {
-    display: flex;
-    align-items: center;
-    border: 1px solid transparent;
-    border-radius: 7px;
-    padding: 5px 0;
-    height: 28px;
-}
-
 .column-number-input__container {
     position: relative;
     display: inline-block;
@@ -336,7 +327,7 @@
 }
 
 .column-name__container-img:hover .column-name__img {
-    transform: scale(10) translate(20px, 0);
+    transform: scale(10) translate(20px, 5px);
     border-radius: 7px;
     box-shadow: 0 0 0 0.4px black;
 }

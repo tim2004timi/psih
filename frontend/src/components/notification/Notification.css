@@ -1,35 +1,70 @@
-.notification{
+.notification {
+    background-color: #f8d7da;
+    padding: 10px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-top: 10px;
     display: flex;
-    flex-direction: column;
-    padding: 20px;
-    gap: 15px;
-    background-color: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(40px);
-    position: absolute;
-    border-radius: 7px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    right: 10px;
-    width: auto;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.5s, fadeOut 5s;
 }
 
-.notification.hidden{
+.notification.errorItem{
+    border: 1px solid #f5c6cb;
+    background-color: #f8d7da;
+}
+
+.notification.succeessItem{
+    background-color: #daf8d7;
+    border: 1px solid #bcf5ad;
+}
+
+.notification.hidden {
     display: none;
 }
 
-.notification__btn{
-    display: flex;
-    justify-content: end;
-    align-items: center;
-}
-
-.notification__btn-button{
-    background-color: transparent;
+.notification__btn {
+    color: #fff;
     border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
     cursor: pointer;
-    padding: 0;
 }
 
-.notification__text{
-    text-align: center;
+.notification__btn.errorItem{
+    background-color: #721c24;
+}
 
+.notification__btn:hover.notification__btn.errorItem {
+    background-color: #5a1a1f;
+}
+
+.notification__btn.succeessItem{
+    background-color: #1d721c;
+}
+
+.notification__btn:hover.notification__btn.succeessItem {
+    background-color: #295a1a;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
 }

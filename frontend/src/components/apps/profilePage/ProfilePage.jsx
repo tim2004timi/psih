@@ -7,7 +7,7 @@ import AuthStore from "../../../AuthStore";
 import { useNavigate } from "react-router-dom";
 import UserStore from "../../../UserStore";
 import { observer } from "mobx-react-lite";
-import { toJS } from "mobx";
+import NotificationManager from "../../notificationManager/NotificationManager";
 
 const ProfilePage = observer(() => {
   const { logout } = AuthStore;
@@ -18,6 +18,7 @@ const ProfilePage = observer(() => {
     getUsers,
     patchUser,
     createUser,
+    errorText,
   } = UserStore;
   const navigate = useNavigate();
 
@@ -35,6 +36,7 @@ const ProfilePage = observer(() => {
   const [isShowNewUserPopup, setIsShowNewUserPopup] = useState(false);
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [profilePageErrorText, setProfilePageErrorText] = useState('')
 
   const logoutOfSystem = () => {
     logout();
@@ -45,6 +47,11 @@ const ProfilePage = observer(() => {
     getCurrentUser();
     getUsers();
   }, []);
+
+
+  useEffect(() => {
+    setProfilePageErrorText(errorText)
+  }, [errorText])
 
   useEffect(() => {
     const initialToggleStates = usersArr.reduce((acc, user) => {
@@ -193,13 +200,21 @@ const ProfilePage = observer(() => {
   };
 
   const checkPassword = (password, repeatPassword) => {
+
     if (password === repeatPassword) {
       patchUser(currentUser.id, { ['password']: password })
-      setIsShowPasswordPopup(false)
     } else {
-      alert("Пароли не совпадают!");
+      setProfilePageErrorText("Пароли не совпадают!")
     }
+    
+    setIsShowPasswordPopup(false)
   };
+
+  useEffect(() => {
+    if (profilePageErrorText) {
+      console.log(profilePageErrorText)
+    }
+  }, [profilePageErrorText])
 
   const passwordPopup = () => {
     return (
@@ -413,6 +428,7 @@ const ProfilePage = observer(() => {
         {isShowNewUserPopup && newUserPopup()} */}
       </div>
       {currentUser.admin && listOfEmployees()}
+      {profilePageErrorText && <NotificationManager errorMessage={profilePageErrorText} />}
     </>
   );
 });

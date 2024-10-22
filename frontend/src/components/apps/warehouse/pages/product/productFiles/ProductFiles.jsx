@@ -5,6 +5,8 @@ import tshirts from "../../../../../../assets/img/tshirts.svg";
 import download from "../../../../../../assets/img/product_file_download.png";
 import { uploadProductFile } from "../../../../../../API/productsApi";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
+import getImgName from '../../../../../../API/getImgName'
+import { Tooltip } from "react-tooltip";
 
 const ProductFiles = () => {
   const { currentProduct, setCurrentProduct, currentConfig } =
@@ -32,11 +34,15 @@ const ProductFiles = () => {
     название: {
       className: "product-file-column",
       content: (row) => {
+        const fileName = getImgName(row.url)
         return (
           // (row.image != false && row.url != null) &&
-          <div className="product-file-column__container">
-            {/* {row.url} */}
-            файл
+          <div
+            data-tooltip-id="product-file-name-tooltip"
+            data-tooltip-content={fileName}
+            className="product-file-column__container"
+          >
+            {fileName}
           </div>
         );
       },
@@ -56,7 +62,9 @@ const ProductFiles = () => {
       content: (row) => {
         return (
           // row.size != null &&
-          <div className="product-file-column__container">{formatDateTime(row.created_at)}</div>
+          <div className="product-file-column__container">
+            {formatDateTime(row.created_at)}
+          </div>
         );
       },
     },
@@ -146,6 +154,7 @@ const ProductFiles = () => {
         </thead>
         <tbody>{currentProductsFiles && renderRows()}</tbody>
       </table>
+      <Tooltip id="category-tooltip" />
       <div className="product-files-table__add">
         <span
           className="product-files-table__add-btn"
