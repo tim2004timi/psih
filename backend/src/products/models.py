@@ -64,7 +64,13 @@ class Modification(Base):
         back_populates="modification",
         cascade="all, delete-orphan",
         passive_deletes=True,
-    )  # TODO: убрать
+    )
+
+    modifications_in_party: Mapped[List["ModificationInParty"]] = relationship(
+        back_populates="modification",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class ModificationInOrder(Base):
@@ -97,3 +103,6 @@ class ModificationInParty(Base):
 
     party_id: Mapped[int] = mapped_column(ForeignKey("parties.id", ondelete="CASCADE"))
     party: Mapped["Party"] = relationship(back_populates="modifications_in_party")
+
+
+from ..parties.models import Party

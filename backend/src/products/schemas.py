@@ -145,7 +145,26 @@ class ModificationInOrder(ModificationInOrderBase):
     model_config = ConfigDict(from_attributes=True)
 
     modification: "Modification"
-    # order: "Order"
+    id: int
+
+
+class ModificationInPartyBase(BaseModel):
+    amount: int
+
+
+class ModificationInPartyCreate(ModificationInOrderBase):
+    modification_id: int
+    party_id: int
+
+
+class ModificationInPartyCreateWithoutParty(ModificationInOrderBase):
+    modification_id: int
+
+
+class ModificationInParty(ModificationInOrderBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    modification: "Modification"
     id: int
 
 
