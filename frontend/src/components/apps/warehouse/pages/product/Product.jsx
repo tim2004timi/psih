@@ -30,7 +30,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       "discount_price": 0,
       "category_id": null,
       "measure": "шт.",
-      "size": "S",
+      "sizes": [],
       "remaining": 0,
       "archived": false
     }

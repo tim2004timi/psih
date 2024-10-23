@@ -5,6 +5,7 @@ import { patchProduct } from '../../../../../../API/productsApi';
 import { useParams } from 'react-router-dom';
 import { getCategories } from '../../../../../../API/productsApi';
 import NotificationManager from "../../../../../notificationManager/NotificationManager";
+import sortSizes from '../../../../../../API/sortSizes';
 
 const ProductData = () => {
     const { id } = useParams();
@@ -15,6 +16,7 @@ const ProductData = () => {
     const [groupListSelectedItem, setGroupListSelectedItem] = useState('');
     const [isShowGroupList, setIsShowGroupList] = useState(false);
     const [errorText, setErrorText] = useState('');
+    const [arrSize, setArrSize] = useState([])
 
     useEffect(() => {
       if (currentProduct && currentProduct.modifications) {
@@ -42,9 +44,9 @@ const ProductData = () => {
       }
     }, [productsModification]);
 
-    // useEffect(() => {
-    //   console.log(currentProductsModification);
-    // }, [currentProductsModification]);
+    useEffect(() => {
+      console.log(currentProduct);
+    }, [currentProduct]);
 
     const handleChange = (value, field) => {
         setCurrentProduct((prev) => ({ ...prev, [field]: value }));
@@ -72,10 +74,6 @@ const ProductData = () => {
           }
       }
   }, [categoriesObj, currentProduct.category_id]);
-
-    useEffect(() => {
-      console.log(productsModification);
-    }, [productsModification]);
 
     useEffect(() => {
       fetchCategories();
@@ -116,6 +114,20 @@ const ProductData = () => {
         </div>
       );
     };
+
+    const addSize = (size) => {
+      if (!arrSize.includes(size)) {
+        setArrSize((prev) => {
+          const newArrSize = [...prev, size];
+          newArrSize.sort(sortSizes);
+          return newArrSize;
+        });
+      }
+    };
+
+    useEffect(() => {
+      console.log(arrSize)
+    }, [arrSize])
 
     return (
       <div className="product-data">
@@ -297,20 +309,65 @@ const ProductData = () => {
         )}
         <div className="product-data__size">
           <p className="product-data__size-text">Размеры</p>
-          <div className="product-data__size-items">
-            {currentProduct?.modifications?.map((modification) => {
-              return (
-                <button
-                  className="product-data__size-item"
-                  onClick={() =>
-                    returnCurrentProductsModification(modification.size)
-                  }
-                >
-                  {modification.size}
-                </button>
-              );
-            })}
-          </div>
+          {Object.keys(productsModification).length > 0 ? (
+            <div className="product-data__size-items">
+              {currentProduct?.modifications?.map((modification) => {
+                return (
+                  <button
+                    className="product-data__size-item"
+                    onClick={() =>
+                      returnCurrentProductsModification(modification.size)
+                    }
+                  >
+                    {modification.size}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="product-data__size-items">
+              <button
+                className="product-data__size-item"
+                onClick={() =>
+                  addSize('S')
+                }
+              >
+                S
+              </button>
+              <button
+                className="product-data__size-item"
+                onClick={() =>
+                  addSize('M')
+                }
+              >
+                M
+              </button>
+              <button
+                className="product-data__size-item"
+                onClick={() =>
+                  addSize('L')
+                }
+              >
+                L
+              </button>
+              <button
+                className="product-data__size-item"
+                onClick={() =>
+                  addSize('XL')
+                }
+              >
+                XL
+              </button>
+              <button
+                className="product-data__size-item"
+                onClick={() =>
+                  addSize('XXL')
+                }
+              >
+                XXL
+              </button>
+            </div>
+          )}
         </div>
         {errorText && <NotificationManager errorMessage={errorText} />}
       </div>
