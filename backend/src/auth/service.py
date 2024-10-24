@@ -38,12 +38,18 @@ async def login(user: UserSchema = Depends(validate_auth_user)):
             detail="Telegram-аккаунт не привязан. Пожалуйста, начните диалог с ботом для привязки аккаунта.",
         )
 
-    # Отправка кода через Telegram-бота
-    await bot.send_message(
-        chat_id=int(chat_id),
-        text=f"Ваш 2FA код: <code>{code}</code>",
-        parse_mode="HTML",
-    )
+    try:
+        # Отправка кода через Telegram-бота
+        await bot.send_message(
+            chat_id=int(chat_id),
+            text=f"Ваш 2FA код: <code>{code}</code>",
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail="Не получается отправить код в Telegram. Попробуйте позже",
+        )
 
     return {"message": "2FA код отправлен через Telegram"}
 
