@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setIds } from "./../../../stm/idsSlice";
 import { formatDateTime } from "../../../../API/formateDateTime";
+import NotificationManager from "../../../notificationManager/NotificationManager";
 
 const OrderTable = ({
   selectedColumns,
@@ -33,6 +34,7 @@ const OrderTable = ({
     handleFetchData,
     handleTagList,
   ] = childValue;
+  const [errorText, setErrorText] = useState('')
 
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
@@ -126,6 +128,7 @@ const OrderTable = ({
       handleTagList(Array.from(tags));
     } catch (error) {
       console.error(error);
+      setErrorText(error.response.data.detail)
     }
   }
 
@@ -175,6 +178,7 @@ const OrderTable = ({
       });
     } catch (error) {
       console.error("Error updating order status:", error);
+      setErrorText(error.response.data.detail)
     }
   };
 
@@ -558,6 +562,7 @@ const OrderTable = ({
       <Tooltip id="note-tooltip" />
       <Tooltip id="comment-tooltip" />
       <Tooltip id="email-tooltip" />
+      {errorText && <NotificationManager errorMessage={errorText} />}
       {/* </SelectionArea > */}
     </>
   );

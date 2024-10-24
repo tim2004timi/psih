@@ -284,7 +284,13 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  padding-left: 25px
+  padding-left: 30px
+}
+
+.column-pt-number__content-name{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .column-pt-name__container-img{

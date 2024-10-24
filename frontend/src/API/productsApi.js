@@ -130,6 +130,7 @@ export async function deleteProductImg(productId) {
     try {
         let response = await instance.delete(`${serverUrl}/api/products/images/?image_id=${productId}`);
         // console.log(response)
+        return response
     } catch (e) {
         throw e;
     }
@@ -151,6 +152,16 @@ export async function uploadProductFile(productId, file) {
         );
         // console.log(response);
         return response.data;
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function deleteProductFile(fileId) {
+    try {
+        let response = await instance.delete(`${serverUrl}/api/products/files/?file_id=${fileId}`);
+        // console.log(response)
+        return response
     } catch (e) {
         throw e;
     }

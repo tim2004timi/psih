@@ -225,6 +225,19 @@ button {
     cursor: pointer;
     background-color: transparent;
     border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.warehouse-table__settings-img{
+    width: 28px;
+    height: 28px;
+}
+
+.warehouse-table__settings-image{
+    width: 100%;
+    height: 100%;
 }
 
 .warehouse-table__settings-img--hover{
@@ -234,8 +247,16 @@ button {
 .warehouse-table__settings-btn:hover .warehouse-table__settings-img{
     display: none;
 }
+
 .warehouse-table__settings-btn:hover .warehouse-table__settings-img--hover{
-    display: block; 
+    display: inline; 
+    height: 28px;
+}
+
+.warehouse-table__settings-btn:hover
+.warehouse-table__settings-image--hover{
+    height: 100%;
+    width: 100%;
 }
 
 .warehouse-table__settings{

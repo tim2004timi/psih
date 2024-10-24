@@ -16,7 +16,8 @@
 }
 
 
-.product-file-column-header:last-child{
+.product-file-column-header:nth-last-child(-n+2),
+.product-file-column-header:nth-last-child(-n+2){
     color: transparent;
 }
 
@@ -41,9 +42,11 @@
   width: 20%;
 }
 
-.product-file-column-header:last-child,
-.product-file-column:last-child {
-  width: 10%;
+.product-file-column-header:nth-last-child(-n+2),
+.product-file-column-header:nth-last-child(-n+2),
+.product-file-column:nth-last-child(-n+2),
+.product-file-column:nth-last-child(-n+2) {
+  width: 5%;
 }
 
 .product-file-column__container{

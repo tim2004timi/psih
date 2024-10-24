@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './WarehouseNavBar.css';
+
 const WarehouseNavBar = () => {
   const location = useLocation();
 
@@ -9,9 +10,7 @@ const WarehouseNavBar = () => {
         <li className={ 
         `WarehouseNavBar__container-li 
         ${
-          location.pathname === '/orders' 
-          || location.pathname === '/orders/neworder/orderdata' 
-          || location.pathname === '/orders/:id/orderdata' 
+          location.pathname.startsWith('/orders') 
           ? 
           'WarehouseNavBar__container-li_active' 
           : 
@@ -22,8 +21,7 @@ const WarehouseNavBar = () => {
         <li className={
           `WarehouseNavBar__container-li 
           ${
-            location.pathname === '/products' 
-            || location.pathname === '/productsarchive' 
+            location.pathname.startsWith('/products') 
             ? 
             'WarehouseNavBar__container-li_active' 
             : 

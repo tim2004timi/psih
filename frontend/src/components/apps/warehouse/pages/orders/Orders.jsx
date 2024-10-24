@@ -3,7 +3,7 @@ import "./Orders.css";
 import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
 import settings from "../../../../../assets/img/table-settings.svg";
-import settingsHover from "../../../../../assets/img/settings_hover.png";
+import settingsHover from "../../../../../assets/img/settings_hover.svg";
 import up_btn from "../../../../../assets/img/up-btn-search.svg";
 import down_btn from "../../../../../assets/img/down-btn-search.svg";
 import close from "../../../../../assets/img/close_filter.png";
@@ -403,9 +403,14 @@ const Orders = () => {
             <PopularButton
               text={"+ Заказ"}
               isHover={true}
-              onClick={() => setIsNewOrder(isNewOrder => !isNewOrder)}
+              onClick={() => setIsNewOrder((isNewOrder) => !isNewOrder)}
             />
-            {isNewOrder && <OrderData configName='newOrderConfig' showNewOrder={setIsNewOrder} />}
+            {isNewOrder && (
+              <OrderData
+                configName="newOrderConfig"
+                showNewOrder={setIsNewOrder}
+              />
+            )}
             {/* <div className="search">
               <div className="search__btn">
                 <button
@@ -509,12 +514,20 @@ const Orders = () => {
               setShowColumnList(!showColumnList);
             }}
           >
-            <img
-              className="warehouse-table__settings-img"
-              src={settings}
-              alt="settings"
-            />
-            <img className='warehouse-table__settings-img--hover' src={settingsHover} alt="settings" />
+            <div className="warehouse-table__settings-img">
+              <img
+                className="warehouse-table__settings-image"
+                src={settings}
+                alt="settings"
+              />
+            </div>
+            <div className="warehouse-table__settings-img--hover">
+              <img
+                className="warehouse-table__settings-image--hover"
+                src={settingsHover}
+                alt="settings"
+              />
+            </div>
           </button>
           {showColumnList && (
             <div className="warehouse-table__settings" ref={columnsListRef}>

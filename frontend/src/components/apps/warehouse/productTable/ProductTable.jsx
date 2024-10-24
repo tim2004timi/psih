@@ -19,6 +19,7 @@ import getFullImageUrl from "../../../../API/getFullImgUrl";
 import "./ProductTable.css";
 import search from "../../../../assets/img/search_btn.svg";
 import close from "../../../../assets/img/close_filter.png";
+import NotificationManager from "../../../notificationManager/NotificationManager.jsx";
 
 const ProductTable = ({ showArchive, configName }) => {
   //   const productsNA = useSelector((state) => state.productsNA.productsNA);
@@ -51,6 +52,7 @@ const ProductTable = ({ showArchive, configName }) => {
   const categoriesSettingsRef = useRef(null);
 
   const [currentConfig, setCurrentConfig] = useState(null);
+  const [errorText, setErrorText] = useState('')
 
   // useEffect(() => {
   //   console.log(configName)
@@ -101,6 +103,7 @@ const ProductTable = ({ showArchive, configName }) => {
       ]);
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -111,6 +114,7 @@ const ProductTable = ({ showArchive, configName }) => {
       setProductsNA(response.data);
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -120,6 +124,7 @@ const ProductTable = ({ showArchive, configName }) => {
       setProductsA(response.data);
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -224,6 +229,7 @@ const ProductTable = ({ showArchive, configName }) => {
       currentConfig.fetchFunc();
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -234,6 +240,7 @@ const ProductTable = ({ showArchive, configName }) => {
       currentConfig.fetchFunc();
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -274,6 +281,7 @@ const ProductTable = ({ showArchive, configName }) => {
       }));
     } catch (e) {
       console.error(e);
+      setErrorText(e.response.data.detail)
     }
   };
 
@@ -304,7 +312,14 @@ const ProductTable = ({ showArchive, configName }) => {
               ></span>
             </div>
             <div className="column-pt-number__content">
-              <Link to={`/products/${row.id}`}>{row.name}</Link>
+              <Link
+                data-tooltip-id="name-tooltip"
+                data-tooltip-content={row.name}
+                to={`/products/${row.id}`}
+                className="column-pt-number__content-name"
+              >
+                {row.name}
+              </Link>
               <div className={`column-pt-name__container-img`}>
                 {row.images.length !== 0 ? (
                   <img
@@ -564,6 +579,8 @@ const ProductTable = ({ showArchive, configName }) => {
             </table>
           </div>
           <Tooltip id="category-tooltip" />
+          <Tooltip id="name-tooltip" />
+          {errorText && <NotificationManager errorMessage={errorText} />}
         </div>
       </div>
     </div>
