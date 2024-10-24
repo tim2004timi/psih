@@ -33,7 +33,7 @@ router = APIRouter(
 @router.get(
     path="/",
     response_model=List[OrderWithoutProducts],
-    description="Get all orders with all information",
+    description="Get all orders",
 )
 async def get_all_orders(
     session: AsyncSession = Depends(db_manager.session_dependency),

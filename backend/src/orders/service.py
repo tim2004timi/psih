@@ -120,7 +120,7 @@ async def upload_order_file(
     return file
 
 
-async def delete_modifications_in_order(session: AsyncSession, order):
+async def delete_modifications_in_order(session: AsyncSession, order):  # TODO: ?
     stmt = delete(ModificationInOrder).where(ModificationInOrder.id == order.id)
     await session.execute(stmt)
     await session.commit()

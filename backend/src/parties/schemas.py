@@ -5,6 +5,7 @@ from datetime import datetime
 from enum import Enum
 
 from ..schemas import File as MyFile
+from ..products.schemas import ModificationInPartyBase, Modification
 
 
 class StatusEnum(str, Enum):
@@ -22,13 +23,13 @@ class PartyBase(BaseModel):
 
 
 class PartyCreate(PartyBase):
-    modifications_in_party: List["ModificationsInPartyCreateWithoutParty"] = []
+    modifications_in_party: List["ModificationInPartyCreateWithoutParty"] = []
 
 
 class PartyUpdatePartial(PartyBase):
     agent_name: str | None = None
     status: StatusEnum | None = None
-    modifications_in_party: List["ModificationsInPartyCreateWithoutParty"] | None = None
+    modifications_in_party: List["ModificationInPartyCreateWithoutParty"] | None = None
 
 
 class Party(PartyBase):
@@ -36,7 +37,7 @@ class Party(PartyBase):
 
     id: int
     party_date: datetime
-    modifications_in_order: List["ModificationsInParty"]
+    modifications_in_party: List["ModificationInParty"]
     files: List["MyFile"]
 
 
@@ -45,12 +46,15 @@ class PartyWithoutProducts(PartyBase):
 
     id: int
     party_date: datetime
-    files: List["MyFile"]
+    # files: List["MyFile"]
 
 
-class ModificationsInPartyCreateWithoutParty:
-    pass
+class ModificationInPartyCreateWithoutParty(ModificationInPartyBase):
+    modification_id: int
 
 
-class ModificationsInParty:
-    pass
+class ModificationInParty(ModificationInPartyBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    modification: "Modification"
+    id: int

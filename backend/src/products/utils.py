@@ -10,7 +10,7 @@ def string_id(value: int) -> str:
 
 def create_auto_article(product: Product, size: str) -> str:
     eng_vowels = "aeiouy"
-    rus_letters = "йцукенгшщзхъфывапролджэячсмитьбю"
+    rus_letters = "йцукенгшщзхъфывапролджэячсмитьбю "
     forbidden_letters = eng_vowels + rus_letters
 
     article = product.name.lower()
