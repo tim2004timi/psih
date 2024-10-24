@@ -196,7 +196,7 @@ button {
 }
 
 .warehouse-table-btn__container{
-    display: flex;
+    display: none;
     align-items: center;
     gap: 18px;
     position: absolute;

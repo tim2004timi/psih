@@ -16,9 +16,12 @@ import settings from "../../../../../../assets/img/table-settings.svg";
 import InputMask from "react-input-mask";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
 import close from "../../../../../../assets/img/close_filter.png";
+import NotificationManager from "../../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
 
-const OrderData = ({configName, showNewOrder}) => {
+const OrderData = observer(({configName, showNewOrder}) => {
   const { id } = useParams();
   const [orderInfo, setOrderInfo] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +29,6 @@ const OrderData = ({configName, showNewOrder}) => {
   const [statusObj, setStatusObj] = useState({});
   const [tagObj, setTagObj] = useState({});
   // const [localPhone, setLocalPhone] = useState('')
-  const navigate = useNavigate();
   const phoneInputRef = useRef(null);
   const [unformateDate, setUnformateDate] = useState("");
   const [ordersProducts, setOrdersProducts] = useState([]);
@@ -58,6 +60,8 @@ const OrderData = ({configName, showNewOrder}) => {
   const columnsListRef = useRef(null);
 
   const [currentConfig, setCurrentConfig] = useState(null);
+
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
@@ -120,12 +124,13 @@ const OrderData = ({configName, showNewOrder}) => {
       setOrdersProducts(response.data.products_in_order);
     } catch (error) {
       setIsLoading(true);
+      setErrorText(error.response.data.detail)
     }
   };
 
-  useEffect(() => {
-    console.log(ordersProducts)
-  }, [ordersProducts])
+  // useEffect(() => {
+  //   console.log(ordersProducts)
+  // }, [ordersProducts])
 
   useEffect(() => {
     currentConfig?.startFunc();
@@ -156,8 +161,10 @@ const OrderData = ({configName, showNewOrder}) => {
   const updateOrderInfo = async (key, value) => {
     try {
       await patchOrder(id, key, value);
+      setSuccessText("Значение успешно изменено!")
     } catch (error) {
       console.error(error);
+      setErrorText(error.response.data.detail)
     }
   };
 
@@ -539,8 +546,10 @@ const OrderData = ({configName, showNewOrder}) => {
         </thead>
         {/* <tbody>{renderRows()}</tbody> */}
       </table>
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
     </div>
   );
-};
+});
 
 export default OrderData;

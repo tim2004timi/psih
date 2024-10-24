@@ -4,14 +4,9 @@ import "../../../../../../node_modules/react-tooltip/dist/react-tooltip.css";
 import { Tooltip } from "react-tooltip";
 import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
-import HeaderButton from "../../../../headerApp/headerButton/HeaderButton";
 import settings from "../../../../../assets/img/table-settings.svg";
-import plus from "../../../../../assets/img/plus_zakaz.svg";
-import close from "../../../../../assets/img/close_filter.png";
 import { Link } from "react-router-dom";
 import FilterDropDownList from "../../../../filterDropDownList/FilterDropDownList";
-import szhatie from "../../../../../assets/img/szhatie-strok.png";
-import editor from "../../../../../assets/img/editor-btn.png";
 import deleteTable from "../../../../../assets/img/delete-table.png";
 import archiveBtn from "../../../../../assets/img/toArchive-btn.png";
 import archiveBtnHover from "../../../../../assets/img/fromArchive-btn.png";
@@ -30,16 +25,19 @@ import { setProductsNA } from "../../../../stm/productsNASlice";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "../product/Product";
 import ProductTable from "../../productTable/ProductTable";
-import NotificationManager from '../../../../notificationManager/NotificationManager';
 import getArticleName from '../../../../../API/getArticleName.js'
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const Products = () => {
+const Products = observer(() => {
   const dispatch = useDispatch();
   const productsNA = useSelector((state) => state.productsNA.productsNA);
 
   const [checkboxStates, setCheckboxStates] = useState({});
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
   const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
+  let initialCheckboxStates;
 
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
@@ -76,8 +74,7 @@ const Products = () => {
 
   const warehouseTableBtnContainerRef = useRef(null);
 
-  // const [error, setError] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState(null);
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
@@ -114,7 +111,7 @@ const Products = () => {
     let countChange = 0;
 
     setCheckboxStates((prevState) => {
-      // console.log('setCheckboxStates')
+      window.getSelection().removeAllRanges();
       let upFlag;
       const newState = { ...prevState };
       // console.log(newState);
@@ -130,16 +127,11 @@ const Products = () => {
         }
 
         if (upFlag) {
-          // console.log(upFlag);
           for (let i = start + 1; i <= end; i++) {
-            console.log(i)
             if (newState[i] !== undefined) {
               newState[i] = !newState[i];
               countChange += newState[i] ? 1 : -1;
-              setActiveCheckboxIds((prevState) => {
-                // console.log(prevState);
-                return [...prevState, i]
-              });
+              setActiveCheckboxIds((prevState) => [...prevState, i]);
             }
           }
         } else {
@@ -148,15 +140,11 @@ const Products = () => {
             if (newState[i] !== undefined) {
               newState[i] = !newState[i];
               countChange += newState[i] ? 1 : -1;
-              setActiveCheckboxIds((prevState) => {
-                // console.log(prevState);
-                return [...prevState, i]
-              });
+              setActiveCheckboxIds((prevState) => [...prevState, i]);
             }
           }
         }
       } else {
-        // console.log('here');
         const wasChecked = newState[rowId] || false;
         newState[rowId] = !wasChecked;
         countChange += newState[rowId] ? 1 : -1;
@@ -170,6 +158,13 @@ const Products = () => {
   };
 
   useEffect(() => {
+
+    if (activeCheckboxCount > 0) {
+      warehouseTableBtnContainerRef.current.style.display = "flex";
+    } else {
+      warehouseTableBtnContainerRef.current.style.display = "none";
+    }
+  
     setActiveCheckboxCount(Math.floor(activeCheckboxCount));
     setActiveCheckboxIds(
       activeCheckboxIds.filter(
@@ -177,6 +172,22 @@ const Products = () => {
       )
     );
   }, [activeCheckboxCount]);
+
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      
+      if (!event.target.closest(".table") && initialCheckboxStates !== undefined) {
+        setCheckboxStates(initialCheckboxStates);
+        setActiveCheckboxCount(0);
+      }
+    };
+  
+    document.addEventListener("click", handleDocumentClick);
+  
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, [initialCheckboxStates])
 
   const showFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -240,16 +251,6 @@ const Products = () => {
     };
   }, [isFilterOpen, showColumnList]);
 
-  // useEffect(() => {
-
-  //   if (activeCheckboxCount > 0) {
-  //       warehouseTableBtnContainerRef.current.style.display = 'flex';
-  //   } else {
-  //       warehouseTableBtnContainerRef.current.style.display = 'none';
-  //   }
-
-  // }, [activeCheckboxCount])
-
   async function fetchCategories() {
     try {
       const response = await getCategories();
@@ -264,7 +265,7 @@ const Products = () => {
       ]);
     } catch (e) {
       console.error(e);
-      setNotificationMessage(e.response.data.detail);
+      setErrorText(e.response.data.detail);
     }
   }
 
@@ -274,9 +275,14 @@ const Products = () => {
       const response = await getProducts(isArchived);
       // console.log(response.data)
       dispatch(setProductsNA(response.data));
+      initialCheckboxStates = response.data.reduce((acc, row) => {
+        acc[row.id] = false;
+        return acc;
+      }, {});
+      setCheckboxStates(initialCheckboxStates);
     } catch (e) {
       console.error(e);
-      setNotificationMessage(e.response.data.detail);
+      setErrorText(e.response.data.detail);
     }
   }
 
@@ -311,19 +317,20 @@ const Products = () => {
       const responses = await Promise.all(promises);
       fetchCategories();
       fetchProducts(false);
+      setSuccessText("Продукт в архиве")
     } catch (e) {
       console.error(e);
-      setNotificationMessage(e.response.data.detail);
+      setErrorText(e.response.data.detail);
     }
   }
 
   async function deleteSelectedProducts(idArr) {
     try {
       const response = await deleteProducts(idArr);
-      console.log('успешно', response)
+      setSuccessText('Продукты удалены')
     } catch (e) {
       console.error(e);
-      // setNotificationMessage(e.response.data.detail);
+      setErrorText(e.response.data.detail);
     }
   }
 
@@ -346,9 +353,10 @@ const Products = () => {
           return newCategoriesObj;
         });
         categoriesSettingsInputRef.current.value = "";
+        setSuccessText('Категория удалена!')
       } catch (e) {
         console.error(e)
-        setNotificationMessage(e.response.data.detail);
+        setErrorText(e.response.data.detail);
       }
     },
     [categoriesObj]
@@ -363,9 +371,11 @@ const Products = () => {
         ...prevCategoriesObj,
         [name]: response.data.id,
       }));
+      setIsCategoriesSettingsOpen(false)
+      setSuccessText('Категория создана!')
     } catch (e) {
       console.error(e)
-      setNotificationMessage(e.response.data.detail);
+      setErrorText(e.response.data.detail);
       // console.log(e.response.data.detail)
     }
   };
@@ -807,9 +817,10 @@ const Products = () => {
         </div>
         <Tooltip id="category-tooltip" />
       </div>
-      {notificationMessage && <NotificationManager errorMessage={notificationMessage} />}
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
     </>
   );
-};
+});
 
 export default Products;

@@ -6,13 +6,24 @@ import editor from "../../../../../assets/img/editor-btn.png";
 import deleteTable from "../../../../../assets/img/delete-table.png";
 import settings from "../../../../../assets/img/table-settings.svg";
 import search from "../../../../../assets/img/search_btn.svg";
-import './Remains.css';
+import "./Remains.css";
 import FilterDropDownList from "../../../../filterDropDownList/FilterDropDownList";
+import { getProducts, deleteProducts } from "../../../../../API/productsApi";
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const Remains = () => {
+const Remains = observer(() => {
+  const [products, setProducts] = useState([]);
+  const [productsModification, setProductsModification] = useState([]);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
   const filterBtnRef = useRef(null);
+
+  let initialCheckboxStates;
+
+  const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
   const [selectedColumns, setSelectedColumns] = useState([
     "наименование",
@@ -36,6 +47,7 @@ const Remains = () => {
   const [tagList, setTagList] = useState(null);
   const [selectedTag, setSelectedTag] = useState([]);
 
+  const [checkboxStates, setCheckboxStates] = useState({});
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
   const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
   const [selectedFilterItems, setSelectedFilterItems] = useState({});
@@ -57,9 +69,59 @@ const Remains = () => {
     "сумма продажи",
   ];
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
+
+  useEffect(() => {
+    fetchAllProducts();
+  }, []);
+
   const showFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
+
+  async function fetchAllProducts() {
+    try {
+      const response = await getProducts(null);
+      let eachProduct = response.data.reduce((acc, row) => {
+        row.modifications.forEach((modification) => {
+          acc.push({
+            id: modification.id,
+            // images: { ...row.images },
+            // files: { ...row.files },
+            // modifications: { ...row.modifications },
+            displayName: `${row.name} (${modification.size})`,
+            remaining: modification.remaining,
+            cost_price: row.cost_price,
+            price: row.price
+          });
+        });
+        return acc;
+      }, []);
+
+      eachProduct.sort((a, b) => a.id - b.id);
+  
+      setProducts(eachProduct);
+  
+      initialCheckboxStates = response.data.reduce((acc, row) => {
+        acc[row.id] = false;
+        return acc;
+      }, {});
+      setCheckboxStates(initialCheckboxStates);
+      setIsLoading(false);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    initialCheckboxStates = products.reduce((acc, row) => {
+      acc[row.id] = false;
+      return acc;
+    }, {});
+    setCheckboxStates(initialCheckboxStates);
+  }, [products]);
 
   const handleOutsideClick = (event) => {
     if (filterBtnRef.current && filterBtnRef.current.contains(event.target)) {
@@ -84,8 +146,106 @@ const Remains = () => {
     ) {
       setShowColumnList(false);
     }
-
   };
+
+  const handleCheckboxChange = (rowId, event) => {
+    // console.log(rowId)
+    event.stopPropagation();
+    setLastSelectedIndex(rowId);
+
+    let countChange = 0;
+
+    setCheckboxStates((prevState) => {
+      let upFlag;
+      const newState = { ...prevState };
+      window.getSelection().removeAllRanges();
+      // console.log(newState);
+
+      if (event.shiftKey) {
+        const start = Math.min(lastSelectedIndex, rowId);
+        const end = Math.max(lastSelectedIndex, rowId);
+
+        if (start == rowId) {
+          upFlag = false;
+        } else {
+          upFlag = true;
+        }
+
+        if (upFlag) {
+          for (let i = start + 1; i <= end; i++) {
+            if (newState[i] !== undefined) {
+              newState[i] = !newState[i];
+              countChange += newState[i] ? 1 : -1;
+              setActiveCheckboxIds((prevState) => [...prevState, i]);
+            }
+          }
+        } else {
+          // console.log(upFlag);
+          for (let i = start; i < end; i++) {
+            if (newState[i] !== undefined) {
+              newState[i] = !newState[i];
+              countChange += newState[i] ? 1 : -1;
+              setActiveCheckboxIds((prevState) => [...prevState, i]);
+            }
+          }
+        }
+      } else {
+        const wasChecked = newState[rowId] || false;
+        newState[rowId] = !wasChecked;
+        countChange += newState[rowId] ? 1 : -1;
+        setActiveCheckboxIds((prevState) => [...prevState, rowId]);
+      }
+
+      return newState;
+    });
+
+    setActiveCheckboxCount((prevCount) => prevCount + countChange);
+  };
+
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      
+      if (!event.target.closest(".table") && initialCheckboxStates !== undefined) {
+        setCheckboxStates(initialCheckboxStates);
+        setActiveCheckboxCount(0);
+      }
+    };
+  
+    document.addEventListener("click", handleDocumentClick);
+  
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, [initialCheckboxStates])
+
+  useEffect(() => {
+    if (activeCheckboxCount > 0) {
+      if (warehouseTableBtnContainerRef.current) {
+        warehouseTableBtnContainerRef.current.style.display = "flex";
+      }
+    } else {
+      if (warehouseTableBtnContainerRef.current) {
+        warehouseTableBtnContainerRef.current.style.display = "none";
+      }
+    }
+  
+    setActiveCheckboxCount(Math.floor(activeCheckboxCount));
+    setActiveCheckboxIds(
+      activeCheckboxIds.filter(
+        (item, index) => activeCheckboxIds.indexOf(item) === index
+      )
+    );
+  }, [activeCheckboxCount]);
+
+  async function deleteSelectedProducts(idArr) {
+    try {
+      const response = await deleteProducts(idArr);
+      setSuccessText('Продукты удалены')
+    } catch (e) {
+      console.error(e);
+      setErrorText(e.response.data.detail);
+    }
+  }
 
   useEffect(() => {
     if (isFilterOpen || showColumnList) {
@@ -137,72 +297,94 @@ const Remains = () => {
     наименование: {
       className: "remains-column column-remains-name",
       content: (row) => {
-        let isChecked = true;
-        return row.name && (
+        const isChecked = checkboxStates[row.id] || false;
+        return (
+          row.displayName && (
             <div
-              className={`remains-column-container column-name__container ${
-                isChecked ? "remains-colums-selected" : ""
+              className={`products-column-container column-name__container ${
+                isChecked ? "product-colums-selected" : ""
               }`}
             >
-              {row.name}
+              <div className={`column-number-input__container`}>
+                <input
+                  type="checkbox"
+                  className="column-number-input-products"
+                  checked={isChecked}
+                  readOnly
+                />
+                <span
+                  className="column-number-input__custom-products"
+                  onClick={(event) => {
+                    handleCheckboxChange(row.id, event);
+                    event.preventDefault();
+                  }}
+                ></span>
+              </div>
+              <div className="column-number__content">{row.displayName}</div>
             </div>
+          )
         );
       },
     },
     остаток: {
       className: "remains-column column-remains",
       content: (row) => {
-        let isChecked = true;
-        return row.remains && (
-          <div
-            className={`remains-column-container column-remains__container ${
-              isChecked ? "remains-colums-selected" : ""
-            }`}
-          >
-            {row.remains}
-          </div>
+        const isChecked = checkboxStates[row.id] || false;
+        return (
+          row.remaining && (
+            <div
+              className={`remains-column-container column-remains__container ${
+                isChecked ? "remains-colums-selected" : ""
+              }`}
+            >
+              {row.remaining}
+            </div>
+          )
         );
       },
     },
     предзаказ: {
       className: "remains-column column-preorder",
       content: (row) => {
-        let isChecked = true;
+        const isChecked = checkboxStates[row.id] || false;
         return row.preorder != undefined ? (
-            <div
-              className={`remains-column-container column-prеorder__container ${
-                isChecked ? "remains-colums-selected" : ""
-              }`}
-            >
-              {row.preorder}
-            </div>
-          ) : null;
+          <div
+            className={`remains-column-container column-prеorder__container ${
+              isChecked ? "remains-colums-selected" : ""
+            }`}
+          >
+            {row.preorder}
+          </div>
+        ) : null;
       },
     },
     себестоимость: {
       className: "remains-column column-cost-price",
       content: (row) => {
-        let isChecked = true;
-        return row.cost_price && (
+        const isChecked = checkboxStates[row.id] || false;
+        return (
+          row.cost_price && (
             <div
               className={`remains-column-container column-cost-price__container ${
                 isChecked ? "remains-colums-selected" : ""
               }`}
             >
-              {row.cost_price}
+              {row.cost_price + " ₽"}
             </div>
-          );
+          )
+        );
       },
     },
     "сумма продажи": {
       className: "remains-column column-sum",
       content: (row) => {
-        return row.sum && (
-          <div
-            className={`remains-column-container column-sum__container`}
-          >
-            {row.sum}
-          </div>
+        const isChecked = checkboxStates[row.id] || false;
+        return (
+          row.price && (
+            <div className={`remains-column-container column-sum__container`}>
+              {row.price + " ₽"}
+            </div>
+          )
         );
       },
     },
@@ -216,43 +398,24 @@ const Remains = () => {
     ));
   };
 
-  const mocData = [
-        // {
-        // "наименование": "Товар 1",
-        // 'остаток': 100,
-        // 'предзаказ': 0,
-        // 'себестоимость': 100,
-        // "сумма продажи": 1000,
-        // },
-        {
-        "name": "Товар 2",
-        'remains': 200,
-        'preorder': 0,
-        'cost_price': 200,
-        "sum": 2000,
-        },
-        {
-        "name": "Товар 3",
-        'remains': 300,
-        'preorder': 0,
-        'cost_price': 300,
-        "sum": 3000,
-        },
-    ]
-    const renderRows = () => {
-        return mocData.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {selectedColumns.map((column, colIndex) => {
-              const className = columnConfig[column]?.className;
-              return (
-                <td key={colIndex} className={className}>
-                  {columnConfig[column]?.content(row)}
-                </td>
-              );
-            })}
-          </tr>
-        ));
-    };
+  const renderRows = () => {
+    return products.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {selectedColumns.map((column, colIndex) => {
+          const className = columnConfig[column]?.className;
+          return (
+            <td key={colIndex} className={className}>
+              {columnConfig[column]?.content(row)}
+            </td>
+          );
+        })}
+      </tr>
+    ));
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -274,21 +437,11 @@ const Remains = () => {
             <div className="warehouse-table-btn__counter">
               {activeCheckboxCount}
             </div>
-            <button className="warehouse-table-btn warehouse-table-btn__szhatie">
-              <img
-                className="warehouse-table-btn__img"
-                src={szhatie}
-                alt="szhatie"
-              />
-            </button>
-            <button className="warehouse-table-btn warehouse-table-btn__editor">
-              <img className="orderTable-btn__img" src={editor} alt="editor" />
-            </button>
             <button
               className="warehouse-table-btn warehouse-table-btn__delete-table"
               onClick={() => {
-                deleteSelectedOrders(activeCheckboxIds);
-                setIsFetchData(true);
+                deleteSelectedProducts(activeCheckboxIds);
+                fetchAllProducts();
               }}
             >
               <img
@@ -380,27 +533,19 @@ const Remains = () => {
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Остаток</p>
-                  <FilterDropDownList
-                    
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Предзаказ</p>
-                  <FilterDropDownList
-                 
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Себестоимость</p>
-                  <FilterDropDownList
-                   
-                  />
+                  <FilterDropDownList />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Сумма продажи</p>
-                  <FilterDropDownList
-                   
-                  />
+                  <FilterDropDownList />
                 </div>
               </div>
               <div className="filter-btn-container">
@@ -431,8 +576,10 @@ const Remains = () => {
         </thead>
         <tbody>{renderRows()}</tbody>
       </table>
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
     </>
   );
-};
+});
 
 export default Remains;

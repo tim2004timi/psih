@@ -10,8 +10,10 @@ import { useDispatch } from "react-redux";
 import { setIds } from "./../../../stm/idsSlice";
 import { formatDateTime } from "../../../../API/formateDateTime";
 import NotificationManager from "../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const OrderTable = ({
+const OrderTable = observer(({
   selectedColumns,
   childValue,
   selectedFilterItems,
@@ -34,7 +36,8 @@ const OrderTable = ({
     handleFetchData,
     handleTagList,
   ] = childValue;
-  const [errorText, setErrorText] = useState('')
+  
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   const handleCheckboxChange = (rowId, event) => {
     // console.log('handleCheckboxChange')
@@ -44,7 +47,7 @@ const OrderTable = ({
     let countChange = 0;
 
     setCheckboxStates((prevState) => {
-      // console.log('setCheckboxStates')
+      window.getSelection().removeAllRanges();
       let upFlag;
       const newState = { ...prevState };
       // console.log(newState);
@@ -176,6 +179,7 @@ const OrderTable = ({
         handleStatusList(Array.from(newStatuses));
         return newStatuses;
       });
+      setSuccessText('Статус успешно обновлен!')
     } catch (error) {
       console.error("Error updating order status:", error);
       setErrorText(error.response.data.detail)
@@ -562,10 +566,11 @@ const OrderTable = ({
       <Tooltip id="note-tooltip" />
       <Tooltip id="comment-tooltip" />
       <Tooltip id="email-tooltip" />
-      {errorText && <NotificationManager errorMessage={errorText} />}
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
       {/* </SelectionArea > */}
     </>
   );
-};
+});
 
 export default OrderTable;
