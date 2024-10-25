@@ -4,8 +4,10 @@ import "./ProductData.css";
 import { patchProduct } from "../../../../../../API/productsApi";
 import { useParams } from "react-router-dom";
 import { getCategories } from "../../../../../../API/productsApi";
-import NotificationManager from "../../../../../notificationManager/NotificationManager";
 import sortSizes from "../../../../../../API/sortSizes";
+import NotificationManager from "../../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
 const ProductData = () => {
   const { id } = useParams();
@@ -17,10 +19,12 @@ const ProductData = () => {
   const [categoriesObj, setCategoriesObj] = useState([]);
   const [groupListSelectedItem, setGroupListSelectedItem] = useState("");
   const [isShowGroupList, setIsShowGroupList] = useState(false);
-  const [errorText, setErrorText] = useState("");
   const [arrSize, setArrSize] = useState([]);
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   useEffect(() => {
+    if (Object.keys(productsModification).length > 0) return 
+
     if (currentProduct && currentProduct.modifications) {
       const modificationsMap = currentProduct.modifications.reduce(
         (acc, modification) => {
@@ -29,6 +33,7 @@ const ProductData = () => {
             article: modification.article,
             remaining: modification.remaining,
             product_id: modification.product_id,
+            size: modification.size,
           };
           return acc;
         },
@@ -37,6 +42,7 @@ const ProductData = () => {
 
       setProductsModification(modificationsMap);
     }
+    
   }, [currentProduct]);
 
   const returnCurrentProductsModification = (size) => {
@@ -90,6 +96,7 @@ const ProductData = () => {
     try {
       const updatedProduct = { ...currentProduct, [key]: value };
       const response = await patchProduct(id, updatedProduct);
+      setSuccessText('Значение изменено!')
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail);
@@ -126,7 +133,6 @@ const ProductData = () => {
       if (!prev.includes(size)) {
         const newArrSize = [...prev, size];
         newArrSize.sort(sortSizes);
-        console.log('новый массив', newArrSize)
         return newArrSize;
       } else {
         const removeSizeIndex = prev.indexOf(size);
@@ -139,8 +145,14 @@ const ProductData = () => {
     handleChange(arrSize, 'sizes')
   }, [arrSize])
 
-  const getButtonClass = (size) => {
+  const getNewProductButtonClass = (size) => {
     return arrSize.includes(size)
+      ? "product-data__size-item product-data__size-item--selected"
+      : "product-data__size-item";
+  };
+
+  const getProductPageButtonClass = (size) => {
+    return currentProductsModification?.size === size
       ? "product-data__size-item product-data__size-item--selected"
       : "product-data__size-item";
   };
@@ -324,7 +336,8 @@ const ProductData = () => {
             {currentProduct?.modifications?.map((modification) => {
               return (
                 <button
-                  className="product-data__size-item"
+                  key={modification.id}
+                  className={getProductPageButtonClass(modification.size)}
                   onClick={() =>
                     returnCurrentProductsModification(modification.size)
                   }
@@ -337,31 +350,31 @@ const ProductData = () => {
         ) : (
           <div className="product-data__size-items">
             <button
-              className={getButtonClass("S")}
+              className={getNewProductButtonClass("S")}
               onClick={() => addSize("S")}
             >
               S
             </button>
             <button
-              className={getButtonClass("M")}
+              className={getNewProductButtonClass("M")}
               onClick={() => addSize("M")}
             >
               M
             </button>
             <button
-              className={getButtonClass("L")}
+              className={getNewProductButtonClass("L")}
               onClick={() => addSize("L")}
             >
               L
             </button>
             <button
-              className={getButtonClass("XL")}
+              className={getNewProductButtonClass("XL")}
               onClick={() => addSize("XL")}
             >
               XL
             </button>
             <button
-              className={getButtonClass("XXL")}
+              className={getNewProductButtonClass("XXL")}
               onClick={() => addSize("XXL")}
             >
               XXL
@@ -369,7 +382,12 @@ const ProductData = () => {
           </div>
         )}
       </div>
-      {errorText && <NotificationManager errorMessage={errorText} />}
+      {currentConfig?.showRemainsInfo && (
+          <>
+            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+          </>
+        )}
     </div>
   );
 };

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './Notification.css'
 
-const Notification = ({ message, onClose, config }) => {
+const Notification = ({ message, onClose, config, resetFunc }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
+      resetFunc()
       onClose();
     }, 5000);
 

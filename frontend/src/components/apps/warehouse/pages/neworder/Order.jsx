@@ -7,8 +7,11 @@ import { useSelector } from 'react-redux';
 import axios from "axios";
 import { deleteOrder } from '../../../../../API/ordersAPI'; 
 import DropDownList from '../../../../dropDownList/DropDownList';
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const Order = () => {
+const Order = observer(() => {
     const { id } = useParams();
     const ids = useSelector(state => state.ids);
     // const [formData, setFormData] = useState({
@@ -33,6 +36,8 @@ const Order = () => {
     const deleteOverlayRef = useRef(null);
     const navigate = useNavigate();
 
+    const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
+
     // useEffect(() => {
     //     console.log(ordersDate)
     // }, [ordersDate]);
@@ -41,9 +46,11 @@ const Order = () => {
         try {
             const response = await deleteOrder(id);
             navigate('/orders');
-            console.log(response.data);
+            // console.log(response.data);
+            setSuccessText('Вы успешно удалили заказ!')
         } catch (error) {
             console.error(error);
+            setErrorText(error.response.data.detail)
         }
     }
 
@@ -124,9 +131,11 @@ const Order = () => {
                 </div>
             </div>
             <div className="Neworder__separator"></div>
+            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
             <Outlet context={{ ordersDate, setOrdersDate }}/>
         </div>
     );
-}
+});
  
 export default Order;

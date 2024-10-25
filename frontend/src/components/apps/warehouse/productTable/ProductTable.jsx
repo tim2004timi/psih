@@ -19,9 +19,11 @@ import getFullImageUrl from "../../../../API/getFullImgUrl";
 import "./ProductTable.css";
 import search from "../../../../assets/img/search_btn.svg";
 import close from "../../../../assets/img/close_filter.png";
-import NotificationManager from "../../../notificationManager/NotificationManager.jsx";
+import NotificationManager from "../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const ProductTable = ({ showArchive, configName }) => {
+const ProductTable = observer(({ showArchive, configName }) => {
   //   const productsNA = useSelector((state) => state.productsNA.productsNA);
   const [productsNA, setProductsNA] = useState([]);
   const [productsA, setProductsA] = useState([]);
@@ -52,7 +54,7 @@ const ProductTable = ({ showArchive, configName }) => {
   const categoriesSettingsRef = useRef(null);
 
   const [currentConfig, setCurrentConfig] = useState(null);
-  const [errorText, setErrorText] = useState('')
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   // useEffect(() => {
   //   console.log(configName)
@@ -68,6 +70,7 @@ const ProductTable = ({ showArchive, configName }) => {
         return {
           fetchFunc: fetchProductsA,
           isShowComponentHeader: true,
+          isShowNotifications: false,
           // getCurrentProducts: getProducts,
         };
       default:
@@ -89,6 +92,8 @@ const ProductTable = ({ showArchive, configName }) => {
     }
   }, [categories, productsA, productsNA]);
 
+
+
   async function fetchCategories() {
     try {
       const response = await getCategories();
@@ -103,7 +108,7 @@ const ProductTable = ({ showArchive, configName }) => {
       ]);
     } catch (e) {
       console.error(e);
-      setErrorText(e.response.data.detail)
+      setErrorText(e.response.data.detail);
     }
   }
 
@@ -145,6 +150,7 @@ const ProductTable = ({ showArchive, configName }) => {
     let countChange = 0;
 
     setCheckboxStates((prevState) => {
+      window.getSelection().removeAllRanges();
       // console.log('setCheckboxStates')
       let upFlag;
       const newState = { ...prevState };
@@ -225,8 +231,9 @@ const ProductTable = ({ showArchive, configName }) => {
       });
 
       const responses = await Promise.all(promises);
-      // fetchCategories();
+      fetchCategories();
       currentConfig.fetchFunc();
+      setSuccessText("Продукт убран из архива")
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail)
@@ -236,8 +243,9 @@ const ProductTable = ({ showArchive, configName }) => {
   async function deleteSelectedProducts(idArr) {
     try {
       const response = await deleteProducts(idArr);
-      // fetchCategories();
+      fetchCategories();
       currentConfig.fetchFunc();
+      setSuccessText('Продукты удалены')
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail)
@@ -263,8 +271,10 @@ const ProductTable = ({ showArchive, configName }) => {
           return newCategoriesObj;
         });
         categoriesSettingsInputRef.current.value = "";
+        setSuccessText('Категория удалена!')
       } catch (e) {
         console.error(e);
+        setErrorText(e.response.data.detail)
       }
     },
     [categoriesObj]
@@ -279,6 +289,7 @@ const ProductTable = ({ showArchive, configName }) => {
         ...prevCategoriesObj,
         [name]: response.data.id,
       }));
+      setSuccessText('Категория создана!')
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail)
@@ -580,11 +591,26 @@ const ProductTable = ({ showArchive, configName }) => {
           </div>
           <Tooltip id="category-tooltip" />
           <Tooltip id="name-tooltip" />
-          {errorText && <NotificationManager errorMessage={errorText} />}
+          {currentConfig?.isShowNotifications && (
+            <>
+              {errorText && (
+                <NotificationManager
+                  errorMessage={errorText}
+                  resetFunc={resetErrorText}
+                />
+              )}
+              {successText && (
+                <NotificationManager
+                  successMessage={successText}
+                  resetFunc={resetSuccessText}
+                />
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default ProductTable;

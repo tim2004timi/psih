@@ -4,11 +4,6 @@ import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
 import settings from "../../../../../assets/img/table-settings.svg";
 import settingsHover from "../../../../../assets/img/settings_hover.svg";
-import up_btn from "../../../../../assets/img/up-btn-search.svg";
-import down_btn from "../../../../../assets/img/down-btn-search.svg";
-import close from "../../../../../assets/img/close_filter.png";
-import szhatie from "../../../../../assets/img/szhatie-strok.png";
-import editor from "../../../../../assets/img/editor-btn.png";
 import deleteTable from "../../../../../assets/img/delete-table.png";
 import { Link } from "react-router-dom";
 import OrderTable from "../../OrderTable/OrderTable";
@@ -20,8 +15,11 @@ import InputMask from "react-input-mask";
 import { createOrder } from "../../../../../API/ordersAPI";
 import OrderData from "../neworder/orderDetails/OrderData";
 import AuthStore from "../../../../../AuthStore";
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const Orders = () => {
+const Orders = observer(() => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
   const filterBtnRef = useRef(null);
@@ -91,6 +89,8 @@ const Orders = () => {
     "телефон",
     "почта",
   ];
+
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
 
   const handleCheckboxCount = (checkboxCount, idsCount) => {
     setActiveCheckboxCount(checkboxCount);
@@ -282,8 +282,11 @@ const Orders = () => {
   async function deleteSelectedOrders(idArr) {
     try {
       const response = await deleteOrders(idArr);
+      console.log(response)
+      setSuccessText("Успех!")
     } catch (e) {
       console.log(e);
+      setErrorText(e.response.data.detail)
     }
   }
 
@@ -369,16 +372,6 @@ const Orders = () => {
     matches[highlightedIndex].classList.remove('highlighted');
     setHighlightedIndex(prevIndex);
     scrollToHighlighted(prevIndex);
-  };
-
-  const createOrderData = async () => {
-    const finalFields = { ...editableFields, ...statusObj, ...tagObj };
-    try {
-      const response = await createOrder(finalFields);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   const handleChange = (e, field) => {
@@ -666,8 +659,10 @@ const Orders = () => {
         isFetchData={isFetchData}
         // ref={contentRef}
       />
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText} />}
+      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
     </div>
   );
-};
+});
 
 export default Orders;

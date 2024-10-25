@@ -18,9 +18,11 @@ import { serverUrl } from "../../../../../config.js";
 import tshirts from "../../../../../assets/img/tshirts.svg";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import Product from "./Product";
-import NotificationManager from "../../../../notificationManager/NotificationManager.jsx";
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const ProductPage = () => {
+const ProductPage = observer(() => {
   const { id } = useParams();
   const navigate = useNavigate();
   const deleteOverlayRef = useRef(null);
@@ -31,8 +33,7 @@ const ProductPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const fileInputRef = useRef(null);
-  const [errorText, setErrorText] = useState('')
-
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
   // async function fetchProductsNA() {
   //   try {
   //     const response = await getProductsNA();
@@ -111,6 +112,7 @@ const ProductPage = () => {
   }
 
   if (!currentProduct) {
+    setErrorText("Продукт не найден")
     return <div>Продукт не найден</div>;
   }
 
@@ -165,10 +167,10 @@ const ProductPage = () => {
         </div>
       </div>
       <div className="product__separator"></div>
-      {errorText && <NotificationManager errorMessage={errorText} />}
+      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
       <Product currentProductArr={[currentProduct, setCurrentProduct]} configName='productPageConfig'/>
     </>
   );
-};
+});
 
 export default ProductPage;

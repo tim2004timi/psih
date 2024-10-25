@@ -16,8 +16,11 @@ import { serverUrl } from "../../../../../config.js";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
 import close from "../../../../../assets/img/close_filter.png";
 import "./Product.css";
+import NotificationManager from "../../../../notificationManager/NotificationManager";
+import NotificationStore from "../../../../../NotificationStore";
+import { observer } from 'mobx-react-lite';
 
-const Product = ({ currentProductArr, configName, showNewProduct }) => {
+const Product = observer(({ currentProductArr, configName, showNewProduct }) => {
   const fileInputRef = useRef(null);
   const { id } = useParams();
   const [currentProduct, setCurrentProduct] = useState(
@@ -38,7 +41,8 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
   const [productsImages, setProductsImages] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
-  const [errorText, setErrorText] = useState('')
+  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
+  const navigate = useNavigate();
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
@@ -101,6 +105,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       try {
         const response = await uploadProductImg(id, file);
         setProductsImages((prevImages) => [...prevImages, response]);
+        setSuccessText("Фотография успешно загружена!")
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
         setErrorText(error.response.data.detail)
@@ -204,6 +209,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
         setProductsImages((prevImages) =>
           prevImages.filter((img) => img.name !== cnt)
         );
+        setSuccessText("Фотография удалена!")
       } catch (e) {
         console.error(e);
         setErrorText(e.response.data.detail)
@@ -214,6 +220,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
         setProductsImages((prevImages) =>
           prevImages.filter((img) => img.id !== cnt)
         );
+        setSuccessText("Фотография удалена!")
       } catch (e) {
         console.error(e);
         setErrorText(e.response.data.detail)
@@ -247,6 +254,7 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       const updatedProduct = { ...currentProduct, [key]: value };
       const response = await patchProduct(id, updatedProduct);
       // console.log(response.data);
+      setSuccessText("Значение успешно изменено!")
     } catch (error) {
       console.error(error);
       setErrorText(error.response.data.detail)
@@ -269,7 +277,12 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
   async function createNewProduct(currentProduct) {
 
     if (!isImportantFieldsFilled(currentProduct)) {
-      alert('Заполните необходимые поля');
+      setErrorText('Заполните необходимые поля!');
+      return;
+    }
+
+    if (currentProduct.sizes.length === 0) {
+      setErrorText('Должен быть хотя бы один размер!');
       return;
     }
 
@@ -278,6 +291,8 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
       // console.log(response.data);
       uploadImages(productsImages, response.data.id);
       showNewProduct(false)
+      setSuccessText("Продукт создан!")
+      navigate('/products')
     } catch (error) {
       console.error(error);
       setErrorText(error.response.data.detail)
@@ -395,11 +410,16 @@ const Product = ({ currentProductArr, configName, showNewProduct }) => {
             </Link>
           </div>
         </div>
-        {errorText && <NotificationManager errorMessage={errorText} />}
+        {currentConfig?.showRemainsInfo && (
+          <>
+            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
+            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+          </>
+        )}
         <Outlet context={{ currentProduct, setCurrentProduct, currentConfig }} />
       </div>
     </div>
   );
-};
+});
 
 export default Product;
