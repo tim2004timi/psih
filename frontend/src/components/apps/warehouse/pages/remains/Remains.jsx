@@ -392,9 +392,9 @@ const Remains = observer(() => {
     },
   };
 
-  const handleSelectedRemians = (items) => {
-    setSelectedProducts(...prev, remaining: items);
-  };
+  // const handleSelectedRemians = (items) => {
+  //   setSelectedProducts(...prev, remaining: items);
+  // };
 
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (

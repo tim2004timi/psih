@@ -1,6 +1,7 @@
 import random
 
-from fastapi import Depends, HTTPException, Form
+from fastapi import Depends, HTTPException, Form, Request
+from geoip2.errors import AddressNotFoundError
 from redis.asyncio import Redis
 from aiogram import Bot
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,8 +13,13 @@ from ..database import db_manager
 from ..users.schemas import User as UserSchema
 from ..users.service import get_user_by_username
 
+import geoip2.database
+from user_agents import parse
+
 # Инициализация Redis клиента
 redis_client = Redis(host="localhost", port=6379, db=0, decode_responses=True)
+
+geoip_reader = geoip2.database.Reader("data/GeoLite2-City.mmdb")
 
 bot = Bot(token=settings.bot_token)
 
@@ -55,6 +61,7 @@ async def login(user: UserSchema = Depends(validate_auth_user)):
 
 
 async def verify_code(
+    client_request: Request,
     username: str = Form(),
     code: str = Form(),
     session: AsyncSession = Depends(db_manager.session_dependency),
@@ -80,9 +87,14 @@ async def verify_code(
 
         # Отправка уведомления о входе через Telegram-бота
         chat_id = await redis_client.get(f"telegram_chat_id:{request.username}")
+        user_info = await get_client_information(client_request)
+        user_info_string = "\n".join(
+            f"{key}: {value}" for key, value in user_info.items()
+        )
         await bot.send_message(
             chat_id=int(chat_id),
-            text=f"В ваш аккаунт <i><b>{request.username}</b></i> произведен вход",
+            text=f"В ваш аккаунт <i><b>{request.username}</b></i> произведен вход\n"
+            + user_info_string,
             parse_mode="HTML",
         )
 
@@ -92,3 +104,31 @@ async def verify_code(
         attempts += 1
         await redis_client.set(f"2fa_attempts:{request.username}", attempts)
         raise HTTPException(status_code=401, detail="Неверный 2FA код")
+
+
+async def get_client_information(request: Request) -> dict:
+    client_ip = request.client.host
+
+    user_agent = request.headers.get("User-Agent")
+    parsed_ua = parse(user_agent)
+
+    try:
+        # Определяем страну и город из локальной базы GeoLite2
+        location = geoip_reader.city(client_ip)
+        country = location.country.name
+        city = location.city.name
+    except AddressNotFoundError:
+        location = "?"
+        country = "?"
+        city = "?"
+
+    # Формируем данные для ответа
+    user_info = {
+        "IP": client_ip,
+        "Страна": country,
+        "Город": city,
+        "Браузер": parsed_ua.browser.family,
+        "ОС": parsed_ua.os.family,
+    }
+
+    return user_info

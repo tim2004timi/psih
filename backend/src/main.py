@@ -10,6 +10,7 @@ from .products.router import products_router, categories_router
 from .auth.router import router as auth_router
 from .users.router import router as users_router
 from .parties.router import router as parties_router
+from .collections.router import router as collections_router
 
 from .database import Base
 from .config import UPLOAD_DIR, DEV
@@ -98,5 +99,6 @@ main_router.include_router(products_router)
 main_router.include_router(orders_router)
 main_router.include_router(users_router)
 main_router.include_router(parties_router)
+main_router.include_router(collections_router)
 
 app.include_router(main_router)
