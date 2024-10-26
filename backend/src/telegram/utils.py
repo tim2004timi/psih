@@ -3,7 +3,7 @@ from enum import Enum
 from itertools import zip_longest
 
 import pytz
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, InlineKeyboardMarkup
 from functools import wraps
 from fastapi import HTTPException
 
@@ -71,6 +71,24 @@ def delete_and_send_new_message(func):
     async def wrapper(callback: CallbackQuery, *args, **kwargs):
         await callback.message.delete()
         await func(callback, *args, **kwargs)
+        await callback.answer()
+
+    return wrapper
+
+
+def edit_message(func):
+    @wraps(func)
+    async def wrapper(callback: CallbackQuery, *args, **kwargs):
+        # Вызываем функцию для получения нового текста и клавиатуры
+        new_text, new_reply_markup = await func(callback, *args, **kwargs)
+
+        if not new_reply_markup:
+            new_reply_markup = InlineKeyboardMarkup(inline_keyboard=[])
+
+        # Обновляем текст сообщения и клавиатуру
+        await callback.message.edit_text(text=new_text, reply_markup=new_reply_markup)
+
+        # Закрываем инлайн-уведомление
         await callback.answer()
 
     return wrapper

@@ -1,5 +1,3 @@
-from functools import reduce
-
 from aiogram import Dispatcher, Router, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -10,7 +8,6 @@ from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
 )
-from aiogram.utils.formatting import Text
 from fastapi import HTTPException
 from redis.asyncio import Redis
 
@@ -19,9 +16,9 @@ from .utils import (
     permission_decorator,
     Permission,
     get_user_from_system,
-    delete_and_send_new_message,
     grouper,
     convert_to_moscow_time,
+    edit_message,
 )
 from src.collections.service import (
     get_collections,
@@ -67,9 +64,9 @@ async def cmd_menu(message: Message):
 
 
 @router.callback_query(F.data == "menu")
-@delete_and_send_new_message
-async def menu_callback(callback: CallbackQuery):
-    await menu(event=callback)
+@edit_message
+async def menu_callback(callback: CallbackQuery) -> tuple[str, InlineKeyboardMarkup]:
+    return await menu(event=callback)
 
 
 @router.message(F.text == "📋 Меню")
@@ -79,8 +76,10 @@ async def menu_message(message: Message):
 
 @router.callback_query(F.data == "collections")
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def collections_callback(callback: CallbackQuery):
+@edit_message
+async def collections_callback(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup]:
     async with db_manager.session_maker() as session:
         collections = await get_collections(session=session)
 
@@ -107,18 +106,22 @@ async def collections_callback(callback: CallbackQuery):
 
     collections_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
 
-    await callback.message.answer(
-        "👕 <b>Коллекции:</b> ", reply_markup=collections_keyboard
-    )
-    await callback.answer()
+    return "👕 <b>Коллекции:</b>", collections_keyboard
+    # await callback.message.answer(
+    #     "👕 <b>Коллекции:</b> ", reply_markup=collections_keyboard
+    # )
+    # await callback.answer()
 
 
 @router.callback_query(F.data == "add-collection")
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def create_collection_callback(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer("🔖 Введите название коллекции:")
+@edit_message
+async def create_collection_callback(
+    callback: CallbackQuery, state: FSMContext
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    # await callback.message.answer("🔖 Введите название коллекции:")
     await state.set_state(CollectionState.name)
+    return "🔖 Введите название коллекции:", None
 
 
 @router.message(CollectionState.name)
@@ -151,8 +154,10 @@ async def collection_name_state(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.startswith("collection_"))
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def collection_detail_callback(callback: CallbackQuery):
+@edit_message
+async def collection_detail_callback(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
     collection_name = callback.data.split("_")[1]
     collection_id = int(callback.data.split("_")[2])
     async with db_manager.session_maker() as session:
@@ -183,28 +188,33 @@ async def collection_detail_callback(callback: CallbackQuery):
             [InlineKeyboardButton(text="Назад", callback_data="collections")],
         ]
     )
-
-    await callback.message.answer(
-        message.format(collection_name, summ), reply_markup=inline_keyboard
-    )
-    await callback.answer()
+    return message.format(collection_name, summ), inline_keyboard
+    # await callback.message.answer(
+    #     message.format(collection_name, summ), reply_markup=inline_keyboard
+    # )
+    # await callback.answer()
 
 
 @router.callback_query(F.data.startswith("add-note"))
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def add_note_first_step(callback: CallbackQuery, state: FSMContext):
+@edit_message
+async def add_note_first_step(
+    callback: CallbackQuery, state: FSMContext
+) -> tuple[str, InlineKeyboardMarkup | None]:
     collection_id = int(callback.data.split("_")[1])
     await state.update_data(collection_id=collection_id)
     await state.set_state(NoteState.amount)
-    await callback.message.answer("💰 Введите сумму:")
-    await callback.answer()
+    return "💰 Введите сумму:", None
+    # await callback.message.answer("💰 Введите сумму:")
+    # await callback.answer()
 
 
 @router.callback_query(F.data.startswith("rm-choice-note"))
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def choose_remove_note(callback: CallbackQuery):
+@edit_message
+async def choose_remove_note(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
     collection_name = callback.data.split("_")[1]
     collection_id = int(callback.data.split("_")[2])
     async with db_manager.session_maker() as session:
@@ -243,16 +253,19 @@ async def choose_remove_note(callback: CallbackQuery):
 
     notes_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
 
-    await callback.message.answer(
-        message.format(collection_name, summ), reply_markup=notes_keyboard
-    )
-    await callback.answer()
+    return message.format(collection_name, summ), notes_keyboard
+    # await callback.message.answer(
+    #     message.format(collection_name, summ), reply_markup=notes_keyboard
+    # )
+    # await callback.answer()
 
 
 @router.callback_query(F.data.startswith("rm-note"))
 @permission_decorator(Permission.ADMIN)
-@delete_and_send_new_message
-async def remove_note(callback: CallbackQuery):
+@edit_message
+async def remove_note(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
     note_id = int(callback.data.split("_")[1])
     inline_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -268,16 +281,21 @@ async def remove_note(callback: CallbackQuery):
             )
             await delete_collection_note(session=session, collection_note=note)
     except Exception as e:
-        await callback.message.answer(
+        return (
             f"❌ Запись не удалена! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
-            reply_markup=inline_keyboard,
+            inline_keyboard,
         )
-        await callback.answer()
-        return
-    await callback.message.answer(
-        "✅ Запись удалена успешно!", reply_markup=inline_keyboard
-    )
-    await callback.answer()
+        # await callback.message.answer(
+        #     f"❌ Запись не удалена! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
+        #     reply_markup=inline_keyboard,
+        # )
+        # await callback.answer()
+        # return
+    return "✅ Запись удалена успешно!", inline_keyboard
+    # await callback.message.answer(
+    #     "✅ Запись удалена успешно!", reply_markup=inline_keyboard
+    # )
+    # await callback.answer()
 
 
 @router.message(NoteState.amount)
@@ -326,21 +344,24 @@ async def note_name_state(message: Message, state: FSMContext):
 
 
 @router.callback_query(F.data == "something")
-@delete_and_send_new_message
-async def something_callback(callback: CallbackQuery):
+@edit_message
+async def something_callback(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
     inline_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="Назад", callback_data="menu")],
         ]
     )
-    await callback.message.answer(
-        "🔞🔞🔞🔞🔞🔞\nЖЕСТКИЙ СЕКС В МАЙНКРАФТЕ\n🔞🔞🔞🔞🔞🔞",
-        reply_markup=inline_keyboard,
-    )
-    await callback.answer()
+    return "🔞🔞🔞🔞🔞🔞\nЖЕСТКИЙ СЕКС В МАЙНКРАФТЕ\n🔞🔞🔞🔞🔞🔞", inline_keyboard
+    # await callback.message.answer(
+    #     "🔞🔞🔞🔞🔞🔞\nЖЕСТКИЙ СЕКС В МАЙНКРАФТЕ\n🔞🔞🔞🔞🔞🔞",
+    #     reply_markup=inline_keyboard,
+    # )
+    # await callback.answer()
 
 
-async def menu(event):
+async def menu(event) -> None | tuple[str, InlineKeyboardMarkup]:
     user = await get_user_from_system(event=event)
     message = "<b>➖PSIHSYSTEM➖</b>"
     if user:
@@ -348,8 +369,9 @@ async def menu(event):
         admin = "✅" if user.admin else "❌"
         message += admin
     if isinstance(event, CallbackQuery):
-        await event.message.answer(message, reply_markup=menu_inline_keyboard)
-        await event.answer()
+        # await event.message.answer(message, reply_markup=menu_inline_keyboard)
+        return message, menu_inline_keyboard
+        # await event.answer()
     elif isinstance(event, Message):
         await event.answer(message, reply_markup=menu_inline_keyboard)
 
