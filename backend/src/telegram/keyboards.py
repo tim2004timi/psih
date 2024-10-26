@@ -9,7 +9,9 @@ menu_inline_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text="👕 Коллекции", callback_data="collections"),
-            InlineKeyboardButton(text="❓ Что-то...", callback_data="something"),
+            InlineKeyboardButton(
+                text="🗒 Бизнес записи", callback_data="business-notes"
+            ),
         ]
     ]
 )

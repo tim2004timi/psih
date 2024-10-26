@@ -3,7 +3,11 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.client.default import DefaultBotProperties
 
 from src.config import settings
-from .handlers import register_handlers
+from .handlers import register_handlers as register_main_handlers
+from .collections.handlers import register_handlers as register_collection_handlers
+from .business_notes.handlers import (
+    register_handlers as register_business_notes_handlers,
+)
 from src import main as fastapi_main
 
 
@@ -23,7 +27,9 @@ async def main() -> None:
     dp = Dispatcher()
     print("Бот запущен!")
 
-    register_handlers(dp)
+    register_main_handlers(dp)
+    register_collection_handlers(dp)
+    register_business_notes_handlers(dp)
     await bot.set_my_commands(commands)
 
     try:
