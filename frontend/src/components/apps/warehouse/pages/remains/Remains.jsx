@@ -15,6 +15,7 @@ import { observer } from 'mobx-react-lite';
 
 const Remains = observer(() => {
   const [products, setProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   const [productsModification, setProductsModification] = useState([]);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -301,8 +302,8 @@ const Remains = observer(() => {
         return (
           row.displayName && (
             <div
-              className={`products-column-container column-name__container ${
-                isChecked ? "product-colums-selected" : ""
+              className={`remains-column-container column-displayName__container ${
+                isChecked ? "remains-colums-selected" : ""
               }`}
             >
               <div className={`column-number-input__container`}>
@@ -331,16 +332,14 @@ const Remains = observer(() => {
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
-          row.remaining && (
-            <div
-              className={`remains-column-container column-remains__container ${
-                isChecked ? "remains-colums-selected" : ""
-              }`}
-            >
-              {row.remaining}
-            </div>
-          )
-        );
+          <div
+            className={`remains-column-container column-remains__container ${
+              isChecked ? "remains-colums-selected" : ""
+            }`}
+          >
+            {row.remaining}
+          </div>
+        )
       },
     },
     предзаказ: {
@@ -381,13 +380,20 @@ const Remains = observer(() => {
         const isChecked = checkboxStates[row.id] || false;
         return (
           row.price && (
-            <div className={`remains-column-container column-sum__container`}>
+            <div className={`remains-column-container column-sum__container ${
+              isChecked ? "remains-colums-selected" : ""
+            }`}
+            >
               {row.price + " ₽"}
             </div>
           )
         );
       },
     },
+  };
+
+  const handleSelectedRemians = (items) => {
+    setSelectedProducts(...prev, remaining: items);
   };
 
   const renderHeaders = () => {
@@ -533,7 +539,10 @@ const Remains = observer(() => {
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Остаток</p>
-                  <FilterDropDownList />
+                  <FilterDropDownList
+                    items={products.remaining}
+                    onSelect={setProducts}
+                   />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Предзаказ</p>
