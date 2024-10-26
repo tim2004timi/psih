@@ -11,15 +11,20 @@ import FilterDropDownList from "../../../../filterDropDownList/FilterDropDownLis
 import { getProducts, deleteProducts } from "../../../../../API/productsApi";
 import NotificationManager from "../../../../notificationManager/NotificationManager";
 import NotificationStore from "../../../../../NotificationStore";
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const Remains = observer(() => {
   const [products, setProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState({});
+  const [appliedFilters, setAppliedFilters] = useState({});
   const [productsModification, setProductsModification] = useState([]);
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const filterRef = useRef(null);
   const filterBtnRef = useRef(null);
+  const dropdownRef = useRef(null);
+  const dropdowndRef = useRef(null);
 
   let initialCheckboxStates;
 
@@ -55,7 +60,7 @@ const Remains = observer(() => {
   const [isClearFDDlistSelectedItems, setIsClearFDDlistSelectedItems] =
     useState(false);
 
-  const inputPokupatelRef = useRef(null);
+  const inputNameRef = useRef(null);
 
   const inputDateOrderRef = useRef(null);
 
@@ -71,7 +76,48 @@ const Remains = observer(() => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
+  const {
+    errorText,
+    successText,
+    setErrorText,
+    setSuccessText,
+    resetErrorText,
+    resetSuccessText,
+  } = NotificationStore;
+
+  const handleSelect = (field, item) => {
+    setSelectedProducts((prevSelectedProducts) => {
+      const fieldItems = prevSelectedProducts[field] || [];
+      const isSelected = fieldItems.includes(item);
+
+      if (isSelected) {
+        // Если элемент уже выбран, удаляем его
+        return {
+          ...prevSelectedProducts,
+          [field]: fieldItems.filter((selectedItem) => selectedItem !== item),
+        };
+      } else {
+        // Если элемент не выбран, добавляем его
+        return {
+          ...prevSelectedProducts,
+          [field]: [...fieldItems, item],
+        };
+      }
+    });
+  };
+
+  const handleFilterSelection = () => {
+    setAppliedFilters(selectedProducts);
+  };
+
+  const handleClearFilter = () => {
+    setAppliedFilters({});
+    setSelectedProducts({})
+  };
+
+  // useEffect(() => {
+  //   console.log(selectedProducts);
+  // }, [selectedProducts]);
 
   useEffect(() => {
     fetchAllProducts();
@@ -94,16 +140,16 @@ const Remains = observer(() => {
             displayName: `${row.name} (${modification.size})`,
             remaining: modification.remaining,
             cost_price: row.cost_price,
-            price: row.price
+            price: row.price,
           });
         });
         return acc;
       }, []);
 
       eachProduct.sort((a, b) => a.id - b.id);
-  
+
       setProducts(eachProduct);
-  
+
       initialCheckboxStates = response.data.reduce((acc, row) => {
         acc[row.id] = false;
         return acc;
@@ -124,9 +170,10 @@ const Remains = observer(() => {
   }, [products]);
 
   const handleOutsideClick = (event) => {
-    if (filterBtnRef.current && filterBtnRef.current.contains(event.target)) {
+    if (filterBtnRef.current && filterBtnRef.current.contains(event.target) || dropdownRef.current && dropdownRef.current.contains(event.target) || dropdowndRef.current && dropdowndRef.current.contains(event.target)) {
       return;
     }
+
 
     if (filterRef.current && !filterRef.current.contains(event.target)) {
       showFilter(false);
@@ -204,19 +251,21 @@ const Remains = observer(() => {
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
-      
-      if (!event.target.closest(".table") && initialCheckboxStates !== undefined) {
+      if (
+        !event.target.closest(".table") &&
+        initialCheckboxStates !== undefined
+      ) {
         setCheckboxStates(initialCheckboxStates);
         setActiveCheckboxCount(0);
       }
     };
-  
+
     document.addEventListener("click", handleDocumentClick);
-  
+
     return () => {
       document.removeEventListener("click", handleDocumentClick);
     };
-  }, [initialCheckboxStates])
+  }, [initialCheckboxStates]);
 
   useEffect(() => {
     if (activeCheckboxCount > 0) {
@@ -228,7 +277,7 @@ const Remains = observer(() => {
         warehouseTableBtnContainerRef.current.style.display = "none";
       }
     }
-  
+
     setActiveCheckboxCount(Math.floor(activeCheckboxCount));
     setActiveCheckboxIds(
       activeCheckboxIds.filter(
@@ -240,30 +289,30 @@ const Remains = observer(() => {
   async function deleteSelectedProducts(idArr) {
     try {
       const response = await deleteProducts(idArr);
-      setSuccessText('Продукты удалены')
+      setSuccessText("Продукты удалены");
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail);
     }
   }
 
-  useEffect(() => {
-    if (isFilterOpen || showColumnList) {
-      document.addEventListener("mousedown", handleOutsideClick);
-    } else {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    }
+  // useEffect(() => {
+  //   if (isFilterOpen || showColumnList) {
+  //     document.addEventListener("mousedown", handleOutsideClick);
+  //   } else {
+  //     document.removeEventListener("mousedown", handleOutsideClick);
+  //   }
 
-    if (isFilterOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+  //   if (isFilterOpen) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "auto";
+  //   }
 
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [isFilterOpen, showColumnList]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleOutsideClick);
+  //   };
+  // }, [isFilterOpen, showColumnList]);
 
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
@@ -301,8 +350,8 @@ const Remains = observer(() => {
         return (
           row.displayName && (
             <div
-              className={`products-column-container column-name__container ${
-                isChecked ? "product-colums-selected" : ""
+              className={`remains-column-container column-displayName__container ${
+                isChecked ? "remains-colums-selected" : ""
               }`}
             >
               <div className={`column-number-input__container`}>
@@ -331,15 +380,13 @@ const Remains = observer(() => {
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
-          row.remaining && (
-            <div
-              className={`remains-column-container column-remains__container ${
-                isChecked ? "remains-colums-selected" : ""
-              }`}
-            >
-              {row.remaining}
-            </div>
-          )
+          <div
+            className={`remains-column-container column-remains__container ${
+              isChecked ? "remains-colums-selected" : ""
+            }`}
+          >
+            {row.remaining}
+          </div>
         );
       },
     },
@@ -381,7 +428,11 @@ const Remains = observer(() => {
         const isChecked = checkboxStates[row.id] || false;
         return (
           row.price && (
-            <div className={`remains-column-container column-sum__container`}>
+            <div
+              className={`remains-column-container column-sum__container ${
+                isChecked ? "remains-colums-selected" : ""
+              }`}
+            >
               {row.price + " ₽"}
             </div>
           )
@@ -390,6 +441,10 @@ const Remains = observer(() => {
     },
   };
 
+  // const handleSelectedRemians = (items) => {
+  //   setSelectedProducts(...prev, remaining: items);
+  // };
+
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (
       <th key={index} className="remains-column-header">
@@ -397,20 +452,48 @@ const Remains = observer(() => {
       </th>
     ));
   };
+  // useEffect(() => {
+  //   if (inputNameRef) {
+  //     console.log(inputNameRef.current?.value);
+  //   }
+  // }, [inputNameRef.current]);
 
   const renderRows = () => {
-    return products.map((row, rowIndex) => (
-      <tr key={rowIndex}>
-        {selectedColumns.map((column, colIndex) => {
-          const className = columnConfig[column]?.className;
-          return (
-            <td key={colIndex} className={className}>
-              {columnConfig[column]?.content(row)}
-            </td>
-          );
-        })}
-      </tr>
-    ));
+    return products
+      .filter((row) => {
+        if (Object.keys(appliedFilters).length === 0) {
+          return true;
+        }
+  
+        const remainingMatches =
+          !('remaining' in appliedFilters) ||
+          appliedFilters.remaining?.includes(row.remaining);
+        const nameMatches =
+          inputNameRef.current?.value === '' ||
+          row.displayName?.includes(inputNameRef?.current?.value);
+        const cost_priceMatches =
+          !('cost_price' in appliedFilters) ||
+          appliedFilters.cost_price?.includes(row.cost_price);
+        const priceMatches =
+          !('price' in appliedFilters) ||
+          appliedFilters.price?.includes(row.price);
+        console.log(remainingMatches)
+
+        console.log(inputNameRef.current?.value)
+        return remainingMatches && nameMatches && cost_priceMatches && priceMatches;
+      })
+      .map((row, rowIndex) => (
+        <tr key={rowIndex}>
+          {selectedColumns.map((column, colIndex) => {
+            const className = columnConfig[column]?.className;
+            return (
+              <td key={colIndex} className={className}>
+                {columnConfig[column]?.content(row)}
+              </td>
+            );
+          })}
+        </tr>
+      ));
   };
 
   if (isLoading) {
@@ -514,11 +597,11 @@ const Remains = observer(() => {
                     onChange={(e) => highlightText(e.target.value)}
                   />
                   {/* <button onClick={
-                                        () => {
-                                            highlightText()
-                                            setIsFilterOpen(false)
-                                        }
-                                    }>Найти</button> */}
+                        () => {
+                            highlightText()
+                            setIsFilterOpen(false)
+                        }
+                    }>Найти</button> */}
                   {/* <SearchableContent /> */}
                 </div>
               </div>
@@ -528,12 +611,69 @@ const Remains = observer(() => {
                   <input
                     className="filter__input filter__input--pokupatel"
                     type="text"
-                    ref={inputPokupatelRef}
+                    ref={inputNameRef}
                   />
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Остаток</p>
-                  <FilterDropDownList />
+                  {/* <FilterDropDownList
+                    items={products.remaining}
+                    onSelect={setProducts}
+                   /> */}
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild ref={dropdowndRef}>
+                      <button className="dropdown-trigger">
+                        {selectedProducts.remaining?.length > 0
+                          ? selectedProducts.remaining
+                              .map((field) => field)
+                              .join(", ")
+                          : ""}
+                        <button className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </button>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content" ref={dropdownRef}>
+                        {selectedProducts.remaining?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("remaining", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.remaining && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {products.map((product) => (
+                          <DropdownMenu.Item
+                            key={product.id}
+                            className="dropdown-item"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("remaining", product.remaining);
+                            }}
+                          >
+                            {product.remaining}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Предзаказ</p>
@@ -541,27 +681,132 @@ const Remains = observer(() => {
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Себестоимость</p>
-                  <FilterDropDownList />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        {selectedProducts.cost_price?.length > 0
+                          ? selectedProducts.cost_price
+                              .map((field) => field)
+                              .join(", ")
+                          : ""}
+                        <button className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </button>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content">
+                        {selectedProducts.cost_price?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("cost_price", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.cost_price && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {products.map((product) => (
+                          <DropdownMenu.Item
+                            key={product.id}
+                            className="dropdown-item"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("cost_price", product.cost_price);
+                            }}
+                          >
+                            {product.cost_price}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Сумма продажи</p>
-                  <FilterDropDownList />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        {selectedProducts.price?.length > 0
+                          ? selectedProducts.price
+                              .map((field) => field)
+                              .join(", ")
+                          : ""}
+                        <button className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </button>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content">
+                        {selectedProducts.price?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("price", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.price && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {products.map((product) => (
+                          <DropdownMenu.Item
+                            key={product.id}
+                            className="dropdown-item"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("price", product.price);
+                            }}
+                          >
+                            {product.price}
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
               </div>
               <div className="filter-btn-container">
                 <PopularButton
                   text="Очистить всё"
                   isHover={true}
-                  onClick={() => clearSelectedItems()}
+                  onClick={() => handleClearFilter()}
                 />
                 <PopularButton
                   text={"Применить"}
                   isHover={true}
                   onClick={() => {
-                    clearSelectedItems();
                     handleFilterSelection();
                     setIsFilterOpen(false);
-                    // console.log(inputDateOrderRef.current.value);
+                    // setSelectedProducts({})
                   }}
                 />
               </div>
@@ -576,8 +821,18 @@ const Remains = observer(() => {
         </thead>
         <tbody>{renderRows()}</tbody>
       </table>
-      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+      {errorText && (
+        <NotificationManager
+          errorMessage={errorText}
+          resetFunc={resetErrorText}
+        />
+      )}
+      {successText && (
+        <NotificationManager
+          successMessage={successText}
+          resetFunc={resetSuccessText}
+        />
+      )}
     </>
   );
 });

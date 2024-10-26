@@ -60,8 +60,8 @@ const TelegramCodeForm = observer(({ usersData }) => {
         </p>
         <p className="tegram-code__text">
           Введите код. Мы отправим его на ваш телеграм.{" "}
-          <a href="https://t.me/psihsystem_bot" className="tegram-code__link">
-            @psihsystem_bot
+          <a href="https://t.me/psihsystembot" className="tegram-code__link">
+            @psihsystembot
             <div className="tegram-code-img">
               <img className='tegram-code-img__img' src={telegram_qr_img} alt="qr" />
               <div className="telegram-overlay">
