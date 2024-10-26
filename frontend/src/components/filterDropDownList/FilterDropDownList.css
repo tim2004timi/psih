@@ -87,7 +87,7 @@
     position: absolute;
     top: 52px;
     border-radius: 7px;
-    width: 165px;
+    width: 100%;
     color: #000;
     backdrop-filter: blur(10px);
 }
@@ -97,6 +97,7 @@
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
+    z-index: 5;
 }
 
 .filterdropdownlist-list__item{

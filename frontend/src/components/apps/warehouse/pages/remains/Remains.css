@@ -1,9 +1,9 @@
-.remains-table{
+.remains-table {
     width: 1443px;
     margin: 0 auto;
 }
 
-.remains-column-header{
+.remains-column-header {
     color: rgba(0, 0, 0, 0.5);
     text-align: center;
     font-weight: normal;
@@ -12,11 +12,11 @@
     padding-top: 8px;
 }
 
-.remains-column-header:last-child{
+.remains-column-header:last-child {
     border-right: none;
 }
 
-.remains-column{
+.remains-column {
     color: rgba(0, 0, 0, 0.5);
     text-align: center;
     font-weight: normal;
@@ -26,22 +26,77 @@
     vertical-align: middle;
 }
 
-.remains-column:last-child{
+.remains-column:last-child {
     border-right: none;
 }
 
-.remains-column-container{
+.remains-column-container {
     padding: 4px 0;
     border: 1px solid transparent;
     border-radius: 7px;
 }
 
-.column-displayName__container{
+.column-displayName__container {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.remains-colums-selected{
+.remains-colums-selected {
     border: 1px solid #000;
+}
+
+/* styles.css */
+
+.dropdown-trigger {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    width: 165px;
+    height: 29px;
+    position: relative;
+    cursor: pointer;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0px 33px 0px 10px;
+    white-space: nowrap;
+}
+
+.dropdown-content {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 22px 20px;
+    border-radius: 7px;
+    width: 165px;
+    color: #000;
+    backdrop-filter: blur(10px);
+    z-index: 5;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+}
+
+.dropdown-item {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.dropdown-item--selected{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+}
+
+.dropdown-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+}
+
+.dropdown-separator {
+    border-top: 1px solid #ccc;
 }
