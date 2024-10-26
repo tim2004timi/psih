@@ -17,7 +17,7 @@ commands = [
 
 async def main() -> None:
     bot = Bot(
-        token="8029600416:AAHC6ejKwFDa1k9b39aKEInMVYURsAYvlvo",
+        token=settings.bot_token,
         default=DefaultBotProperties(parse_mode="HTML"),
     )
     dp = Dispatcher()

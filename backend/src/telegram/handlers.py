@@ -11,6 +11,7 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 from aiogram.utils.formatting import Text
+from fastapi import HTTPException
 from redis.asyncio import Redis
 
 from .keyboards import menu_inline_keyboard, menu_reply_keyboard
@@ -26,8 +27,11 @@ from src.collections.service import (
     get_collections,
     get_collection_notes_by_collection_id,
     create_collection_note,
+    delete_collection_note,
+    get_collection_note_by_id,
+    create_collection,
 )
-from ..collections.schemas import CollectionNoteCreate
+from ..collections.schemas import CollectionNoteCreate, CollectionCreate
 from ..database import db_manager
 
 
@@ -35,6 +39,10 @@ class NoteState(StatesGroup):
     amount = State()
     name = State()
     collection_id = State()
+
+
+class CollectionState(StatesGroup):
+    name = State()
 
 
 redis_client = Redis(host="localhost", port=6379, db=0, decode_responses=True)
@@ -87,8 +95,15 @@ async def collections_callback(callback: CallbackQuery):
 
     keyboard_rows = [list(filter(None, group)) for group in grouper(buttons, 2)]
 
-    back_button = [InlineKeyboardButton(text="Назад", callback_data="menu")]
-    keyboard_rows.append(back_button)
+    back_button = [
+        [
+            InlineKeyboardButton(
+                text="✏️ Добавить коллекцию", callback_data="add-collection"
+            )
+        ],
+        [InlineKeyboardButton(text="Назад", callback_data="menu")],
+    ]
+    keyboard_rows.extend(back_button)
 
     collections_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
 
@@ -96,6 +111,42 @@ async def collections_callback(callback: CallbackQuery):
         "👕 <b>Коллекции:</b> ", reply_markup=collections_keyboard
     )
     await callback.answer()
+
+
+@router.callback_query(F.data == "add-collection")
+@permission_decorator(Permission.ADMIN)
+@delete_and_send_new_message
+async def create_collection_callback(callback: CallbackQuery, state: FSMContext):
+    await callback.message.answer("🔖 Введите название коллекции:")
+    await state.set_state(CollectionState.name)
+
+
+@router.message(CollectionState.name)
+@permission_decorator(Permission.ADMIN)
+async def collection_name_state(message: Message, state: FSMContext):
+    name = message.text
+
+    inline_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="👕 Коллекции", callback_data="collections")],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+        ]
+    )
+
+    try:
+        async with db_manager.session_maker() as session:
+            collection_create = CollectionCreate(name=name)
+            await create_collection(
+                session=session, collection_create=collection_create
+            )
+    except HTTPException:
+        await message.answer(
+            "🚫 <b>Такая коллекция уже есть</b>\nВведите название уникальной коллекции",
+        )
+        return
+
+    await message.answer("✅ Коллекция создана успешно!", reply_markup=inline_keyboard)
+    await state.clear()
 
 
 @router.callback_query(F.data.startswith("collection_"))
@@ -123,6 +174,12 @@ async def collection_detail_callback(callback: CallbackQuery):
                     text="✏️ Добавить запись", callback_data=f"add-note_{collection_id}"
                 )
             ],
+            [
+                InlineKeyboardButton(
+                    text="❌ Удалить запись",
+                    callback_data=f"rm-choice-note_{collection_name}_{collection_id}",
+                )
+            ],
             [InlineKeyboardButton(text="Назад", callback_data="collections")],
         ]
     )
@@ -141,6 +198,85 @@ async def add_note_first_step(callback: CallbackQuery, state: FSMContext):
     await state.update_data(collection_id=collection_id)
     await state.set_state(NoteState.amount)
     await callback.message.answer("💰 Введите сумму:")
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("rm-choice-note"))
+@permission_decorator(Permission.ADMIN)
+@delete_and_send_new_message
+async def choose_remove_note(callback: CallbackQuery):
+    collection_name = callback.data.split("_")[1]
+    collection_id = int(callback.data.split("_")[2])
+    async with db_manager.session_maker() as session:
+        notes = await get_collection_notes_by_collection_id(
+            session=session, collection_id=collection_id
+        )
+
+    i = 0
+    summ = 0
+    message = "👕 <b>Коллекция: {0}\n💰 Всего: {1} ₽</b>\n\n"
+    while i < len(notes):
+        message += (
+            f"<b><i>{i+1}) 🕒 {convert_to_moscow_time(notes[i].created_at)} </i></b>\n"
+        )
+        message += f"    Сумма: {notes[i].amount} ₽\n"
+        message += f"    Описание: {notes[i].name}\n\n"
+        summ += notes[i].amount
+        i += 1
+    message += "<i>Выберете номер записи, которую хотите удалить</i>"
+    buttons = [
+        InlineKeyboardButton(
+            text=str(index + 1),
+            callback_data=f"rm-note_{note.id}",
+        )
+        for index, note in enumerate(notes)
+    ]
+
+    keyboard_rows = [list(filter(None, group)) for group in grouper(buttons, 2)]
+
+    back_button = [
+        InlineKeyboardButton(
+            text="Назад", callback_data=f"collection_{collection_name}_{collection_id}"
+        )
+    ]
+    keyboard_rows.append(back_button)
+
+    notes_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
+
+    await callback.message.answer(
+        message.format(collection_name, summ), reply_markup=notes_keyboard
+    )
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("rm-note"))
+@permission_decorator(Permission.ADMIN)
+@delete_and_send_new_message
+async def remove_note(callback: CallbackQuery):
+    note_id = int(callback.data.split("_")[1])
+    inline_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="👕 Коллекции", callback_data="collections")],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+        ]
+    )
+
+    try:
+        async with db_manager.session_maker() as session:
+            note = await get_collection_note_by_id(
+                session=session, collection_note_id=note_id
+            )
+            await delete_collection_note(session=session, collection_note=note)
+    except Exception as e:
+        await callback.message.answer(
+            f"❌ Запись не удалена! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
+            reply_markup=inline_keyboard,
+        )
+        await callback.answer()
+        return
+    await callback.message.answer(
+        "✅ Запись удалена успешно!", reply_markup=inline_keyboard
+    )
     await callback.answer()
 
 
@@ -202,33 +338,6 @@ async def something_callback(callback: CallbackQuery):
         reply_markup=inline_keyboard,
     )
     await callback.answer()
-
-
-# @router.callback_query(F.data == "registration")
-# async def collections_callback(callback: CallbackQuery, state: FSMContext):
-#     await callback.message.answer("Логин:")
-#     await state.set_state(RegistrationState.login)
-#     await callback.answer()
-#
-#
-# @router.message(RegistrationState.login)
-# async def login_state(message: Message, state: FSMContext):
-#     login = message.text
-#     await state.update_data(login=login)
-#     await state.set_state(RegistrationState.password)
-#     await message.answer("Пароль:")
-#
-#
-# @router.message(RegistrationState.password)
-# async def password_state(message: Message, state: FSMContext):
-#     password = message.text
-#     await state.update_data(password=password)
-#     data = await state.get_data()
-#     await message.answer(
-#         f"Успешно!\nЛогин: {data['login']}\nПароль: {data['password']}",
-#         reply_markup=menu_reply_keyboard,
-#     )
-#     await state.clear()
 
 
 async def menu(event):
