@@ -305,9 +305,14 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       <div className="product-img__content">
         {currentConfig?.showNewProductsBtn && (
           <div className="product__save-btn">
-            <button className="product__save-btn-button" onClick={() => {
-              createNewProduct(currentProduct);
-              }}>Сохранить</button>
+            <button
+              className="product__save-btn-button"
+              onClick={() => {
+                createNewProduct(currentProduct);
+              }}
+            >
+              Сохранить
+            </button>
           </div>
         )}
         <div className="product__img">
@@ -335,7 +340,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           <div className="product__name">
             <input
               className={`product__name-input ${
-                currentProduct?.name === '' ? "warning" : ""
+                currentProduct?.name === "" ? "warning" : ""
               }`}
               value={currentProduct?.name}
               onChange={(e) => handleChange(e, "name")}
@@ -348,7 +353,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
               <Link
                 className="product__content-close-btn"
                 onClick={() => showNewProduct(false)}
-                to={'/products'}
+                to={"/products"}
               >
                 <img
                   src={close}
@@ -364,20 +369,16 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
             {currentConfig?.newProductFlag ? (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/data`
-                    ? "active"
-                    : ""
+                  location.pathname === `/products/data` ? "active" : ""
                 }`}
                 to={`/products/data`}
               >
-              Данные товара
+                Данные товара
               </Link>
             ) : (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/${id}/data`
-                    ? "active"
-                    : ""
+                  location.pathname === `/products/${id}/data` ? "active" : ""
                 }`}
                 to={`/products/${id}/data`}
               >
@@ -392,14 +393,25 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
             >
               Доставка
             </Link>
-            <Link
-              className={`product__navbar-link ${
-                location.pathname === `/products/${id}/files` ? "active" : ""
-              }`}
-              to={`/products/${id}/files`}
-            >
-              Файлы
-            </Link>
+            {currentConfig?.newProductFlag ? (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/files` ? "active" : ""
+                }`}
+                to={`/products/files`}
+              >
+                Файлы
+              </Link>
+            ) : (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/${id}/files` ? "active" : ""
+                }`}
+                to={`/products/${id}/files`}
+              >
+                Файлы
+              </Link>
+            )}
             <Link
               className={`product__navbar-link ${
                 location.pathname === `/products/${id}/history` ? "active" : ""
@@ -412,11 +424,23 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
         </div>
         {currentConfig?.showRemainsInfo && (
           <>
-            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+            {errorText && (
+              <NotificationManager
+                errorMessage={errorText}
+                resetFunc={resetErrorText}
+              />
+            )}
+            {successText && (
+              <NotificationManager
+                successMessage={successText}
+                resetFunc={resetSuccessText}
+              />
+            )}
           </>
         )}
-        <Outlet context={{ currentProduct, setCurrentProduct, currentConfig }} />
+        <Outlet
+          context={{ currentProduct, setCurrentProduct, currentConfig }}
+        />
       </div>
     </div>
   );

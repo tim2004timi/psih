@@ -149,7 +149,11 @@ const ProductFiles = () => {
   // }
 
   useEffect(() => {
-    setCurrentProductsFiles(currentProduct.files);
+    if (currentProduct.files != undefined) {
+      setCurrentProductsFiles(currentProduct.files);
+    } else {
+
+    }
   }, [currentProduct]);
 
   const handleClick = () => fileInputRef.current.click();
@@ -184,9 +188,17 @@ const ProductFiles = () => {
       <tr key={rowIndex}>
         {columnFilesHeaders.map((column, colIndex) => {
           const className = columnConfig[column]?.className;
+          const content = columnConfig[column]?.content(row);
+  
+          // Проверка на корректность возвращаемого значения
+          if (typeof content !== 'string' && typeof content !== 'number' && !React.isValidElement(content)) {
+            console.error(`Invalid content for column ${column}:`, content);
+            return null; // или другой fallback
+          }
+  
           return (
             <td key={colIndex} className={className}>
-              {columnConfig[column]?.content(row)}
+              {content}
             </td>
           );
         })}

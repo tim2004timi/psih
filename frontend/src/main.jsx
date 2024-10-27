@@ -77,11 +77,15 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="productdata" replace />,
+                element: <Navigate to="data" replace />,
               },
               {
-                path: "productdata",
+                path: "data",
                 element: <ProductData />,
+              },
+              {
+                path: "files",
+                element: <ProductFiles />,
               }
             ]
           },

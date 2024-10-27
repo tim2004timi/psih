@@ -17,6 +17,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 const Remains = observer(() => {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState({});
+  const [isFilterProducts, setIsFilterProducts] = useState(false)
   const [appliedFilters, setAppliedFilters] = useState({});
   const [productsModification, setProductsModification] = useState([]);
 
@@ -106,12 +107,12 @@ const Remains = observer(() => {
     });
   };
 
-  const handleFilterSelection = () => {
-    setAppliedFilters(selectedProducts);
-  };
+  // const handleFilterSelection = () => {
+  //   setAppliedFilters(selectedProducts);
+  // };
 
   const handleClearFilter = () => {
-    setAppliedFilters({});
+    setIsFilterProducts(false)
     setSelectedProducts({})
   };
 
@@ -459,41 +460,45 @@ const Remains = observer(() => {
   // }, [inputNameRef.current]);
 
   const renderRows = () => {
-    return products
-      .filter((row) => {
-        if (Object.keys(appliedFilters).length === 0) {
-          return true;
-        }
-  
-        const remainingMatches =
-          !('remaining' in appliedFilters) ||
-          appliedFilters.remaining?.includes(row.remaining);
-        const nameMatches =
-          inputNameRef.current?.value === '' ||
-          row.displayName?.includes(inputNameRef?.current?.value);
-        const cost_priceMatches =
-          !('cost_price' in appliedFilters) ||
-          appliedFilters.cost_price?.includes(row.cost_price);
-        const priceMatches =
-          !('price' in appliedFilters) ||
-          appliedFilters.price?.includes(row.price);
-        console.log(remainingMatches)
+    const filteredProducts = isFilterProducts
+      ? products.filter((row) => {
+          if (Object.keys(selectedProducts).length === 0) {
+            return true;
+          }
 
-        console.log(inputNameRef.current?.value)
-        return remainingMatches && nameMatches && cost_priceMatches && priceMatches;
-      })
-      .map((row, rowIndex) => (
-        <tr key={rowIndex}>
-          {selectedColumns.map((column, colIndex) => {
-            const className = columnConfig[column]?.className;
-            return (
-              <td key={colIndex} className={className}>
-                {columnConfig[column]?.content(row)}
-              </td>
-            );
-          })}
-        </tr>
-      ));
+          const remainingMatches =
+            !("remaining" in selectedProducts) ||
+            selectedProducts.remaining?.includes(row.remaining);
+          const nameMatches =
+            inputNameRef.current?.value === "" ||
+            row.displayName?.includes(inputNameRef?.current?.value);
+          const cost_priceMatches =
+            !("cost_price" in selectedProducts) ||
+            selectedProducts.cost_price?.includes(row.cost_price);
+          const priceMatches =
+            !("price" in selectedProducts) ||
+            selectedProducts.price?.includes(row.price);
+          console.log(remainingMatches);
+
+          console.log(inputNameRef.current?.value);
+          return (
+            remainingMatches && nameMatches && cost_priceMatches && priceMatches
+          );
+        })
+      : products;
+
+    return filteredProducts.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {selectedColumns.map((column, colIndex) => {
+          const className = columnConfig[column]?.className;
+          return (
+            <td key={colIndex} className={className}>
+              {columnConfig[column]?.content(row)}
+            </td>
+          );
+        })}
+      </tr>
+    ));
   };
 
   if (isLoading) {
@@ -804,9 +809,9 @@ const Remains = observer(() => {
                   text={"Применить"}
                   isHover={true}
                   onClick={() => {
-                    handleFilterSelection();
+                    setIsFilterProducts(true)
                     setIsFilterOpen(false);
-                    // setSelectedProducts({})
+                    handleClearFilter()
                   }}
                 />
               </div>
