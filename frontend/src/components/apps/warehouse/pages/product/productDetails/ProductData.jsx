@@ -42,7 +42,6 @@ const ProductData = () => {
 
       setProductsModification(modificationsMap);
     }
-    
   }, [currentProduct]);
 
   const returnCurrentProductsModification = (size) => {
@@ -132,7 +131,6 @@ const ProductData = () => {
     setArrSize((prev) => {
       if (!prev.includes(size)) {
         const newArrSize = [...prev, size];
-        newArrSize.sort(sortSizes);
         return newArrSize;
       } else {
         const removeSizeIndex = prev.indexOf(size);
@@ -333,19 +331,21 @@ const ProductData = () => {
         <p className="product-data__size-text">Размеры</p>
         {Object.keys(productsModification).length > 0 ? (
           <div className="product-data__size-items">
-            {currentProduct?.modifications?.map((modification) => {
-              return (
-                <button
-                  key={modification.id}
-                  className={getProductPageButtonClass(modification.size)}
-                  onClick={() =>
-                    returnCurrentProductsModification(modification.size)
-                  }
-                >
-                  {modification.size}
-                </button>
-              );
-            })}
+            {currentProduct?.modifications
+              ?.sort(sortSizes)
+              .map((modification) => {
+                return (
+                  <button
+                    key={modification.id}
+                    className={getProductPageButtonClass(modification.size)}
+                    onClick={() =>
+                      returnCurrentProductsModification(modification.size)
+                    }
+                  >
+                    {modification.size}
+                  </button>
+                );
+              })}
           </div>
         ) : (
           <div className="product-data__size-items">
@@ -383,11 +383,21 @@ const ProductData = () => {
         )}
       </div>
       {currentConfig?.showRemainsInfo && (
-          <>
-            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
-          </>
-        )}
+        <>
+          {errorText && (
+            <NotificationManager
+              errorMessage={errorText}
+              resetFunc={resetErrorText}
+            />
+          )}
+          {successText && (
+            <NotificationManager
+              successMessage={successText}
+              resetFunc={resetSuccessText}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 };

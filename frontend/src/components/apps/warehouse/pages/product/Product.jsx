@@ -11,6 +11,7 @@ import {
   patchProduct,
   uploadProductImg,
   deleteProductImg,
+  uploadProductFile,
 } from "../../../../../API/productsApi";
 import { serverUrl } from "../../../../../config.js";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
@@ -39,6 +40,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
     }
   );
   const [productsImages, setProductsImages] = useState([]);
+  const [currentProductsFiles, setCurrentProductsFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
   const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
@@ -72,6 +74,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           showNewProductsBtn: false,
           showRemainsInfo: true,
           wrapperClassName: "product__content--page",
+          productPageFlag: true,
         };
       default:
         return null;
@@ -204,8 +207,10 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       : renderImgDragAndDrop();
 
   const removeImg = async (cnt) => {
-    if (currentConfig.newProductFlag) {
       try {
+        if (currentConfig.productPageFlag) {
+          await deleteProductImg(cnt);
+        }
         setProductsImages((prevImages) =>
           prevImages.filter((img) => img.name !== cnt)
         );
@@ -214,18 +219,6 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
         console.error(e);
         setErrorText(e.response.data.detail)
       }
-    } else {
-      try {
-        await deleteProductImg(cnt);
-        setProductsImages((prevImages) =>
-          prevImages.filter((img) => img.id !== cnt)
-        );
-        setSuccessText("Фотография удалена!")
-      } catch (e) {
-        console.error(e);
-        setErrorText(e.response.data.detail)
-      }
-    }
   };
 
   useEffect(() => {
@@ -290,6 +283,14 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       const response = await createProduct(currentProduct);
       // console.log(response.data);
       uploadImages(productsImages, response.data.id);
+      currentProductsFiles.map(async(file) => {
+        try {
+          const resp = await uploadProductFile(response.data.id, file);
+        } catch (error) {
+          console.error("Ошибка при загрузке файла:", error);
+          setErrorText(error.response.data.detail)
+        }
+      })
       showNewProduct(false)
       setSuccessText("Продукт создан!")
       navigate('/products')
@@ -439,7 +440,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           </>
         )}
         <Outlet
-          context={{ currentProduct, setCurrentProduct, currentConfig }}
+          context={{ currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig }}
         />
       </div>
     </div>

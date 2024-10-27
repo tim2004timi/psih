@@ -55,6 +55,7 @@ class UserStore {
     async getCurrentUser() {
         try {
             const resp = await UserService.getCurrentUser()
+            console.log(resp)
             this.setCurrentUser(resp.data)
         } catch(e) {
             console.error(e)
