@@ -102,9 +102,12 @@ async def add_business_note_first_step(
 @permission_decorator(Permission.ADMIN)
 async def business_note_amount_state(message: Message, state: FSMContext):
     amount = message.text
-    if not amount.isdigit():
+    try:
+        amount = int(amount)
+    except ValueError:
         await message.answer("🚫 <b>Неверная сумма</b>\nВведите сумму еще раз")
         return
+
     await state.update_data(amount=int(amount))
     await state.set_state(BusinessNoteState.name)
     await message.answer("🔖 Введите комментарий:")

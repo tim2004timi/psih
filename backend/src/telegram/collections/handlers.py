@@ -251,7 +251,9 @@ async def remove_note(
 @permission_decorator(Permission.ADMIN)
 async def note_amount_state(message: Message, state: FSMContext):
     amount = message.text
-    if not amount.isdigit():
+    try:
+        amount = int(amount)
+    except ValueError:
         await message.answer("🚫 <b>Неверная сумма</b>\nВведите сумму еще раз")
         return
     await state.update_data(amount=int(amount))
