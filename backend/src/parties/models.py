@@ -32,4 +32,5 @@ class Party(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Party.id, File.owner_type == 'Party', File.image == False)",
+        overlaps="images, order, files, product",
     )

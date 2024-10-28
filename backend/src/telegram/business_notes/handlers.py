@@ -12,6 +12,9 @@ from src.business_notes.schemas import BusinessNoteCreate
 from src.business_notes.service import (
     get_business_notes_by_user_id,
     create_business_note,
+    get_business_note_by_id,
+    delete_business_note,
+    get_all_business_notes,
 )
 from src.database import db_manager
 from src.telegram.utils import (
@@ -19,6 +22,7 @@ from src.telegram.utils import (
     convert_to_moscow_time,
     permission_decorator,
     Permission,
+    grouper,
 )
 from src.users.service import get_user_by_tg_username
 
@@ -70,6 +74,11 @@ async def business_notes_callback(
                     callback_data=f"rm-choice-business-note_{user.id}",
                 )
             ],
+            [
+                InlineKeyboardButton(
+                    text="❔ Записи других", callback_data=f"other-business-notes"
+                )
+            ],
             [InlineKeyboardButton(text="Назад", callback_data="menu")],
         ]
     )
@@ -109,12 +118,12 @@ async def business_note_name_state(message: Message, state: FSMContext):
 
     inline_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
             [
                 InlineKeyboardButton(
-                    text="Назад", callback_data="business-notes"
+                    text="🗒 Ваши личные записи", callback_data="business-notes"
                 )
             ],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
         ]
     )
 
@@ -136,6 +145,125 @@ async def business_note_name_state(message: Message, state: FSMContext):
         return
     await message.answer("✅ Запись создана успешно!", reply_markup=inline_keyboard)
     await state.clear()
+
+
+@router.callback_query(F.data.startswith("rm-choice-business-note"))
+@permission_decorator(Permission.ADMIN)
+@edit_message
+async def choose_remove_business_note(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    user_id = int(callback.data.split("_")[1])
+    async with db_manager.session_maker() as session:
+        notes = await get_business_notes_by_user_id(session=session, user_id=user_id)
+
+    i = 0
+    summ = 0
+    message = "🗒 <b>Ваши личные записи\n💰 Всего: {0} ₽</b>\n\n"
+    while i < len(notes):
+        message += (
+            f"<b><i>{i+1}) 🕒 {convert_to_moscow_time(notes[i].created_at)} </i></b>\n"
+        )
+        message += f"    Сумма: {notes[i].amount} ₽\n"
+        message += f"    Описание: {notes[i].name}\n\n"
+        summ += notes[i].amount
+        i += 1
+    message += "<i>Выберете номер записи, которую хотите удалить</i>"
+    buttons = [
+        InlineKeyboardButton(
+            text=str(index + 1),
+            callback_data=f"rm-business-note_{note.id}",
+        )
+        for index, note in enumerate(notes)
+    ]
+
+    keyboard_rows = [list(filter(None, group)) for group in grouper(buttons, 2)]
+
+    back_button = [
+        InlineKeyboardButton(text="Назад", callback_data=f"business-notes"),
+    ]
+    keyboard_rows.append(back_button)
+
+    notes_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
+
+    return message.format(summ), notes_keyboard
+
+
+@router.callback_query(F.data.startswith("rm-business-note"))
+@permission_decorator(Permission.ADMIN)
+@edit_message
+async def remove_business_note(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    note_id = int(callback.data.split("_")[1])
+    inline_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🗒 Ваши личные записи", callback_data="business-notes"
+                )
+            ],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+        ]
+    )
+
+    try:
+        async with db_manager.session_maker() as session:
+            note = await get_business_note_by_id(
+                session=session, business_note_id=note_id
+            )
+            await delete_business_note(session=session, business_note=note)
+    except Exception as e:
+        return (
+            f"❌ Запись не удалена! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
+            inline_keyboard,
+        )
+
+    return "✅ Запись удалена успешно!", inline_keyboard
+
+
+@router.callback_query(F.data == "other-business-notes")
+@permission_decorator(Permission.ADMIN)
+@edit_message
+async def other_business_notes_callback(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    users_notes = {}
+    async with db_manager.session_maker() as session:
+        notes = await get_all_business_notes(session=session)
+    for note in notes:
+        if note.user.tg_username == "@" + callback.from_user.username:
+            continue
+        if note.user.username not in users_notes:
+            users_notes[note.user] = [note]
+        else:
+            users_notes[note.user].append(note)
+
+    message = ""
+    for user in users_notes:
+        summ = 0
+        message += "ℹ️ <b>Пользователь: {0}\n💰 Всего: {1} ₽</b>\n\n"
+        for note in notes:
+            summ += note.amount
+            message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
+            message += f"Сумма: {note.amount} ₽\n"
+            message += f"Описание: {note.name}\n\n"
+        message = message.format(user.username, summ)
+
+    if not message:
+        message = "<i>Пусто</i>"
+
+    inline_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🗒 Ваши личные записи", callback_data="business-notes"
+                )
+            ],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+        ]
+    )
+    return message, inline_keyboard
 
 
 def register_handlers(dp: Dispatcher):

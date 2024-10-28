@@ -12,9 +12,11 @@ class Collection(Base):
 
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
 
-    products: Mapped[List["Product"]] = relationship(back_populates="collection")
+    products: Mapped[List["Product"]] = relationship(
+        back_populates="collection", passive_deletes=True
+    )
     collection_notes: Mapped[List["CollectionNote"]] = relationship(
-        back_populates="collection"
+        back_populates="collection", cascade="all, delete", passive_deletes=True
     )
 
 
@@ -28,4 +30,6 @@ class CollectionNote(Base):
     )
 
     collection: Mapped["Collection"] = relationship(back_populates="collection_notes")
-    collection_id: Mapped[int] = mapped_column(ForeignKey("collections.id"))
+    collection_id: Mapped[int] = mapped_column(
+        ForeignKey("collections.id", ondelete="CASCADE")
+    )

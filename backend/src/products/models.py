@@ -29,7 +29,9 @@ class Product(Base):
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     category: Mapped["ProductCategory"] = relationship(back_populates="products")
 
-    collection_id: Mapped[int | None] = mapped_column(ForeignKey("collections.id"))
+    collection_id: Mapped[int | None] = mapped_column(
+        ForeignKey("collections.id", ondelete="SET NULL")
+    )
     collection: Mapped["Collection"] = relationship(back_populates="products")
 
     modifications: Mapped[List["Modification"]] = relationship(
@@ -43,7 +45,7 @@ class Product(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Product.id, File.owner_type == 'Product', File.image == True)",
-        overlaps="files, order",
+        overlaps="files, order, images",
     )
 
     files: Mapped[List["File"]] = relationship(

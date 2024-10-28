@@ -24,7 +24,7 @@ router = APIRouter(
     dependencies=[
         Depends(http_bearer),
         Depends(get_current_active_auth_user),
-        Depends(check_permission(Permission.STORAGE)),
+        Depends(check_permission(Permission.ADMIN)),
     ],
 )
 

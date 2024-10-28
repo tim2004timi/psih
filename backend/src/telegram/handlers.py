@@ -47,15 +47,24 @@ async def menu_message(message: Message):
 
 async def menu(event) -> None | tuple[str, InlineKeyboardMarkup]:
     user = await get_user_from_system(event=event)
-    message = "<b>➖PSIHSYSTEM➖</b>"
+    message = "➖<b><a href='https://psihsystem.com'>PSIHSYSTEM</a></b>➖"
+    message += "\n<b>Удобная и надежная система</b>"
     if user:
-        message += f"\n\nПользователь: <b><i>{user.username}</i></b>\nАдмин: "
-        admin = "✅" if user.admin else "❌"
-        message += admin
+        message += "\n\nℹ️ <b>Личный кабинет</b>"
+        message += f"\nИмя: <u>{user.username}</u>"
+        message += "\nАдмин: " + get_permission_emoji(user.admin)
+        message += "\nСклад: " + get_permission_emoji(user.access_storage)
+        message += "\nCRM: " + get_permission_emoji(user.access_crm)
+        message += "\nМессенджер: " + get_permission_emoji(user.access_message)
+        message += "\nАналитика: " + get_permission_emoji(user.access_analytics)
     if isinstance(event, CallbackQuery):
         return message, menu_inline_keyboard
     elif isinstance(event, Message):
         await event.answer(message, reply_markup=menu_inline_keyboard)
+
+
+def get_permission_emoji(permission: bool):
+    return "▫️" if permission else "▪️"
 
 
 def register_handlers(dp: Dispatcher):
