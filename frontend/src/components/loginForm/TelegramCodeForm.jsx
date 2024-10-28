@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";    
 import logo from "../../assets/img/logo.svg";
 import { observer } from 'mobx-react-lite';
@@ -15,6 +15,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
   const { messageFromBot, getTokens, isAuth, checkAuth, isAuthInProgress } = AuthStore;
   const navigate = useNavigate();
   const isTimerActive = timer > 0;
+  const codeInputRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +33,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
     try {
       await messageFromBot(loginValue, password);
       setTimer(120);
+      codeInputRef.current.focus();
     } catch (e) {
       setErrorText(e.response.data.detail);
       console.error(e);
@@ -86,6 +88,7 @@ const TelegramCodeForm = observer(({ usersData }) => {
             className="authorization__form-input"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            ref={codeInputRef}
           />
           <button type="submit" className="authorization__form-btn">
             ВОЙТИ

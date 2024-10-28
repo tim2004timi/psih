@@ -264,8 +264,13 @@ const Products = observer(() => {
         ...new Set([...prevCategories, ...newCategories]),
       ]);
     } catch (e) {
-      console.error(e);
-      setErrorText(e.response.data.detail);
+      if (error.response && error.response.status === 401) {
+        console.log('Unauthorized: Please log in again.');
+      } else {
+        console.error(error);
+        setErrorText(e.response.data.detail);
+      }
+      
     }
   }
 
@@ -641,11 +646,11 @@ const Products = observer(() => {
               setShowColumnList(!showColumnList);
             }}
           >
-            <img
+            {/* <img
               className="warehouse-table__settings-img"
               src={settings}
               alt="settings"
-            />
+            /> */}
             {/* <img className='orderTable__settings-img--hover' src={settingsHover} alt="settings" /> */}
           </button>
           {showColumnList && (

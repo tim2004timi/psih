@@ -56,64 +56,7 @@
     /* margin-top: 5px; */
 }
 
-.column-number__container {
-    display: flex;
-    align-items: center;
-    border: 1px solid transparent;
-    border-radius: 7px;
-    padding: 5px 0;
-    height: 28px;
-}
 
-.column-number-input__container {
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.column-number-input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-.column-number-input__custom {
-    position: absolute;
-    top: -8px;
-    left: 11px;
-    height: 17px;
-    width: 17px;
-    background-color: transparent; 
-    border: 1px solid black; 
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.column-number-input:checked ~ .column-number-input__custom {
-    background-color: black; 
-}
-
-.column-number-input__custom::after {
-    content: "";
-    position: absolute;
-    display: none;
-}
-
-.column-number-input:checked ~ .column-number-input__custom::after {
-    display: block;
-}
-
-.column-number-input__custom::after {
-    left: 5px;
-    top: 1px;
-    width: 5px;
-    height: 10px;
-    border: solid white; 
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
 
 .column-number-link{
     flex-grow: 1;

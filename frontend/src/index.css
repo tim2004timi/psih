@@ -225,9 +225,23 @@ button {
     cursor: pointer;
     background-color: transparent;
     border: none;
-    display: flex;
+    /* display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
+    position: relative;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url('../src/assets/img/table-settings.svg');
+}
+
+.warehouse-table__settings-btn:hover{
+    background-image: url('../src/assets/img/settings_hover.svg');
+    width: 28px;
+    height: 28px;
 }
 
 .warehouse-table__settings-img{

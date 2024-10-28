@@ -507,7 +507,7 @@ const Orders = observer(() => {
               setShowColumnList(!showColumnList);
             }}
           >
-            <div className="warehouse-table__settings-img">
+            {/* <div className="warehouse-table__settings-img">
               <img
                 className="warehouse-table__settings-image"
                 src={settings}
@@ -520,7 +520,7 @@ const Orders = observer(() => {
                 src={settingsHover}
                 alt="settings"
               />
-            </div>
+            </div> */}
           </button>
           {showColumnList && (
             <div className="warehouse-table__settings" ref={columnsListRef}>
