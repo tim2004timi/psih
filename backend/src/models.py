@@ -48,5 +48,5 @@ class File(Base):
         back_populates="files",
         primaryjoin="and_(foreign(File.owner_id) == Party.id, File.owner_type == 'Party')",
         foreign_keys=[owner_id],
-        overlaps="files, order, product",
+        overlaps="files, order, product, images",
     )

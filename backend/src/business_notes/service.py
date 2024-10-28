@@ -3,6 +3,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlalchemy import select, Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from starlette import status
 
 from src.business_notes.models import BusinessNote
@@ -13,6 +14,13 @@ async def get_business_notes_by_user_id(
     session: AsyncSession, user_id: int
 ) -> List[BusinessNote]:
     stmt = select(BusinessNote).where(BusinessNote.user_id == user_id)
+    result: Result = await session.execute(stmt)
+    business_notes = result.scalars().all()
+    return list(business_notes)
+
+
+async def get_all_business_notes(session: AsyncSession) -> List[BusinessNote]:
+    stmt = select(BusinessNote).options(selectinload(BusinessNote.user))
     result: Result = await session.execute(stmt)
     business_notes = result.scalars().all()
     return list(business_notes)

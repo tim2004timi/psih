@@ -17,6 +17,8 @@ from src.collections.service import (
     get_collection_note_by_id,
     delete_collection_note,
     create_collection_note,
+    get_collection_by_id,
+    delete_collection,
 )
 from src.database import db_manager
 from src.telegram.utils import (
@@ -63,6 +65,11 @@ async def collections_callback(_: CallbackQuery) -> tuple[str, InlineKeyboardMar
         [
             InlineKeyboardButton(
                 text="✏️ Добавить коллекцию", callback_data="add-collection"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="❌ Удалить коллекцию", callback_data="rm-choice-collection"
             )
         ],
         [InlineKeyboardButton(text="Назад", callback_data="menu")],
@@ -244,7 +251,9 @@ async def remove_note(
 @permission_decorator(Permission.ADMIN)
 async def note_amount_state(message: Message, state: FSMContext):
     amount = message.text
-    if not amount.isdigit():
+    try:
+        amount = int(amount)
+    except ValueError:
         await message.answer("🚫 <b>Неверная сумма</b>\nВведите сумму еще раз")
         return
     await state.update_data(amount=int(amount))
@@ -283,6 +292,66 @@ async def note_name_state(message: Message, state: FSMContext):
         return
     await message.answer("✅ Запись создана успешно!", reply_markup=inline_keyboard)
     await state.clear()
+
+
+@router.callback_query(F.data == "rm-choice-collection")
+@permission_decorator(Permission.ADMIN)
+@edit_message
+async def choice_remove_collection(
+    _: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    async with db_manager.session_maker() as session:
+        collections = await get_collections(session=session)
+
+    # Создаем кнопки для коллекций
+    buttons = [
+        InlineKeyboardButton(
+            text=collection.name,
+            callback_data=f"rm-collection_{collection.name}_{collection.id}",
+        )
+        for collection in collections
+    ]
+
+    keyboard_rows = [list(filter(None, group)) for group in grouper(buttons, 2)]
+
+    back_button = [
+        InlineKeyboardButton(text="Назад", callback_data="collections"),
+    ]
+    keyboard_rows.append(back_button)
+    collections_keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_rows)
+
+    message = "👕 <b>Коллекции:</b>\n\n<i>Выберите объект для удаления</i>"
+
+    return message, collections_keyboard
+
+
+@router.callback_query(F.data.startswith("rm-collection"))
+@permission_decorator(Permission.ADMIN)
+@edit_message
+async def remove_collection(
+    callback: CallbackQuery,
+) -> tuple[str, InlineKeyboardMarkup | None]:
+    collection_id = int(callback.data.split("_")[2])
+    inline_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="👕 Коллекции", callback_data="collections")],
+            [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+        ]
+    )
+
+    try:
+        async with db_manager.session_maker() as session:
+            collection = await get_collection_by_id(
+                session=session, collection_id=collection_id
+            )
+            await delete_collection(session=session, collection=collection)
+    except Exception as e:
+        return (
+            f"❌ Коллекция не удалена! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
+            inline_keyboard,
+        )
+
+    return "✅ Коллекция удалена успешно!", inline_keyboard
 
 
 def register_handlers(dp: Dispatcher):

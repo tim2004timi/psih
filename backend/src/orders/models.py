@@ -39,7 +39,7 @@ class Order(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
         primaryjoin="and_(foreign(File.owner_id) == Order.id, File.owner_type == 'Order', File.image == False)",
-        overlaps="product, images",
+        overlaps="product, images, party",
     )
 
     # другая инфа для суммы
