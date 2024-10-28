@@ -234,7 +234,7 @@ async def other_business_notes_callback(
     for note in notes:
         if note.user.tg_username == "@" + callback.from_user.username:
             continue
-        if note.user.username not in users_notes:
+        if note.user not in users_notes:
             users_notes[note.user] = [note]
         else:
             users_notes[note.user].append(note)
