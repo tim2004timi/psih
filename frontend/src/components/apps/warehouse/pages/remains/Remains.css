@@ -46,10 +46,6 @@
     border: 1px solid #000;
 }
 
-.column-number-input__container{
-    position: relative;
-}
-
 .column-number-input__container {
     position: relative;
     display: inline-block;
