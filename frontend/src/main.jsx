@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import {
@@ -8,22 +8,27 @@ import {
 } from "react-router-dom";
 import { Provider } from 'react-redux';
 import store from './components/stm/store.js';
+
 import Warehouse from "./components/apps/warehouse/Warehouse.jsx";
 import Messager from "./components/apps/messager/Messager.jsx";
 import Crm from "./components/apps/crm/Crm.jsx";
-import Orders from "./components/apps/warehouse/pages/orders/Orders.jsx";
-import Products from "./components/apps/warehouse/pages/products/Products.jsx";
-import Remains from "./components/apps/warehouse/pages/remains/Remains.jsx";
-import Parties from "./components/apps/warehouse/pages/parties/Parties.jsx";
-import Order from "./components/apps/warehouse/pages/neworder/Order.jsx";
-import OrderData from './components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx';
-import ProductData from './components/apps/warehouse/pages/product/productDetails/ProductData.jsx';
-import ProductFiles from './components/apps/warehouse/pages/product/productFiles/ProductFiles.jsx';
-import ProductPage from './components/apps/warehouse/pages/product/ProductPage.jsx';
+
+const Orders = lazy(() => import("./components/apps/warehouse/pages/orders/Orders.jsx"));
+const Products = lazy(() => import("./components/apps/warehouse/pages/products/Products.jsx"));
+const Remains = lazy(() => import("./components/apps/warehouse/pages/remains/Remains.jsx"));
+const Parties = lazy(() => import("./components/apps/warehouse/pages/parties/Parties.jsx"));
+const Order = lazy(() => import("./components/apps/warehouse/pages/neworder/Order.jsx"));
+const OrderData = lazy(() => import('./components/apps/warehouse/pages/neworder/orderDetails/OrderData.jsx'));
+const ProductData = lazy(() => import('./components/apps/warehouse/pages/product/productDetails/ProductData.jsx'));
+const ProductFiles = lazy(() => import('./components/apps/warehouse/pages/product/productFiles/ProductFiles.jsx'));
+const ProductPage = lazy(() => import('./components/apps/warehouse/pages/product/ProductPage.jsx'));
+
 import Login from './components/login/Login.jsx';
 import RegForm from './components/regForm/RegForm.jsx';
+
 import PrivateRoute from './components/apps/PrivateRoute.jsx';
 import AuthStore from "./AuthStore.js";
+
 import ProfilePage from './components/apps/profilePage/ProfilePage.jsx';
 
 const router = createBrowserRouter([
@@ -77,11 +82,15 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "",
-                element: <Navigate to="productdata" replace />,
+                element: <Navigate to="data" replace />,
               },
               {
-                path: "productdata",
+                path: "data",
                 element: <ProductData />,
+              },
+              {
+                path: "files",
+                element: <ProductFiles />,
               }
             ]
           },

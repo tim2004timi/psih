@@ -5,6 +5,130 @@
     padding: 20px 0;
 }
 
+.back-btn__btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 10px 17px;
+    background-size: cover;
+    background-position: center;
+}
+
+.back-btn__btn:hover{
+    border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.back-btn__arrow {
+    background: rgba(0, 0, 0, 0.5);
+    height: 1px;
+    width: 21px;
+    margin: 0 auto;
+    position: relative;
+    cursor: pointer;
+}
+
+.back-btn__btn:hover .back-btn__arrow {
+    background: rgba(0, 0, 0, 1);
+}
+
+.back-btn__arrow:before,
+.back-btn__arrow:after {
+    content: "";
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    height: 1px;
+    width: 7px;
+}
+
+.back-btn__arrow:before {
+    left: -1px;
+    bottom: -2.3px;
+    transform: rotate(45deg);
+}
+
+.back-btn__arrow:after {
+    left: -1px;
+    top: -2px;
+    transform: rotate(-45deg);
+}
+
+.back-btn__btn:hover .back-btn__arrow:before,
+.back-btn__btn:hover .back-btn__arrow:after {
+    background: rgba(0, 0, 0, 1);
+}
+
+.delete-btn__btn{
+    background-color: transparent;
+    border-radius: 7px;
+    padding: 5px 21px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+.delete-btn__btn:hover{
+    background: linear-gradient(243.12deg, #FF0004 3.55%, #AF484A 119.41%);
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.deleteOverlay{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+
+.deleteContent{
+    width: 428px;
+    height: 191px;
+    background-color: rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 7px;
+    padding-top: 52px;
+    padding-bottom: 19px;
+}
+
+.deleteContent__title{
+    font-size: 32px;
+    line-height: 38.73px;
+    padding-bottom: 53px;
+}
+
+.deleteContent__btn-container{
+    display: flex;
+    gap: 17px;
+}
+
+.deleteContent__btn-cancel{
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 3px 21px;
+    border-radius: 7px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.deleteContent__btn-delete{
+    border: none;
+    padding: 3px 21px;
+    border-radius: 7px;
+    cursor: pointer;
+    background: linear-gradient(243.12deg, #FF0004 3.55%, #AF484A 119.41%);
+    color: #fff;
+}
+
 .product__separator {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;

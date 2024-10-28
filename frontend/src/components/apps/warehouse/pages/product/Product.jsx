@@ -11,6 +11,7 @@ import {
   patchProduct,
   uploadProductImg,
   deleteProductImg,
+  uploadProductFile,
 } from "../../../../../API/productsApi";
 import { serverUrl } from "../../../../../config.js";
 import getFullImageUrl from "../../../../../API/getFullImgUrl";
@@ -39,6 +40,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
     }
   );
   const [productsImages, setProductsImages] = useState([]);
+  const [currentProductsFiles, setCurrentProductsFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [currentConfig, setCurrentConfig] = useState(null);
   const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
@@ -72,6 +74,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           showNewProductsBtn: false,
           showRemainsInfo: true,
           wrapperClassName: "product__content--page",
+          productPageFlag: true,
         };
       default:
         return null;
@@ -204,8 +207,10 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       : renderImgDragAndDrop();
 
   const removeImg = async (cnt) => {
-    if (currentConfig.newProductFlag) {
       try {
+        if (currentConfig.productPageFlag) {
+          await deleteProductImg(cnt);
+        }
         setProductsImages((prevImages) =>
           prevImages.filter((img) => img.name !== cnt)
         );
@@ -214,18 +219,6 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
         console.error(e);
         setErrorText(e.response.data.detail)
       }
-    } else {
-      try {
-        await deleteProductImg(cnt);
-        setProductsImages((prevImages) =>
-          prevImages.filter((img) => img.id !== cnt)
-        );
-        setSuccessText("Фотография удалена!")
-      } catch (e) {
-        console.error(e);
-        setErrorText(e.response.data.detail)
-      }
-    }
   };
 
   useEffect(() => {
@@ -290,6 +283,14 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       const response = await createProduct(currentProduct);
       // console.log(response.data);
       uploadImages(productsImages, response.data.id);
+      currentProductsFiles.map(async(file) => {
+        try {
+          const resp = await uploadProductFile(response.data.id, file);
+        } catch (error) {
+          console.error("Ошибка при загрузке файла:", error);
+          setErrorText(error.response.data.detail)
+        }
+      })
       showNewProduct(false)
       setSuccessText("Продукт создан!")
       navigate('/products')
@@ -305,9 +306,14 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       <div className="product-img__content">
         {currentConfig?.showNewProductsBtn && (
           <div className="product__save-btn">
-            <button className="product__save-btn-button" onClick={() => {
-              createNewProduct(currentProduct);
-              }}>Сохранить</button>
+            <button
+              className="product__save-btn-button"
+              onClick={() => {
+                createNewProduct(currentProduct);
+              }}
+            >
+              Сохранить
+            </button>
           </div>
         )}
         <div className="product__img">
@@ -335,7 +341,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           <div className="product__name">
             <input
               className={`product__name-input ${
-                currentProduct?.name === '' ? "warning" : ""
+                currentProduct?.name === "" ? "warning" : ""
               }`}
               value={currentProduct?.name}
               onChange={(e) => handleChange(e, "name")}
@@ -348,7 +354,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
               <Link
                 className="product__content-close-btn"
                 onClick={() => showNewProduct(false)}
-                to={'/products'}
+                to={"/products"}
               >
                 <img
                   src={close}
@@ -364,20 +370,16 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
             {currentConfig?.newProductFlag ? (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/data`
-                    ? "active"
-                    : ""
+                  location.pathname === `/products/data` ? "active" : ""
                 }`}
                 to={`/products/data`}
               >
-              Данные товара
+                Данные товара
               </Link>
             ) : (
               <Link
                 className={`product__navbar-link ${
-                  location.pathname === `/products/${id}/data`
-                    ? "active"
-                    : ""
+                  location.pathname === `/products/${id}/data` ? "active" : ""
                 }`}
                 to={`/products/${id}/data`}
               >
@@ -392,14 +394,25 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
             >
               Доставка
             </Link>
-            <Link
-              className={`product__navbar-link ${
-                location.pathname === `/products/${id}/files` ? "active" : ""
-              }`}
-              to={`/products/${id}/files`}
-            >
-              Файлы
-            </Link>
+            {currentConfig?.newProductFlag ? (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/files` ? "active" : ""
+                }`}
+                to={`/products/files`}
+              >
+                Файлы
+              </Link>
+            ) : (
+              <Link
+                className={`product__navbar-link ${
+                  location.pathname === `/products/${id}/files` ? "active" : ""
+                }`}
+                to={`/products/${id}/files`}
+              >
+                Файлы
+              </Link>
+            )}
             <Link
               className={`product__navbar-link ${
                 location.pathname === `/products/${id}/history` ? "active" : ""
@@ -412,11 +425,23 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
         </div>
         {currentConfig?.showRemainsInfo && (
           <>
-            {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-            {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+            {errorText && (
+              <NotificationManager
+                errorMessage={errorText}
+                resetFunc={resetErrorText}
+              />
+            )}
+            {successText && (
+              <NotificationManager
+                successMessage={successText}
+                resetFunc={resetSuccessText}
+              />
+            )}
           </>
         )}
-        <Outlet context={{ currentProduct, setCurrentProduct, currentConfig }} />
+        <Outlet
+          context={{ currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig }}
+        />
       </div>
     </div>
   );

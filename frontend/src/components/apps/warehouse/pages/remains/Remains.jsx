@@ -17,6 +17,12 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 const Remains = observer(() => {
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState({});
+  const [isFilterProducts, setIsFilterProducts] = useState(false)
+
+  const [uniqueCostPrices, setUniqueCostPrices] = useState([]);
+  const [uniquePrices, setUniquePrices] = useState([]);
+  const [uniqueRemaining, setUniqueRemaining] = useState([]);
+
   const [appliedFilters, setAppliedFilters] = useState({});
   const [productsModification, setProductsModification] = useState([]);
 
@@ -106,13 +112,14 @@ const Remains = observer(() => {
     });
   };
 
-  const handleFilterSelection = () => {
-    setAppliedFilters(selectedProducts);
-  };
+  // const handleFilterSelection = () => {
+  //   setAppliedFilters(selectedProducts);
+  // };
 
   const handleClearFilter = () => {
-    setAppliedFilters({});
+    setIsFilterProducts(false)
     setSelectedProducts({})
+    inputNameRef.current.value = ''
   };
 
   // useEffect(() => {
@@ -134,6 +141,7 @@ const Remains = observer(() => {
         row.modifications.forEach((modification) => {
           acc.push({
             id: modification.id,
+            id_row: row.id,
             // images: { ...row.images },
             // files: { ...row.files },
             // modifications: { ...row.modifications },
@@ -167,6 +175,10 @@ const Remains = observer(() => {
       return acc;
     }, {});
     setCheckboxStates(initialCheckboxStates);
+    // console.log(products)
+    setUniqueCostPrices(Array.from(new Set(products.map((product) => product.cost_price))));
+    setUniquePrices(Array.from(new Set(products.map((product) => product.price))));
+    setUniqueRemaining(Array.from(new Set(products.map((product) => product.remaining))));
   }, [products]);
 
   const handleOutsideClick = (event) => {
@@ -195,8 +207,8 @@ const Remains = observer(() => {
     }
   };
 
-  const handleCheckboxChange = (rowId, event) => {
-    // console.log(rowId)
+  const handleCheckboxChange = (rowId, id_row, event) => {
+    console.log(id_row)
     event.stopPropagation();
     setLastSelectedIndex(rowId);
 
@@ -267,24 +279,24 @@ const Remains = observer(() => {
     };
   }, [initialCheckboxStates]);
 
-  useEffect(() => {
-    if (activeCheckboxCount > 0) {
-      if (warehouseTableBtnContainerRef.current) {
-        warehouseTableBtnContainerRef.current.style.display = "flex";
-      }
-    } else {
-      if (warehouseTableBtnContainerRef.current) {
-        warehouseTableBtnContainerRef.current.style.display = "none";
-      }
-    }
+  // useEffect(() => {
+  //   if (activeCheckboxCount > 0) {
+  //     if (warehouseTableBtnContainerRef.current) {
+  //       warehouseTableBtnContainerRef.current.style.display = "flex";
+  //     }
+  //   } else {
+  //     if (warehouseTableBtnContainerRef.current) {
+  //       warehouseTableBtnContainerRef.current.style.display = "none";
+  //     }
+  //   }
 
-    setActiveCheckboxCount(Math.floor(activeCheckboxCount));
-    setActiveCheckboxIds(
-      activeCheckboxIds.filter(
-        (item, index) => activeCheckboxIds.indexOf(item) === index
-      )
-    );
-  }, [activeCheckboxCount]);
+  //   setActiveCheckboxCount(Math.floor(activeCheckboxCount));
+  //   setActiveCheckboxIds(
+  //     activeCheckboxIds.filter(
+  //       (item, index) => activeCheckboxIds.indexOf(item) === index
+  //     )
+  //   );
+  // }, [activeCheckboxCount]);
 
   async function deleteSelectedProducts(idArr) {
     try {
@@ -364,7 +376,7 @@ const Remains = observer(() => {
                 <span
                   className="column-number-input__custom-products"
                   onClick={(event) => {
-                    handleCheckboxChange(row.id, event);
+                    handleCheckboxChange(row.id, row.id_row, event);
                     event.preventDefault();
                   }}
                 ></span>
@@ -459,41 +471,43 @@ const Remains = observer(() => {
   // }, [inputNameRef.current]);
 
   const renderRows = () => {
-    return products
-      .filter((row) => {
-        if (Object.keys(appliedFilters).length === 0) {
-          return true;
-        }
-  
-        const remainingMatches =
-          !('remaining' in appliedFilters) ||
-          appliedFilters.remaining?.includes(row.remaining);
-        const nameMatches =
-          inputNameRef.current?.value === '' ||
-          row.displayName?.includes(inputNameRef?.current?.value);
-        const cost_priceMatches =
-          !('cost_price' in appliedFilters) ||
-          appliedFilters.cost_price?.includes(row.cost_price);
-        const priceMatches =
-          !('price' in appliedFilters) ||
-          appliedFilters.price?.includes(row.price);
-        console.log(remainingMatches)
+    const filteredProducts = isFilterProducts
+      ? products.filter((row) => {
+          if (Object.keys(selectedProducts).length === 0 && inputNameRef.current?.value === '') {
+            return true;
+          }
 
-        console.log(inputNameRef.current?.value)
-        return remainingMatches && nameMatches && cost_priceMatches && priceMatches;
-      })
-      .map((row, rowIndex) => (
-        <tr key={rowIndex}>
-          {selectedColumns.map((column, colIndex) => {
-            const className = columnConfig[column]?.className;
-            return (
-              <td key={colIndex} className={className}>
-                {columnConfig[column]?.content(row)}
-              </td>
-            );
-          })}
-        </tr>
-      ));
+          const remainingMatches =
+            !("remaining" in selectedProducts) ||
+            selectedProducts.remaining?.includes(row.remaining);
+          const nameMatches =
+            inputNameRef.current?.value === "" ||
+            row.displayName?.includes(inputNameRef?.current?.value);
+          const cost_priceMatches =
+            !("cost_price" in selectedProducts) ||
+            selectedProducts.cost_price?.includes(row.cost_price);
+          const priceMatches =
+            !("price" in selectedProducts) ||
+            selectedProducts.price?.includes(row.price);
+
+          return (
+            remainingMatches && nameMatches && cost_priceMatches && priceMatches
+          );
+        })
+      : products;
+
+    return filteredProducts.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {selectedColumns.map((column, colIndex) => {
+          const className = columnConfig[column]?.className;
+          return (
+            <td key={colIndex} className={className}>
+              {columnConfig[column]?.content(row)}
+            </td>
+          );
+        })}
+      </tr>
+    ));
   };
 
   if (isLoading) {
@@ -523,8 +537,9 @@ const Remains = observer(() => {
             <button
               className="warehouse-table-btn warehouse-table-btn__delete-table"
               onClick={() => {
-                deleteSelectedProducts(activeCheckboxIds);
-                fetchAllProducts();
+                console.log(activeCheckboxIds);
+                // deleteSelectedProducts(activeCheckboxIds);
+                // fetchAllProducts();
               }}
             >
               <img
@@ -541,11 +556,11 @@ const Remains = observer(() => {
               setShowColumnList(!showColumnList);
             }}
           >
-            <img
+            {/* <img
               className="warehouse-table__settings-img"
               src={settings}
               alt="settings"
-            />
+            /> */}
             {/* <img className='orderTable__settings-img--hover' src={settingsHover} alt="settings" /> */}
           </button>
           {showColumnList && (
@@ -580,7 +595,7 @@ const Remains = observer(() => {
         <div className="filter">
           <div className="filter__content" ref={filterRef}>
             <div className="filter__content-wrapper">
-              <div className="filter__search">
+              {/* <div className="filter__search">
                 <div className="filter__search-container">
                   <div className="filter__search-img-container">
                     <img
@@ -589,22 +604,22 @@ const Remains = observer(() => {
                       className="filter__search-img"
                     />
                   </div>
-                  {/* <input type="text" className="filter__search-input" placeholder='Поиск по системе' /> */}
+                  <input type="text" className="filter__search-input" placeholder='Поиск по системе' />
                   <input
                     type="text"
                     placeholder="Поиск..."
                     // value={searchTerm}
                     onChange={(e) => highlightText(e.target.value)}
                   />
-                  {/* <button onClick={
+                  <button onClick={
                         () => {
                             highlightText()
                             setIsFilterOpen(false)
                         }
-                    }>Найти</button> */}
-                  {/* <SearchableContent /> */}
+                    }>Найти</button>
+                  <SearchableContent />
                 </div>
-              </div>
+              </div> */}
               <div className="filter__container">
                 <div className="filter__item">
                   <p className="filter__text">Наименование</p>
@@ -628,7 +643,7 @@ const Remains = observer(() => {
                               .map((field) => field)
                               .join(", ")
                           : ""}
-                        <button className="filterdropdownlist__content-btn">
+                        <div className="filterdropdownlist__content-btn">
                           <span
                             className={`filterdropdownlist__arrow 
                               \${
@@ -638,12 +653,15 @@ const Remains = observer(() => {
                             <span className="filterdropdownlist__arrow-btn"></span>
                             <span className="filterdropdownlist__arrow-btn"></span>
                           </span>
-                        </button>
+                        </div>
                       </button>
                     </DropdownMenu.Trigger>
 
                     <DropdownMenu.Portal>
-                      <DropdownMenu.Content className="dropdown-content" ref={dropdownRef}>
+                      <DropdownMenu.Content
+                        className="dropdown-content"
+                        ref={dropdownRef}
+                      >
                         {selectedProducts.remaining?.map((item, index) => (
                           <DropdownMenu.Item
                             key={index}
@@ -659,26 +677,26 @@ const Remains = observer(() => {
                         {selectedProducts.remaining && (
                           <div className="dropdown-separator"></div>
                         )}
-                        {products.map((product) => (
+                        {Array.from(uniqueRemaining).map((item, index) => (
                           <DropdownMenu.Item
-                            key={product.id}
+                            key={index}
                             className="dropdown-item"
                             onSelect={(event) => {
                               event.preventDefault();
-                              handleSelect("remaining", product.remaining);
+                              handleSelect("remaining", item);
                             }}
                           >
-                            {product.remaining}
+                            {item}
                           </DropdownMenu.Item>
                         ))}
                       </DropdownMenu.Content>
                     </DropdownMenu.Portal>
                   </DropdownMenu.Root>
                 </div>
-                <div className="filter__item">
+                {/* <div className="filter__item">
                   <p className="filter__text">Предзаказ</p>
                   <FilterDropDownList />
-                </div>
+                </div> */}
                 <div className="filter__item">
                   <p className="filter__text">Себестоимость</p>
                   <DropdownMenu.Root>
@@ -689,7 +707,7 @@ const Remains = observer(() => {
                               .map((field) => field)
                               .join(", ")
                           : ""}
-                        <button className="filterdropdownlist__content-btn">
+                        <div className="filterdropdownlist__content-btn">
                           <span
                             className={`filterdropdownlist__arrow 
                               \${
@@ -699,7 +717,7 @@ const Remains = observer(() => {
                             <span className="filterdropdownlist__arrow-btn"></span>
                             <span className="filterdropdownlist__arrow-btn"></span>
                           </span>
-                        </button>
+                        </div>
                       </button>
                     </DropdownMenu.Trigger>
 
@@ -720,16 +738,16 @@ const Remains = observer(() => {
                         {selectedProducts.cost_price && (
                           <div className="dropdown-separator"></div>
                         )}
-                        {products.map((product) => (
+                        {Array.from(uniqueCostPrices).map((item, index) => (
                           <DropdownMenu.Item
-                            key={product.id}
+                            key={index}
                             className="dropdown-item"
                             onSelect={(event) => {
                               event.preventDefault();
-                              handleSelect("cost_price", product.cost_price);
+                              handleSelect("cost_price", item);
                             }}
                           >
-                            {product.cost_price}
+                            {item}
                           </DropdownMenu.Item>
                         ))}
                       </DropdownMenu.Content>
@@ -746,7 +764,7 @@ const Remains = observer(() => {
                               .map((field) => field)
                               .join(", ")
                           : ""}
-                        <button className="filterdropdownlist__content-btn">
+                        <div className="filterdropdownlist__content-btn">
                           <span
                             className={`filterdropdownlist__arrow 
                               \${
@@ -756,7 +774,7 @@ const Remains = observer(() => {
                             <span className="filterdropdownlist__arrow-btn"></span>
                             <span className="filterdropdownlist__arrow-btn"></span>
                           </span>
-                        </button>
+                        </div>
                       </button>
                     </DropdownMenu.Trigger>
 
@@ -777,16 +795,16 @@ const Remains = observer(() => {
                         {selectedProducts.price && (
                           <div className="dropdown-separator"></div>
                         )}
-                        {products.map((product) => (
+                        {Array.from(uniquePrices).map((item, index) => (
                           <DropdownMenu.Item
-                            key={product.id}
+                            key={index}
                             className="dropdown-item"
                             onSelect={(event) => {
                               event.preventDefault();
-                              handleSelect("price", product.price);
+                              handleSelect("price", item);
                             }}
                           >
-                            {product.price}
+                            {item}
                           </DropdownMenu.Item>
                         ))}
                       </DropdownMenu.Content>
@@ -798,15 +816,18 @@ const Remains = observer(() => {
                 <PopularButton
                   text="Очистить всё"
                   isHover={true}
-                  onClick={() => handleClearFilter()}
+                  onClick={() => {
+                    handleClearFilter()
+                    setIsFilterOpen(false);
+                  }}
                 />
                 <PopularButton
                   text={"Применить"}
                   isHover={true}
                   onClick={() => {
-                    handleFilterSelection();
+                    setIsFilterProducts(true);
                     setIsFilterOpen(false);
-                    // setSelectedProducts({})
+                    // handleClearFilter();
                   }}
                 />
               </div>

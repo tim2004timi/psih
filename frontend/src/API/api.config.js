@@ -36,6 +36,7 @@ instance.interceptors.response.use(
 
                 if (!refreshToken) {
                     console.log("Refresh token is missing");
+                    return Promise.reject(error);
                 }
 
                 const resp = await refreshInstance.post("/api/jwt/refresh/");

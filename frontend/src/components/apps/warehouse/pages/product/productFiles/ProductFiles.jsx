@@ -9,16 +9,18 @@ import { formatDateTime } from "../../../../../../API/formateDateTime";
 import getImgName from '../../../../../../API/getImgName'
 import { Tooltip } from "react-tooltip";
 import NotificationManager from "../../../../../notificationManager/NotificationManager";
+import UserStore from '../../../../../../UserStore'
+import { observer } from "mobx-react-lite";
 
-const ProductFiles = () => {
-  const { currentProduct, setCurrentProduct, currentConfig } =
+const ProductFiles = observer(() => {
+  const { currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig } =
     useOutletContext();
   const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с", 'x'];
-  const [currentProductsFiles, setCurrentProductsFiles] = useState([]);
   const [isFilesShowDragandDrop, setIsFilesShowDragandDrop] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
   const [errorText, setErrorText] = useState('')
+  const {currentUser, getCurrentUser} = UserStore;
 
   const columnConfig = {
     // изображение: {
@@ -37,7 +39,12 @@ const ProductFiles = () => {
     название: {
       className: "product-file-column",
       content: (row) => {
-        const fileName = getImgName(row.url);
+        let fileName;
+        if (currentProduct.id) {
+          fileName = getImgName(row.url);
+        } else {
+          fileName = row.name;
+        }
         return (
           // (row.image != false && row.url != null) &&
           <div
@@ -55,7 +62,7 @@ const ProductFiles = () => {
       content: (row) => {
         return (
           row.size != null && (
-            <div className="product-file-column__container">{row.size}</div>
+            <div className="product-file-column__container">{currentProduct.id ? row.size : row.size + ' байт'}</div>
           )
         );
       },
@@ -66,7 +73,7 @@ const ProductFiles = () => {
         return (
           // row.size != null &&
           <div className="product-file-column__container">
-            {formatDateTime(row.created_at)}
+            {formatDateTime(currentProduct.id ? row.created_at : new Date())}
           </div>
         );
       },
@@ -77,7 +84,7 @@ const ProductFiles = () => {
         return (
           // row.size != null &&
           <div className="product-file-column__container">
-            {row.user.username}
+            {currentProduct.id ? row.user.username : currentUser.username}
           </div>
         );
       },
@@ -88,8 +95,8 @@ const ProductFiles = () => {
         return (
           <div className="product-file-column__container">
             <a
-              href={row.url}
-              download={row.url}
+              href={currentProduct.id ? row.url : row.name}
+              download={currentProduct.id ? row.url : row.name}
               className="product-file-column__btn"
             >
               <img
@@ -137,7 +144,9 @@ const ProductFiles = () => {
     //   }
     // } else {
       try {
-        await deleteProductFile(fileId);
+        if (currentConfig.productPageFlag) {
+          await deleteProductFile(fileId);
+        }
         setCurrentProductsFiles((prevFiles) =>
           prevFiles.filter((file) => file.id !== fileId)
         );
@@ -149,8 +158,16 @@ const ProductFiles = () => {
   // }
 
   useEffect(() => {
-    setCurrentProductsFiles(currentProduct.files);
-  }, [currentProduct]);
+    if (currentConfig?.newProductFlag) {
+      getCurrentUser()
+    } 
+  }, [currentConfig]);
+
+  useEffect(() => {
+    if (currentProduct.files != undefined && currentProductsFiles != undefined) {
+      setCurrentProductsFiles(currentProduct.files);
+    } 
+  }, [currentProduct, currentProductsFiles]);
 
   const handleClick = () => fileInputRef.current.click();
 
@@ -168,6 +185,13 @@ const ProductFiles = () => {
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || e.dataTransfer.files);
 
+    if (currentProduct.id == undefined) {
+      files.forEach((file) => {
+        setCurrentProductsFiles((prevFiles) => [...prevFiles, file]);
+      });
+      return;
+    }
+
     uploadFiles(files, currentProduct.id);
   };
 
@@ -184,9 +208,17 @@ const ProductFiles = () => {
       <tr key={rowIndex}>
         {columnFilesHeaders.map((column, colIndex) => {
           const className = columnConfig[column]?.className;
+          const content = columnConfig[column]?.content(row);
+  
+          // Проверка на корректность возвращаемого значения
+          if (typeof content !== 'string' && typeof content !== 'number' && !React.isValidElement(content)) {
+            console.error(`Invalid content for column ${column}:`, content);
+            return null; // или другой fallback
+          }
+  
           return (
             <td key={colIndex} className={className}>
-              {columnConfig[column]?.content(row)}
+              {content}
             </td>
           );
         })}
@@ -243,6 +275,6 @@ const ProductFiles = () => {
       )} */}
     </div>
   );
-};
+});
 
 export default ProductFiles;

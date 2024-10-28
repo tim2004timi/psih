@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import { Outlet } from 'react-router-dom';
 import HeaderApp from '../../headerApp/HeaderApp';
 import WarehouseHeader from './WarehouseHeader/WarehouseHeader';
@@ -10,7 +10,9 @@ const Warehouse = () => {
         <div className="separator"></div>
         <WarehouseHeader />
         <div className="separator"></div>
-        <Outlet />
+        <Suspense fallback={<h1>Loading...</h1>}>
+            <Outlet />
+        </Suspense>
     </div>
     )
 }
