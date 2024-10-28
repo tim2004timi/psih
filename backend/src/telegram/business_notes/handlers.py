@@ -243,7 +243,7 @@ async def other_business_notes_callback(
     for user in users_notes:
         summ = 0
         message += "ℹ️ <b>Пользователь: {0}\n💰 Всего: {1} ₽</b>\n\n"
-        for note in notes:
+        for note in users_notes[user]:
             summ += note.amount
             message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
             message += f"Сумма: {note.amount} ₽\n"
