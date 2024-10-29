@@ -1,0 +1,372 @@
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useParams, useNavigate, Outlet } from "react-router-dom";
+import PartyStore from "../../PartyStore";
+import close from "../../assets/img/close_filter.png";
+import { Tooltip } from "react-tooltip";
+import { formatDateTime } from "../../API/formateDateTime";
+import "./SupplyTable.css";
+
+const SupplyTable = ({ configName, showPage }) => {
+  const [currentConfig, setCurrentConfig] = useState(null);
+  const { id } = useParams();
+  const { party, getPartyById } = PartyStore;
+  const [currentParty, setCurrentParty] = useState({});
+  const columnFilesHeaders = [
+    "название",
+    "размер",
+    "дата",
+    "сотрудник",
+    "с",
+    "x",
+  ];
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (id !== undefined) {
+      getPartyById();
+    } else {
+      setCurrentParty({
+        agent_name: "",
+        status: "на складе",
+        tag: "",
+        note: "",
+        storage: "",
+        project: "",
+        phone_number: "",
+        modifications_in_party: [],
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    setCurrentParty(party);
+  }, [party]);
+
+  const handleChange = (value, field) => {
+    setCurrentParty((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const columnFilesConfig = {
+    // изображение: {
+    //   className: "product-file-column",
+    //   content: (row) => {
+    //     return (
+    //     // (row.image != false && row.url != null) &&
+    //       <div className="product-file-column__container">
+    //         {/* <img src={tshirts} alt="img" className="product-file-column__img"/> */}
+    //         {row.img}
+    //         {/* src={getFullImageUrl(serverUrl, image.url)} */}
+    //       </div>
+    //     );
+    //   },
+    // },
+    название: {
+      className: "product-file-column",
+      content: (row) => {
+        let fileName;
+        if (currentProduct.id) {
+          fileName = getImgName(row.url);
+        } else {
+          fileName = row.name;
+        }
+        return (
+          // (row.image != false && row.url != null) &&
+          <div
+            data-tooltip-id="product-file-name-tooltip"
+            data-tooltip-content={fileName}
+            className="product-file-column__container"
+          >
+            {fileName}
+          </div>
+        );
+      },
+    },
+    размер: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          row.size != null && (
+            <div className="product-file-column__container">
+              {currentProduct.id ? row.size : row.size + " байт"}
+            </div>
+          )
+        );
+      },
+    },
+    дата: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="product-file-column__container">
+            {formatDateTime(currentProduct.id ? row.created_at : new Date())}
+          </div>
+        );
+      },
+    },
+    сотрудник: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="product-file-column__container">
+            {currentProduct.id ? row.user.username : currentUser.username}
+          </div>
+        );
+      },
+    },
+    с: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          <div className="product-file-column__container">
+            <a
+              href={currentProduct.id ? row.url : row.name}
+              download={currentProduct.id ? row.url : row.name}
+              className="product-file-column__btn"
+            >
+              <img
+                src={download}
+                alt="download"
+                className="product-file-column__img"
+              />
+            </a>
+          </div>
+        );
+      },
+    },
+    x: {
+      className: "product-file-column",
+      content: (row) => {
+        return (
+          <div className="product-file-column__container">
+            <button
+              className="product-file-column__btn"
+              onClick={() => {
+                removeFile(row.id);
+              }}
+            >
+              <img
+                src={close}
+                alt="close"
+                className="product-file-column__img"
+              />
+            </button>
+          </div>
+        );
+      },
+    },
+  };
+
+  const renderHeaders = () => {
+    return columnFilesHeaders.map((column, index) => (
+      <th key={index} className="product-supply-column-header">
+        {column}
+      </th>
+    ));
+  };
+
+  const renderRows = () => {
+    return columnFilesConfig.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {columnFilesHeaders.map((column, colIndex) => {
+          const className = columnConfig[column]?.className;
+          const content = columnConfig[column]?.content(row);
+
+          // Проверка на корректность возвращаемого значения
+          if (
+            typeof content !== "string" &&
+            typeof content !== "number" &&
+            !React.isValidElement(content)
+          ) {
+            console.error(`Invalid content for column ${column}:`, content);
+            return null; // или другой fallback
+          }
+
+          return (
+            <td key={colIndex} className={className}>
+              {content}
+            </td>
+          );
+        })}
+      </tr>
+    ));
+  };
+
+  //   const handleUpdate = (value, field) => {
+  //     updateProductInfo(field, value);
+  //   };
+
+  //   useEffect(() => {
+  //     setCurrentConfig(returnConfig(configName));
+  //   }, [configName]);
+
+  //   const returnConfig = (configName) => {
+  //     switch (configName) {
+  //       case "supplyPage":
+  //         return {
+  //           fetchFunc: fetchProductsA,
+  //           isShowComponentHeader: true,
+  //           isShowNotifications: false,
+  //           // getCurrentProducts: getProducts,
+  //         };
+  //       default:
+  //         return null;
+  //     }
+  //   };
+
+  return (
+    <div className="supplyTable">
+      <div className="supplyTable__header">
+        <button className="supplyTable__saveBtn">Сохранить</button>
+        <div className="supplyTable__date">
+          {id !== undefined
+            ? formatDateTime(row.party_date)
+            : formatDateTime(new Date())}
+        </div>
+        <Link
+          className="supplyTable__close"
+          onClick={() => showPage(false)}
+          to={"/parties"}
+        >
+          <img
+            src={close}
+            alt="supplyTable close"
+            className="supplyTable__close-img"
+          />
+        </Link>
+      </div>
+      <div className="supplyTable__content">
+        <div className="supplyTable__content-items">
+          <div className="supplyTable__content-wrapper">
+            <div className="supplyTable__content-item">
+              <p className="supplyTable__conterAgent-text">Контрагент</p>
+              <input
+                type="text"
+                className="supplyTable__conterAgent-input"
+                value={currentParty.agent_name}
+                onChange={(e) => handleChange(e.target.value, "agent_name")}
+                onBlur={(e) => handleUpdate(e.target.value, "agent_name")}
+              />
+            </div>
+            {id !== undefined && (
+              <Link className="supplyTable__conterAgent-message">
+                Сообщения
+              </Link>
+            )}
+          </div>
+          <div className="supplyTable__content-item">
+            <p className="supplyTable__conterAgent-text">Телефон</p>
+            <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.phone_number}
+              onChange={(e) =>
+                handleChange(
+                  e.target.value.replace(/[^0-9]/g, ""),
+                  "phone_number"
+                )
+              }
+              onBlur={(e) =>
+                handleUpdate(
+                  e.target.value.replace(/[^0-9]/g, ""),
+                  "phone_number"
+                )
+              }
+            />
+          </div>
+        </div>
+        <div className="supplyTable__content-items">
+          <div className="supplyTable__content-item">
+            <p className="supplyTable__conterAgent-text">Склад</p>
+            <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.agent_name}
+              onChange={(e) => handleChange(e.target.value, "storage")}
+              onBlur={(e) => handleUpdate(e.target.value, "storage")}
+            />
+          </div>
+          <div className="supplyTable__content-item">
+            <p className="supplyTable__conterAgent-text">Проект</p>
+            <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.phone_number}
+              onChange={(e) => handleChange(e.target.value, "project")}
+              onBlur={(e) => handleUpdate(e.target.value, "project")}
+            />
+          </div>
+        </div>
+        <div className="supplyTable__content-items">
+          <div className="supplyTable__content-item">
+            <p className="supplyTable__conterAgent-text">Статус</p>
+            {/* <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.agent_name}
+              onChange={(e) =>
+                handleChange(e.target.value, "storage")
+              }
+              onBlur={(e) =>
+                handleUpdate(e.target.value, "storage")
+              }
+            /> */}
+          </div>
+          <div className="supplyTable__content-item">
+            <p className="supplyTable__conterAgent-text">Тег</p>
+            {/* <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.phone_number}
+              onChange={(e) =>
+                handleChange(e.target.value, "project")
+              }
+              onBlur={(e) =>
+                handleUpdate(e.target.value, "project")
+              }
+            /> */}
+          </div>
+        </div>
+        <div className="supplyTable__content-item">
+          <p className="supplyTable__conterAgent-text">Заметка</p>
+          <textarea
+            className="supplyTable__note"
+            value={currentParty.note}
+            onChange={(e) => handleChange(e.target.value, "note")}
+            onBlur={(e) => handleUpdate(e.target.value, "note")}
+          />
+        </div>
+        <div className="supplyTable__content-item">
+          <p className="supplyTable__conterAgent-text">Файлы</p>
+          <div className="product-files-wrapper">
+            <table className="product-files-table">
+              <thead className="product-files-table__header">
+                <tr>{renderHeaders()}</tr>
+              </thead>
+              {/* <tbody>{renderRows()}</tbody> */}
+            </table>
+            <Tooltip id="category-tooltip" />
+            <div className="product-files-table__add">
+              <span
+                className="product-files-table__add-btn"
+                // onClick={() => setIsFilesShowDragandDrop(!isFilesShowDragandDrop)}
+                onClick={() => handleClick()}
+              ></span>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                //   onChange={handleFileChange}
+                multiple
+                accept="image/*"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SupplyTable;

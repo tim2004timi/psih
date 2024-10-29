@@ -19,8 +19,12 @@ const PartiesService = {
     },
 
     deletePartyById(id) {
-       return instance.get(`${serverUrl}/api/parties/?party_id=${id}`);
+       return instance.delete(`${serverUrl}/api/parties/?party_id=${id}`);
     },
+
+    deleteParties(arr) {
+        return instance.delete(`${serverUrl}/api/parties/multiple/`, arr);
+    }
 }
 
 export default PartiesService;

@@ -52,6 +52,15 @@ class PartyStore {
             throw (e)
         }
     }
+
+    async deleteParties(arr) {
+        try {
+            const resp = await PartiesService.deleteParties(arr)
+            console.log(resp.data)
+        } catch(e) {
+            throw (e)
+        }
+    }
 }
 
 export default new PartyStore();
