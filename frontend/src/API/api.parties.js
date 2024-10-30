@@ -24,7 +24,15 @@ const PartiesService = {
 
     deleteParties(arr) {
         return instance.delete(`${serverUrl}/api/parties/multiple/`, arr);
-    }
+    },
+
+    uploadPartyFile(id) {
+        return instance.post(`${serverUrl}/api/parties/${id}/upload-file/`)
+    },
+
+    deletePartyFile(id) {
+        return instance.delete(`${serverUrl}/api/parties/files/?file_id=${id}`)
+    },
 }
 
 export default PartiesService;

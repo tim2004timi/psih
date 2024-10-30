@@ -97,3 +97,128 @@
     border-radius: 7px;
     padding-left: 5px;
 }
+
+.supplyTable__table-wrapper{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    width: 100%;
+    padding: 0 20px;
+    width: 530px;
+}
+
+.supplyTable__table{
+    width: 100%;
+    border-radius: 7px;
+}
+
+.supply-file-column-header{
+    padding-bottom: 10px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+
+.supply-file-column-header:nth-last-child(-n+2),
+.supply-file-column-header:nth-last-child(-n+2){
+    color: transparent;
+}
+
+.supply-file-column{
+    padding-bottom: 16px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+
+.supply-file-column-header:first-child,
+.supply-file-column:first-child {
+  max-width: 30%;
+}
+
+.supply-file-column-header:nth-child(2),
+.supply-file-column:nth-child(2),
+.supply-file-column-header:nth-child(3),
+.supply-file-column:nth-child(3),
+.supply-file-column-header:nth-child(4),
+.supply-file-column:nth-child(4) {
+  width: 20%;
+}
+
+.supply-file-column-header:nth-last-child(-n+2),
+.supply-file-column-header:nth-last-child(-n+2),
+.supply-file-column:nth-last-child(-n+2),
+.supply-file-column:nth-last-child(-n+2) {
+  width: 5%;
+}
+
+.supply-file-column__container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; */
+    width: 100%;
+    text-align: center;
+}
+
+.supply-file-column__btn{
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.supplyTable__table-add{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.supplyTable__table-add-btn{
+    width: 23px;
+    height: 23px;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.supplyTable__table-add-btn::before {
+    content: '+';
+    width: 15px;
+    height: 15px;
+    display: block;
+    top: 1.1px;
+    left: 5.1px;
+    color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+  }
+
+.files-dragAndDrop{
+    height: 35%;
+}
+
+.files-dragAndDrop__upload-zone {
+    border: 2px dashed #ccc;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 7px;
+    transition: border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.files-dragAndDrop__upload-zone.dragging{
+    border-color: rgba(0, 0, 0, 1);
+}
+
+.files-dragAndDrop__upload-zone-plus{
+    font-size: 70px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.5);
+    transition: color 0.3s ease;
+}

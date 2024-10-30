@@ -2,15 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams, useNavigate, Outlet } from "react-router-dom";
 import PartyStore from "../../PartyStore";
 import close from "../../assets/img/close_filter.png";
+import download from "../../assets/img/product_file_download.png";
 import { Tooltip } from "react-tooltip";
 import { formatDateTime } from "../../API/formateDateTime";
 import "./SupplyTable.css";
+import getImgName from '../../API/getImgName'
+import UserStore from '../../UserStore'
 
 const SupplyTable = ({ configName, showPage }) => {
   const [currentConfig, setCurrentConfig] = useState(null);
   const { id } = useParams();
-  const { party, getPartyById } = PartyStore;
+  const { party, getPartyById, deletePartyFile, uploadPartyFile } = PartyStore;
+  const {currentUser, getCurrentUser} = UserStore;
   const [currentParty, setCurrentParty] = useState({});
+  const [partyFiles, setPartyFiles] = useState([])
   const columnFilesHeaders = [
     "название",
     "размер",
@@ -20,31 +25,6 @@ const SupplyTable = ({ configName, showPage }) => {
     "x",
   ];
   const fileInputRef = useRef(null);
-
-  useEffect(() => {
-    if (id !== undefined) {
-      getPartyById();
-    } else {
-      setCurrentParty({
-        agent_name: "",
-        status: "на складе",
-        tag: "",
-        note: "",
-        storage: "",
-        project: "",
-        phone_number: "",
-        modifications_in_party: [],
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    setCurrentParty(party);
-  }, [party]);
-
-  const handleChange = (value, field) => {
-    setCurrentParty((prev) => ({ ...prev, [field]: value }));
-  };
 
   const columnFilesConfig = {
     // изображение: {
@@ -61,10 +41,10 @@ const SupplyTable = ({ configName, showPage }) => {
     //   },
     // },
     название: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
         let fileName;
-        if (currentProduct.id) {
+        if (id) {
           fileName = getImgName(row.url);
         } else {
           fileName = row.name;
@@ -72,9 +52,9 @@ const SupplyTable = ({ configName, showPage }) => {
         return (
           // (row.image != false && row.url != null) &&
           <div
-            data-tooltip-id="product-file-name-tooltip"
+            data-tooltip-id="supply-file-name-tooltip"
             data-tooltip-content={fileName}
-            className="product-file-column__container"
+            className="supply-file-column__container"
           >
             {fileName}
           </div>
@@ -82,53 +62,54 @@ const SupplyTable = ({ configName, showPage }) => {
       },
     },
     размер: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
+        console.log(row.size)
         return (
           row.size != null && (
-            <div className="product-file-column__container">
-              {currentProduct.id ? row.size : row.size + " байт"}
+            <div className="supply-file-column__container">
+              {id ? row.size : (row.size/1000000).toFixed(1) + " мб"}
             </div>
           )
         );
       },
     },
     дата: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
         return (
           // row.size != null &&
-          <div className="product-file-column__container">
-            {formatDateTime(currentProduct.id ? row.created_at : new Date())}
+          <div className="supply-file-column__container">
+            {formatDateTime(id ? row.created_at : new Date())}
           </div>
         );
       },
     },
     сотрудник: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
         return (
           // row.size != null &&
-          <div className="product-file-column__container">
-            {currentProduct.id ? row.user.username : currentUser.username}
+          <div className="supply-file-column__container">
+            {id ? row.user.username : currentUser.username}
           </div>
         );
       },
     },
     с: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
         return (
-          <div className="product-file-column__container">
+          <div className="supply-file-column__container">
             <a
-              href={currentProduct.id ? row.url : row.name}
-              download={currentProduct.id ? row.url : row.name}
-              className="product-file-column__btn"
+              href={id ? row.url : row.name}
+              download={id ? row.url : row.name}
+              className="supply-file-column__btn"
             >
               <img
                 src={download}
                 alt="download"
-                className="product-file-column__img"
+                className="supply-file-column__img"
               />
             </a>
           </div>
@@ -136,12 +117,12 @@ const SupplyTable = ({ configName, showPage }) => {
       },
     },
     x: {
-      className: "product-file-column",
+      className: "supply-file-column",
       content: (row) => {
         return (
-          <div className="product-file-column__container">
+          <div className="supply-file-column__container">
             <button
-              className="product-file-column__btn"
+              className="supply-file-column__btn"
               onClick={() => {
                 removeFile(row.id);
               }}
@@ -149,7 +130,7 @@ const SupplyTable = ({ configName, showPage }) => {
               <img
                 src={close}
                 alt="close"
-                className="product-file-column__img"
+                className="supply-file-column__img"
               />
             </button>
           </div>
@@ -158,20 +139,90 @@ const SupplyTable = ({ configName, showPage }) => {
     },
   };
 
+  useEffect(() => {
+    if (id !== undefined) {
+      getPartyById();
+    } else {
+      setCurrentParty({
+        agent_name: "",
+        status: "на складе",
+        tag: "",
+        note: "",
+        storage: "",
+        project: "",
+        phone_number: "",
+        modifications_in_party: [],
+      });
+    }
+    getCurrentUser()
+  }, []);
+
+  useEffect(() => {
+    setCurrentParty(party);
+    if (party.files !== undefined) {
+      setPartyFiles(party.files)
+    }
+  }, [party]);
+
+  const removeFile = async(fileId) => {
+    try {
+      if (id != undefined) {
+        await deletePartyFile(fileId);
+      }
+      setPartyFiles((prevFiles) =>
+        prevFiles.filter((file) => file.id !== fileId)
+      );
+    } catch (e) {
+      console.error(e);
+      setErrorText(e.response.data.detail)
+    }
+  }
+
+  const handleClick = () => fileInputRef.current.click();
+
+  const uploadFiles = (files, id) =>
+    files.map(async (file) => {
+      try {
+        const response = await uploadPartyFile(id, file);
+        setPartyFiles((prevFiles) => [...prevFiles, response]);
+      } catch (error) {
+        console.error("Ошибка при загрузке файла:", error);
+        setErrorText(error.response.data.detail)
+      }
+    });
+
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || e.dataTransfer.files);
+
+    if (id == undefined) {
+      files.forEach((file) => {
+        setPartyFiles((prevFiles) => [...prevFiles, file]);
+      });
+      return;
+    }
+
+    uploadFiles(files, id);
+  };
+
+
+  const handleChange = (value, field) => {
+    setCurrentParty((prev) => ({ ...prev, [field]: value }));
+  };
+
   const renderHeaders = () => {
     return columnFilesHeaders.map((column, index) => (
-      <th key={index} className="product-supply-column-header">
+      <th key={index} className="supply-file-column-header">
         {column}
       </th>
     ));
   };
 
   const renderRows = () => {
-    return columnFilesConfig.map((row, rowIndex) => (
+    return partyFiles.map((row, rowIndex) => (
       <tr key={rowIndex}>
         {columnFilesHeaders.map((column, colIndex) => {
-          const className = columnConfig[column]?.className;
-          const content = columnConfig[column]?.content(row);
+          const className = columnFilesConfig[column]?.className;
+          const content = columnFilesConfig[column]?.content(row);
 
           // Проверка на корректность возвращаемого значения
           if (
@@ -339,17 +390,17 @@ const SupplyTable = ({ configName, showPage }) => {
         </div>
         <div className="supplyTable__content-item">
           <p className="supplyTable__conterAgent-text">Файлы</p>
-          <div className="product-files-wrapper">
-            <table className="product-files-table">
-              <thead className="product-files-table__header">
+          <div className="supplyTable__table-wrapper">
+            <table className="supplyTable__table">
+              <thead className="supplyTable__table-header">
                 <tr>{renderHeaders()}</tr>
               </thead>
-              {/* <tbody>{renderRows()}</tbody> */}
+              <tbody>{renderRows()}</tbody>
             </table>
             <Tooltip id="category-tooltip" />
-            <div className="product-files-table__add">
+            <div className="supplyTable__table-add">
               <span
-                className="product-files-table__add-btn"
+                className="supplyTable__table-add-btn"
                 // onClick={() => setIsFilesShowDragandDrop(!isFilesShowDragandDrop)}
                 onClick={() => handleClick()}
               ></span>
@@ -357,7 +408,7 @@ const SupplyTable = ({ configName, showPage }) => {
                 type="file"
                 ref={fileInputRef}
                 style={{ display: "none" }}
-                //   onChange={handleFileChange}
+                  onChange={handleFileChange}
                 multiple
                 accept="image/*"
               />

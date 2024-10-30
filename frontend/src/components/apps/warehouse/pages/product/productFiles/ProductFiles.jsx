@@ -13,8 +13,8 @@ import UserStore from '../../../../../../UserStore'
 import { observer } from "mobx-react-lite";
 
 const ProductFiles = observer(() => {
-  const { currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig } =
-    useOutletContext();
+  // const { currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig } =
+  //   useOutletContext();
   const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с", 'x'];
   const [isFilesShowDragandDrop, setIsFilesShowDragandDrop] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -133,16 +133,6 @@ const ProductFiles = observer(() => {
   };
 
   const removeFile = async(fileId) => {
-    // if (currentConfig.newProductFlag) {
-    //   try {
-    //     setProductsImages((prevImages) =>
-    //       prevImages.filter((img) => img.name !== cnt)
-    //     );
-    //   } catch (e) {
-    //     console.error(e);
-    //     setErrorText(e.response.data.detail)
-    //   }
-    // } else {
       try {
         if (currentConfig.productPageFlag) {
           await deleteProductFile(fileId);

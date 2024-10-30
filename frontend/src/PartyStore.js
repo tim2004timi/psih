@@ -61,6 +61,24 @@ class PartyStore {
             throw (e)
         }
     }
+
+    async uploadPartyFile(id) {
+        try {
+            const resp = await PartiesService.uploadPartyFile(id)
+            console.log(resp.data)
+        } catch(e) {
+            throw (e)
+        }
+    }
+
+    async deletePartyFile(id) {
+        try {
+            const resp = await PartiesService.deletePartyFile(id)
+            console.log(resp.data)
+        } catch(e) {
+            throw (e)
+        }
+    }
 }
 
 export default new PartyStore();
