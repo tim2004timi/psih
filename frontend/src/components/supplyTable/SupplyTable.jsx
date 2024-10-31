@@ -6,16 +6,19 @@ import download from "../../assets/img/product_file_download.png";
 import { Tooltip } from "react-tooltip";
 import { formatDateTime } from "../../API/formateDateTime";
 import "./SupplyTable.css";
-import getImgName from '../../API/getImgName'
-import UserStore from '../../UserStore'
+import getImgName from "../../API/getImgName";
+import UserStore from "../../UserStore";
 
-const SupplyTable = ({ configName, showPage }) => {
+const SupplyTable = ({ configName, showPage, id }) => {
   const [currentConfig, setCurrentConfig] = useState(null);
-  const { id } = useParams();
   const { party, getPartyById, deletePartyFile, uploadPartyFile } = PartyStore;
-  const {currentUser, getCurrentUser} = UserStore;
+  const { currentUser, getCurrentUser } = UserStore;
   const [currentParty, setCurrentParty] = useState({});
-  const [partyFiles, setPartyFiles] = useState([])
+  const [partyFiles, setPartyFiles] = useState([]);
+  const [partyModifications, setPartyModifications] = useState([]);
+  const [showColumnList, setShowColumnList] = useState(false);
+  const columnsListBtnRef = useRef(null);
+  const columnsListRef = useRef(null);
   const columnFilesHeaders = [
     "название",
     "размер",
@@ -24,6 +27,24 @@ const SupplyTable = ({ configName, showPage }) => {
     "с",
     "x",
   ];
+  const columnPartiesHeaders = [
+    "наименование",
+    "принято",
+    "остаток",
+    "себестоимость вещи",
+    "цена продажи",
+    "себестоимость партии",
+    "стоимость партии"
+  ];
+  const [selectedPartiesColumns, setSelectedPartiesColumns] = useState([
+    "наименование",
+    "принято",
+    "остаток",
+    "себестоимость вещи",
+    "цена продажи",
+    "себестоимость партии",
+    "стоимость партии"
+  ]);
   const fileInputRef = useRef(null);
 
   const columnFilesConfig = {
@@ -64,11 +85,11 @@ const SupplyTable = ({ configName, showPage }) => {
     размер: {
       className: "supply-file-column",
       content: (row) => {
-        console.log(row.size)
+        console.log(row.size);
         return (
           row.size != null && (
             <div className="supply-file-column__container">
-              {id ? row.size : (row.size/1000000).toFixed(1) + " мб"}
+              {id ? row.size : (row.size / 1000000).toFixed(1) + " мб"}
             </div>
           )
         );
@@ -139,6 +160,127 @@ const SupplyTable = ({ configName, showPage }) => {
     },
   };
 
+  const columnPartiesConfig = {
+    наименование: {
+      className: "supply-party-column",
+      content: (row) => {
+        let fileName;
+        if (id) {
+          fileName = getImgName(row.url);
+        } else {
+          fileName = row.name;
+        }
+        return (
+          // (row.image != false && row.url != null) &&
+          <div
+            data-tooltip-id="supply-party-name-tooltip"
+            data-tooltip-content={fileName}
+            className="supply-party-column__container"
+          >
+            {fileName}
+          </div>
+        );
+      },
+    },
+    принято: {
+      className: "supply-party-column",
+      content: (row) => {
+        console.log(row.size);
+        return (
+          row.size != null && (
+            <div className="supply-party-column__container">
+              {id ? row.size : (row.size / 1000000).toFixed(1) + " мб"}
+            </div>
+          )
+        );
+      },
+    },
+    остаток: {
+      className: "supply-party-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="supply-party-column__container">
+            {formatDateTime(id ? row.created_at : new Date())}
+          </div>
+        );
+      },
+    },
+    "себестоимость вещи": {
+      className: "supply-party-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="supply-party-column__container">
+            {id ? row.user.username : currentUser.username}
+          </div>
+        );
+      },
+    },
+    "цена продажи": {
+      className: "supply-party-column",
+      content: (row) => {
+        return (
+          <div className="supply-party-column__container">
+            <a
+              href={id ? row.url : row.name}
+              download={id ? row.url : row.name}
+              className="supply-party-column__btn"
+            >
+              <img
+                src={download}
+                alt="download"
+                className="supply-party-column__img"
+              />
+            </a>
+          </div>
+        );
+      },
+    },
+    "себестоимость партии": {
+      className: "supply-party-column",
+      content: (row) => {
+        return (
+          <div className="supply-party-column__container">
+            <button
+              className="supply-party-column__btn"
+              onClick={() => {
+                removeFile(row.id);
+              }}
+            >
+              <img
+                src={close}
+                alt="close"
+                className="supply-party-column__img"
+              />
+            </button>
+          </div>
+        );
+      },
+    },
+    "стоимость партии": {
+      className: "supply-party-column",
+      content: (row) => {
+        return (
+          <div className="supply-party-column__container">
+            <button
+              className="supply-party-column__btn"
+              onClick={() => {
+                removeFile(row.id);
+              }}
+            >
+              <img
+                src={close}
+                alt="close"
+                className="supply-party-column__img"
+              />
+            </button>
+          </div>
+        );
+      },
+    },
+  };
+
   useEffect(() => {
     if (id !== undefined) {
       getPartyById();
@@ -154,17 +296,22 @@ const SupplyTable = ({ configName, showPage }) => {
         modifications_in_party: [],
       });
     }
-    getCurrentUser()
+    getCurrentUser();
   }, []);
+
+  
 
   useEffect(() => {
     setCurrentParty(party);
     if (party.files !== undefined) {
-      setPartyFiles(party.files)
+      setPartyFiles(party.files);
+    }
+    if (party.modifications_in_party !== undefined) {
+      setPartyModifications(party.modifications_in_party);
     }
   }, [party]);
 
-  const removeFile = async(fileId) => {
+  const removeFile = async (fileId) => {
     try {
       if (id != undefined) {
         await deletePartyFile(fileId);
@@ -174,9 +321,9 @@ const SupplyTable = ({ configName, showPage }) => {
       );
     } catch (e) {
       console.error(e);
-      setErrorText(e.response.data.detail)
+      setErrorText(e.response.data.detail);
     }
-  }
+  };
 
   const handleClick = () => fileInputRef.current.click();
 
@@ -187,7 +334,7 @@ const SupplyTable = ({ configName, showPage }) => {
         setPartyFiles((prevFiles) => [...prevFiles, response]);
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
-        setErrorText(error.response.data.detail)
+        setErrorText(error.response.data.detail);
       }
     });
 
@@ -204,12 +351,49 @@ const SupplyTable = ({ configName, showPage }) => {
     uploadFiles(files, id);
   };
 
-
   const handleChange = (value, field) => {
     setCurrentParty((prev) => ({ ...prev, [field]: value }));
   };
 
-  const renderHeaders = () => {
+  // useEffect(() => {
+  //   console.log(currentParty)
+  // }, [currentParty])
+
+  const handleUpdate = (value, field) => {
+    if (id == undefined) return;
+    console.log(value, field);
+    updateProductInfo(field, value);
+  };
+
+  const handleColumnSelect = (column) => {
+    if (selectedPartiesColumns.includes(column)) {
+      setSelectedPartiesColumns(selectedPartiesColumns.filter((col) => col !== column));
+    } else {
+      let inserted = false;
+      const newSelectedColumns = selectedPartiesColumns.reduce(
+        (acc, selectedColumn) => {
+          if (
+            columnPartiesHeaders.indexOf(column) < columnPartiesHeaders.indexOf(selectedColumn) &&
+            !inserted
+          ) {
+            acc.push(column);
+            inserted = true;
+          }
+          acc.push(selectedColumn);
+          return acc;
+        },
+        []
+      );
+
+      if (!inserted) {
+        newSelectedColumns.push(column);
+      }
+
+      setSelectedPartiesColumns(newSelectedColumns);
+    }
+  };
+
+  const renderFileHeaders = () => {
     return columnFilesHeaders.map((column, index) => (
       <th key={index} className="supply-file-column-header">
         {column}
@@ -217,7 +401,7 @@ const SupplyTable = ({ configName, showPage }) => {
     ));
   };
 
-  const renderRows = () => {
+  const renderFileRows = () => {
     return partyFiles.map((row, rowIndex) => (
       <tr key={rowIndex}>
         {columnFilesHeaders.map((column, colIndex) => {
@@ -244,27 +428,40 @@ const SupplyTable = ({ configName, showPage }) => {
     ));
   };
 
-  //   const handleUpdate = (value, field) => {
-  //     updateProductInfo(field, value);
-  //   };
+  const renderPartiesHeaders = () => {
+    return selectedPartiesColumns.map((column, index) => (
+      <th key={index} className="supply-party-column-header">
+        {column}
+      </th>
+    ));
+  };
 
-  //   useEffect(() => {
-  //     setCurrentConfig(returnConfig(configName));
-  //   }, [configName]);
+  const renderPartiesRows = () => {
+    return partyModifications.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {columnFilesHeaders.map((column, colIndex) => {
+          const className = columnPartiesConfig[column]?.className;
+          const content = columnPartiesConfig[column]?.content(row);
 
-  //   const returnConfig = (configName) => {
-  //     switch (configName) {
-  //       case "supplyPage":
-  //         return {
-  //           fetchFunc: fetchProductsA,
-  //           isShowComponentHeader: true,
-  //           isShowNotifications: false,
-  //           // getCurrentProducts: getProducts,
-  //         };
-  //       default:
-  //         return null;
-  //     }
-  //   };
+          // Проверка на корректность возвращаемого значения
+          if (
+            typeof content !== "string" &&
+            typeof content !== "number" &&
+            !React.isValidElement(content)
+          ) {
+            console.error(`Invalid content for column ${column}:`, content);
+            return null; // или другой fallback
+          }
+
+          return (
+            <td key={colIndex} className={className}>
+              {content}
+            </td>
+          );
+        })}
+      </tr>
+    ));
+  };
 
   return (
     <div className="supplyTable">
@@ -272,7 +469,7 @@ const SupplyTable = ({ configName, showPage }) => {
         <button className="supplyTable__saveBtn">Сохранить</button>
         <div className="supplyTable__date">
           {id !== undefined
-            ? formatDateTime(row.party_date)
+            ? formatDateTime(currentParty.party_date)
             : formatDateTime(new Date())}
         </div>
         <Link
@@ -333,7 +530,7 @@ const SupplyTable = ({ configName, showPage }) => {
             <input
               type="text"
               className="supplyTable__conterAgent-input"
-              value={currentParty.agent_name}
+              value={currentParty.storage}
               onChange={(e) => handleChange(e.target.value, "storage")}
               onBlur={(e) => handleUpdate(e.target.value, "storage")}
             />
@@ -343,7 +540,7 @@ const SupplyTable = ({ configName, showPage }) => {
             <input
               type="text"
               className="supplyTable__conterAgent-input"
-              value={currentParty.phone_number}
+              value={currentParty.project}
               onChange={(e) => handleChange(e.target.value, "project")}
               onBlur={(e) => handleUpdate(e.target.value, "project")}
             />
@@ -393,9 +590,9 @@ const SupplyTable = ({ configName, showPage }) => {
           <div className="supplyTable__table-wrapper">
             <table className="supplyTable__table">
               <thead className="supplyTable__table-header">
-                <tr>{renderHeaders()}</tr>
+                <tr>{renderFileHeaders()}</tr>
               </thead>
-              <tbody>{renderRows()}</tbody>
+              <tbody>{renderFileRows()}</tbody>
             </table>
             <Tooltip id="category-tooltip" />
             <div className="supplyTable__table-add">
@@ -408,13 +605,65 @@ const SupplyTable = ({ configName, showPage }) => {
                 type="file"
                 ref={fileInputRef}
                 style={{ display: "none" }}
-                  onChange={handleFileChange}
+                onChange={handleFileChange}
                 multiple
                 accept="image/*"
               />
             </div>
           </div>
         </div>
+      </div>
+      <div className="supplyTable__productTableBtn">
+        <button className="supplyTable__productTableBtn-add">
+          Добавить товар
+        </button>
+        <button
+          className="warehouse-table__settings-btn"
+          ref={columnsListBtnRef}
+          onClick={() => {
+            setShowColumnList(!showColumnList);
+          }}
+        ></button>
+        {showColumnList && (
+            <div className="warehouse-table__settings" ref={columnsListRef}>
+              {columnPartiesHeaders.map((column, index) => (
+                <div
+                  key={index}
+                  className="warehouse-table__settings-container"
+                >
+                  <label className="warehouse-table__settings-item">
+                    <div className="warehouse-table__settings-content">
+                      {column}
+                    </div>
+                    <div className="warehouse-table__settings-input">
+                      <input
+                        type="checkbox"
+                        className="custom-checkbox"
+                        checked={selectedPartiesColumns.includes(column)}
+                        onChange={() => handleColumnSelect(column)}
+                      />
+                      <span className="checkbox-custom"></span>
+                    </div>
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+      </div>
+      <table className="supplyTable-products-table">
+        <thead className="supplyTable__table-header">
+          <tr>{renderPartiesHeaders()}</tr>
+        </thead>
+        <tbody>{renderPartiesRows()}</tbody>
+      </table>
+      <div className="supplyTable__expenses">{`Накладные расходы ${4}`}</div>
+      <div className="supplyTable__total">
+        <p className="supplyTable__total-costprice">
+          {`Общая себестоимость ${4}`}
+        </p>
+        <p className="supplyTable__total-cost">
+          {`Общая стоимость ${4}`}
+        </p>
       </div>
     </div>
   );
