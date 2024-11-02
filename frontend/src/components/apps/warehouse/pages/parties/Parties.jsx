@@ -29,6 +29,7 @@ const Parties = observer(() => {
   const [editableFields, setEditableFields] = useState({});
 
   const [isNewSupply, setIsNewSupply] = useState(false);
+  const [isPageSupply, setIsPageSupply] = useState(false);
 
   const inputPokupatelRef = useRef(null);
 
@@ -483,7 +484,7 @@ const Parties = observer(() => {
                 onClick={() => setIsNewSupply((isNewSupply) => !isNewSupply)}
             />
             {isNewSupply && (
-              <SupplyTable showPage={setIsNewSupply} />
+              <SupplyTable showPage={setIsNewSupply}/>
             )}
             {/* <div className="search">
               <div className="search__btn">

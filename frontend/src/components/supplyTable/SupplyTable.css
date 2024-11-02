@@ -1,5 +1,6 @@
 .supplyTable{
     position: absolute;
+    top: 20px;
     border: 1px solid rgba(0, 0, 0, 0.3);
     background-color: rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(40px);
@@ -24,7 +25,13 @@
     border: 1px solid rgba(0, 0, 0, 0.3);
     padding: 4px 23px;
     cursor: pointer;
-    font-size: 14px
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.supplyTable__saveBtn:hover{
+    background-color: rgba(0, 0, 0, 1);
+    color: #fff;
 }
 
 .supplyTable__date{
@@ -104,6 +111,7 @@
     width: 100%;
     padding: 0 20px;
     width: 530px;
+    min-height: 147px;
 }
 
 .supplyTable__table{
@@ -221,4 +229,73 @@
     font-weight: 700;
     color: rgba(0, 0, 0, 0.5);
     transition: color 0.3s ease;
+}
+
+.supplyTable__productTableBtn{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px 12px;
+}
+
+.supplyTable__productTableBtn-add{
+    background-color: transparent;
+    border-radius: 7px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 4px 23px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.supplyTable__productTableBtn-add:hover{
+    background-color: rgba(0, 0, 0, 1);
+    color: #fff;
+}
+
+.supplyTable-products-table{
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.supplyTable__table-header{
+    width: 100%;
+}
+
+.supply-party-column-header{
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 6px 0 20px;
+}
+
+.supply-party-column-header:last-child{
+    border-right: none
+}
+
+.supply-party-column-header{
+    width: 13%;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.supply-party-column-header:first-child{
+    width: 22%;
+}
+
+.supply-party-column{
+    text-align: center;
+    padding: 0 10px 12px;
+}
+
+.supplyTable__expenses{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.supplyTable__total{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
 }
