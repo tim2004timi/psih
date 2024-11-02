@@ -598,7 +598,8 @@ const Products = observer(() => {
             />
             {isShowArchive && (
               <ProductTable
-                showArchive={setIsShowArchive}
+                showComponent={setIsShowArchive}
+                // path="/products"
                 configName="archiveConfig"
               />
             )}

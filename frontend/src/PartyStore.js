@@ -26,9 +26,9 @@ class PartyStore {
         }
     }
 
-    async createParty() {
+    async createParty(obj) {
         try {
-            const resp = await PartiesService.createParty()
+            const resp = await PartiesService.createParty(obj)
             console.log(resp.data)
         } catch(e) {
             throw (e)
@@ -62,9 +62,9 @@ class PartyStore {
         }
     }
 
-    async uploadPartyFile(id) {
+    async uploadPartyFile(id, file) {
         try {
-            const resp = await PartiesService.uploadPartyFile(id)
+            const resp = await PartiesService.uploadPartyFile(id, file)
             console.log(resp.data)
         } catch(e) {
             throw (e)

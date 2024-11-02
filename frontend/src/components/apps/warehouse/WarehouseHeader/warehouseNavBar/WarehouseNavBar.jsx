@@ -32,7 +32,7 @@ const WarehouseNavBar = () => {
         <li className={
           `WarehouseNavBar__container-li 
           ${
-            location.pathname === '/remains' 
+            location.pathname.startsWith('/remains') 
             ? 
             'WarehouseNavBar__container-li_active' 
             : 
@@ -42,7 +42,7 @@ const WarehouseNavBar = () => {
         </li>
         <li className={
           `WarehouseNavBar__container-li 
-          ${location.pathname === '/parties' 
+          ${location.pathname.startsWith('/parties') 
           ? 
           'WarehouseNavBar__container-li_active' 
           : 

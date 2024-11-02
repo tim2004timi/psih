@@ -23,7 +23,7 @@ import NotificationManager from "../../../notificationManager/NotificationManage
 import NotificationStore from "../../../../NotificationStore";
 import { observer } from 'mobx-react-lite';
 
-const ProductTable = observer(({ showArchive, configName }) => {
+const ProductTable = observer(({ showComponent, addedProducts, configName }) => {
   //   const productsNA = useSelector((state) => state.productsNA.productsNA);
   const [productsNA, setProductsNA] = useState([]);
   const [productsA, setProductsA] = useState([]);
@@ -69,8 +69,17 @@ const ProductTable = observer(({ showArchive, configName }) => {
       case "archiveConfig":
         return {
           fetchFunc: fetchProductsA,
-          isShowComponentHeader: true,
+          archiveFlag: true,
           isShowNotifications: false,
+          addProductFlag: false,
+          // getCurrentProducts: getProducts,
+        };
+      case "addProductConfig":
+        return {
+          fetchFunc: fetchProductsNA,
+          archiveFlag: false,
+          isShowNotifications: false,
+          addProductFlag: true,
           // getCurrentProducts: getProducts,
         };
       default:
@@ -91,8 +100,6 @@ const ProductTable = observer(({ showArchive, configName }) => {
       setSelectedCategory(categories[0]);
     }
   }, [categories, productsA, productsNA]);
-
-
 
   async function fetchCategories() {
     try {
@@ -212,13 +219,51 @@ const ProductTable = observer(({ showArchive, configName }) => {
   //   }
   // }, [productsA, currentConfig]);
 
+  const addSelectedItems = () => {
+    const selectedProducts = filteredProducts
+      .filter((product) => activeCheckboxIds.includes(product.id))
+      .reduce((acc, product) => {
+        acc.push({
+          'modification': {
+            size: product.size,
+            article: product.article,
+            remaining: product.remaining,
+            id: product.id,
+            product_id: product.product_id,
+          },
+        });
+        return acc;
+      }, []);
+    // console.log(selectedProducts);
+    return selectedProducts;
+  };
+
   const filterProductsByCategories = (category) => {
-    const products = currentConfig.isShowComponentHeader
+    const products = currentConfig.archiveFlag
       ? productsA
       : productsNA;
-    const newProducts = products.filter(
+    products.filter(
       (product) => product.category.name === category
     );
+    const newProducts = products.reduce((acc, row) => {
+      row.modifications.forEach((modification) => {
+        acc.push({
+          id: modification.id,
+          product_id: row.id,
+          images: { ...row.images },
+          files: { ...row.files },
+          modifications: { ...row.modifications },
+          name: `${row.name} (${modification.size})`,
+          remaining: modification.remaining,
+          article: modification.article,
+          size: modification.size,
+          price: row.price,
+          // row
+        });
+      });
+      return acc;
+    }, []);
+    // console.log(newProducts)
     setFilteredProducts(newProducts);
   };
 
@@ -300,6 +345,7 @@ const ProductTable = observer(({ showArchive, configName }) => {
     название: {
       className: "products-table-column column-pt-name",
       content: (row) => {
+        // console.log(row)
         const isChecked = checkboxStates[row.id] || false;
         return row.name ? (
           <div
@@ -326,19 +372,19 @@ const ProductTable = observer(({ showArchive, configName }) => {
               <Link
                 data-tooltip-id="name-tooltip"
                 data-tooltip-content={row.name}
-                to={`/products/${row.id}`}
+                to={`/products/${row.product_id}`}
                 className="column-pt-number__content-name"
               >
                 {row.name}
               </Link>
               <div className={`column-pt-name__container-img`}>
-                {row.images.length !== 0 ? (
+                {row.images && Object.keys(row.images).length > 0 && (
                   <img
                     className="column-pt-name__img"
-                    src={getFullImageUrl(serverUrl, row.images[0].url)}
+                    src={getFullImageUrl(serverUrl, row.images[0]?.url)}
                     alt="img"
                   />
-                ) : null}
+                )}
               </div>
             </div>
           </div>
@@ -455,15 +501,38 @@ const ProductTable = observer(({ showArchive, configName }) => {
   };
 
   return (
-    <div className="product-table-overlay">
-      <div className="product-table">
-        <div className="product-table__wrapper">
+    <div
+      className={
+        currentConfig?.addProductFlag
+          ? "product-table-overlay-add"
+          : "product-table-overlay"
+      }
+    >
+      <div
+        className={
+          currentConfig?.addProductFlag ? "product-table-add" : "product-table"
+        }
+      >
+        <div
+          className={
+            currentConfig?.addProductFlag
+              ? "product-table__wrapper-add"
+              : "product-table__wrapper"
+          }
+        >
           <div className="product-table__navbar">
-            {/* <div className="product-table__saveBtn">
-              <button className="product-table__saveBtn-button">
-                Сохранить
-              </button>
-            </div> */}
+            {currentConfig?.addProductFlag && (
+              <div className="product-table__saveBtn">
+                <button
+                  onClick={() => {
+                    addedProducts(addSelectedItems())
+                  }}
+                  className="product-table__saveBtn-button"
+                >
+                  Сохранить
+                </button>
+              </div>
+            )}
             <div className="product-table__navbar-container">
               {renderCategoriesBtn()}
               {/* <div className="product-table__navbar-add">
@@ -535,17 +604,27 @@ const ProductTable = observer(({ showArchive, configName }) => {
                 </button>
               </div>
               <div className="product-table-content__close">
-                <Link
+                {/* <Link
                   className="product-table-content__close-btn"
-                  onClick={() => showArchive(false)}
-                  to={"/products"}
+                  onClick={() => showComponent(false)}
+                  to={path}
                 >
                   <img
                     src={close}
                     alt="close btn"
                     className="product-table-content__close-btn-img"
                   />
-                </Link>
+                </Link> */}
+                <button
+                  className="product-table-content__close-btn"
+                  onClick={() => showComponent(false)}
+                >
+                  <img
+                    src={close}
+                    alt="close btn"
+                    className="product-table-content__close-btn-img"
+                  />
+                </button>
               </div>
             </div>
             <div className="product-table__separator"></div>
