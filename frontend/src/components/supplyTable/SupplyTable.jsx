@@ -141,7 +141,7 @@ const SupplyTable = ({ configName, showPage }) => {
 
   useEffect(() => {
     if (id !== undefined) {
-      getPartyById();
+      getPartyById(id);
     } else {
       setCurrentParty({
         agent_name: "",
@@ -272,7 +272,7 @@ const SupplyTable = ({ configName, showPage }) => {
         <button className="supplyTable__saveBtn">Сохранить</button>
         <div className="supplyTable__date">
           {id !== undefined
-            ? formatDateTime(row.party_date)
+            ? formatDateTime(currentParty.party_date)
             : formatDateTime(new Date())}
         </div>
         <Link

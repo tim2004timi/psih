@@ -10,7 +10,8 @@ import PartyStore from "../../../../../PartyStore";
 import { Tooltip } from "react-tooltip";
 import { formatDateTime } from "../../../../../API/formateDateTime";
 import './Parties.css'
-import SupplyTable from '../../../../supplyTable/SupplyTable'
+import SupplyTable from '../../../../supplyTable/SupplyTable';
+import { Link } from "react-router-dom";
 
 const Parties = observer(() => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -92,12 +93,12 @@ const Parties = observer(() => {
                 ></span>
               </div>
               <div className="column-number-link">
-                {/* <Link
+                <Link
                   className="column-number-link-link"
-                  to={`/orders/${row.id}`}
-                > */}
+                  to={`${row.id}`}
+                >
                   {row.id}
-                {/* </Link> */}
+                </Link>
               </div>
             </div>
           )
