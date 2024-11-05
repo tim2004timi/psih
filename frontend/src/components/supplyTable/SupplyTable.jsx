@@ -180,28 +180,46 @@ const SupplyTable = observer(({ configName, showPage }) => {
     наименование: {
       className: "supply-party-column",
       content: (row) => {
-        // console.log(row);
-
+        // console.log(products)
+        // console.log(toJS(row))
         return (
           <div
             data-tooltip-id="supply-party-name-tooltip"
-            // data-tooltip-content={fileName}
+            data-tooltip-content={products[row.modification.id]?.displayName}
             className="supply-party-column__container"
           >
-            {products[row.modification.product_id]?.displayName}
+            {products[row.modification.id]?.displayName}
           </div>
         );
       },
     },
     принято: {
       className: "supply-party-column",
-      content: (row) => {
+      content: (row, rowIndex) => {
+        // console.log(currentParty)
+        // console.log(row)
         return (
-        row.size != null && (
           <div className="supply-party-column__container">
-            {/* {id ? row.size : (row.size / 1000000).toFixed(1) + " мб"} */}
+            <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={currentParty.modifications_in_party[rowIndex]?.amount}
+              onChange={(e) => {
+                const newAmount = Number(e.target.value);
+                setCurrentParty((prev) => {
+                  const newModifications = [...prev.modifications_in_party];
+                  newModifications[rowIndex] = {
+                    ...newModifications[rowIndex],
+                    amount: newAmount,
+                  };
+                  return {
+                    ...prev,
+                    modifications_in_party: newModifications,
+                  };
+                });
+              }}
+            />
           </div>
-        )
         );
       },
     },
@@ -222,7 +240,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
       content: (row) => {
         return (
           <div className="supply-party-column__container">
-            {products[row.modification.product_id]?.cost_price}
+            {products[row.modification.id]?.cost_price}
           </div>
         );
       },
@@ -232,53 +250,31 @@ const SupplyTable = observer(({ configName, showPage }) => {
       content: (row) => {
         return (
           <div className="supply-party-column__container">
-            {products[row.modification.product_id]?.price}
+            {products[row.modification.id]?.price}
           </div>
         );
       },
     },
     "себестоимость партии": {
       className: "supply-party-column",
-      content: (row) => {
-        // return (
-        //   <div className="supply-party-column__container">
-        //     <button
-        //       className="supply-party-column__btn"
-        //       onClick={() => {
-        //         removeFile(row.id);
-        //       }}
-        //     >
-        //       <img
-        //         src={close}
-        //         alt="close"
-        //         className="supply-party-column__img"
-        //       />
-        //     </button>
-        //   </div>
-        // );
+      content: (row, rowIndex) => {
+        return (
+          <div className="supply-party-column__container">
+            {currentParty.modifications_in_party[rowIndex]?.amount * products[row.modification.id]?.cost_price}
+          </div>
+        );
       },
     },
     "стоимость партии": {
       className: "supply-party-column",
-      content: (row) => {
-        // return (
-        //   <div className="supply-party-column__container">
-        //     <button
-        //       className="supply-party-column__btn"
-        //       onClick={() => {
-        //         removeFile(row.id);
-        //       }}
-        //     >
-        //       <img
-        //         src={close}
-        //         alt="close"
-        //         className="supply-party-column__img"
-        //       />
-        //     </button>
-        //   </div>
-        // );
+      content: (row, rowIndex) => {
+        return (
+          <div className="supply-party-column__container">
+            {currentParty.modifications_in_party[rowIndex]?.amount * products[row.modification.id]?.price}
+          </div>
+        );
       },
-    },
+    }
   };
 
   useEffect(() => {
@@ -321,14 +317,13 @@ const SupplyTable = observer(({ configName, showPage }) => {
       const response = await getProducts(isArchived);
       const newProducts = response.data.reduce((acc, row) => {
         row.modifications.forEach((modification) => {
-          acc[row.id] = {
+          acc[modification.id] = {
             displayName: `${row.name} (${modification.size})`,
             ...row,
           };
         });
         return acc;
       }, {});
-      // console.log(newProducts);
       setProducts(newProducts);
     } catch (e) {
       console.error(e);
@@ -385,9 +380,9 @@ const SupplyTable = observer(({ configName, showPage }) => {
     setCurrentParty((prev) => ({ ...prev, [field]: value }));
   };
 
-  // useEffect(() => {
-  //   fetchProducts(false);
-  // }, [partyModifications])
+  useEffect(() => {
+    console.log(toJS(partyModifications))
+  }, [partyModifications])
 
   const handleUpdate = (value, field) => {
     if (id == undefined) return;
@@ -434,17 +429,48 @@ const SupplyTable = observer(({ configName, showPage }) => {
     ));
   };
 
+  const isImportantFieldsFilled = (currentSupply) => {
+    const newFieldValidity = {
+      agent_name: currentSupply.agent_name !== '',
+      phone_number: currentSupply.phone_number !== '',
+      modifications_in_party: currentSupply.modifications_in_party.length !== 0,
+    };
+    return Object.values(newFieldValidity).every(isValid => isValid);
+  }
+
   const createNewParty = () => {
-    setCurrentParty((prev) => ({
-      ...prev,
-      modifications_in_party: [...prev.modifications_in_party, ...partyModifications],
-    }));
-    console.log(currentParty)
+    if (!isImportantFieldsFilled(currentParty)) {
+      setErrorText('Заполните необходимые поля!');
+      return;
+    }
+
+    createParty(currentParty)
+    showPage(false)
+    setSuccessText("Новая партия создана");
   };
 
   useEffect(() => {
-    console.log(partyModifications)
-  }, [partyModifications])
+    if (id === undefined) {
+      const newModifications = partyModifications.map((modification) => ({
+        amount: 1,
+        modification: {
+          size: modification.modification.size,
+          article: modification.modification.article,
+          remaining: modification.modification.remaining,
+          id: modification.modification.id,
+          product_id: modification.modification.product_id,
+        },
+        modification_id: modification.modification.id
+      }));
+  
+      // console.log(newModifications);
+  
+      setCurrentParty((prev) => ({
+        ...prev,
+        modifications_in_party: [...prev?.modifications_in_party, ...newModifications],
+      }));
+    }
+  }, [partyModifications]);
 
   const renderFileRows = () => {
     return partyFiles.map((row, rowIndex) => (
@@ -482,26 +508,14 @@ const SupplyTable = observer(({ configName, showPage }) => {
   };
 
   const renderPartiesRows = () => {
-    // console.log(partyModifications)
-    return partyModifications.map((row, rowIndex) => (
+    return partyModifications?.map((row, rowIndex) => (
       <tr key={rowIndex}>
         {columnPartiesHeaders.map((column, colIndex) => {
           const className = columnPartiesConfig[column]?.className;
-          // const content = columnPartiesConfig[column]?.content(row);
-
-          // // Проверка на корректность возвращаемого значения
-          // if (
-          //   typeof content !== "string" &&
-          //   typeof content !== "number" &&
-          //   !React.isValidElement(content)
-          // ) {
-          //   console.error(`Invalid content for column ${column}:`, content);
-          //   return null; // или другой fallback
-          // }
-
+          console.log(toJS(row))
           return (
             <td key={colIndex} className={className}>
-              {columnPartiesConfig[column]?.content(row)}
+              {columnPartiesConfig[column]?.content(row, rowIndex)}
             </td>
           );
         })}
@@ -550,7 +564,11 @@ const SupplyTable = observer(({ configName, showPage }) => {
       <div className="supplyTable__content">
         <div className="supplyTable__content-items">
           <div className="supplyTable__content-wrapper">
-            <div className="supplyTable__content-item">
+            <div 
+              className={`supplyTable__content-item ${
+                currentParty.agent_name === '' ? "warning" : ""
+              }`}
+            >
               <p className="supplyTable__conterAgent-text">Контрагент</p>
               <input
                 type="text"
@@ -566,7 +584,10 @@ const SupplyTable = observer(({ configName, showPage }) => {
               </Link>
             )}
           </div>
-          <div className="supplyTable__content-item">
+          <div 
+            className={`supplyTable__content-item ${
+              currentParty.phone_number === '' ? "warning" : ""
+            }`}>
             <p className="supplyTable__conterAgent-text">Телефон</p>
             <input
               type="text"
@@ -749,18 +770,23 @@ const SupplyTable = observer(({ configName, showPage }) => {
         </p>
         <p className="supplyTable__total-cost">{`Общая стоимость ${4}`}</p>
       </div>
-      {errorText && (
-        <NotificationManager
-          errorMessage={errorText}
-          resetFunc={resetErrorText}
-        />
-      )}
-      {successText && (
-        <NotificationManager
-          successMessage={successText}
-          resetFunc={resetSuccessText}
-        />
-      )}
+      <Tooltip id="supply-party-name-tooltip" />
+      { id !== undefined && (
+              <>
+                {errorText && (
+                  <NotificationManager
+                    errorMessage={errorText}
+                    resetFunc={resetErrorText}
+                  />
+                )}
+                {successText && (
+                  <NotificationManager
+                    successMessage={successText}
+                    resetFunc={resetSuccessText}
+                  />
+                )}
+              </>
+            )}
     </div>
   );
 });

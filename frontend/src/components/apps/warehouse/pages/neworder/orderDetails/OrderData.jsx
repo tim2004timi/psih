@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import {
   Link,
   useNavigate,
@@ -12,47 +12,37 @@ import {
   getOrderById,
   patchOrder,
 } from "../../../../../../API/ordersAPI";
+import { getProducts } from "../../../../../../API/productsApi";
 import settings from "../../../../../../assets/img/table-settings.svg";
 import InputMask from "react-input-mask";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
 import close from "../../../../../../assets/img/close_filter.png";
 import NotificationManager from "../../../../../notificationManager/NotificationManager";
 import NotificationStore from "../../../../../../NotificationStore";
-import { observer } from 'mobx-react-lite';
+import { observer } from "mobx-react-lite";
+import ProductTable from "../../../productTable/ProductTable";
 
-
-const OrderData = observer(({configName, showNewOrder}) => {
+const OrderData = observer(({ configName, showNewOrder }) => {
   const { id } = useParams();
   const [orderInfo, setOrderInfo] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([[], []]);
   const [statusObj, setStatusObj] = useState({});
   const [tagObj, setTagObj] = useState({});
+  const fileInputRef = useRef(null);
   // const [localPhone, setLocalPhone] = useState('')
   const phoneInputRef = useRef(null);
+  const [isShowProductTable, setIsShowProductTable] = useState(false)
   const [unformateDate, setUnformateDate] = useState("");
-  const [ordersProducts, setOrdersProducts] = useState([]);
+  const [products, setProducts] = useState({});
+  const [ordersModifications, setOrdersModifications] = useState([]);
   // let {ordersDate, setOrdersDate} = useOutletContext();
-  const columns = [
-    "Товары",
-    "Количество",
-    "Остаток",
-    "Цена",
-    "Стоимость доставки",
-    "НДС",
-    "Скидка",
-    "Промокод",
-    "Сумма",
-  ];
+  const columns = ["Товары", "Количество", "Остаток", "Цена", "Сумма"];
   const [selectedColumns, setSelectedColumns] = useState([
     "Товары",
     "Количество",
     "Остаток",
     "Цена",
-    "Стоимость доставки",
-    "НДС",
-    "Скидка",
-    "Промокод",
     "Сумма",
   ]);
   const [showColumnList, setShowColumnList] = useState(false);
@@ -61,7 +51,14 @@ const OrderData = observer(({configName, showNewOrder}) => {
 
   const [currentConfig, setCurrentConfig] = useState(null);
 
-  const { errorText, successText, setErrorText, setSuccessText, resetErrorText, resetSuccessText } = NotificationStore;
+  const {
+    errorText,
+    successText,
+    setErrorText,
+    setSuccessText,
+    resetErrorText,
+    resetSuccessText,
+  } = NotificationStore;
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
@@ -78,25 +75,25 @@ const OrderData = observer(({configName, showNewOrder}) => {
           isShowHeaderBtn: true,
           newDropDownList: true,
           wrapperClassName: "orderData-new",
-          orderDataHeaderClassName: 'orderData__header-new',
-          orderDataInfoHeaderClassName: 'orderDataInfo__header-new',
+          orderDataHeaderClassName: "orderData__header-new",
+          orderDataInfoHeaderClassName: "orderDataInfo__header-new",
           startFunc: () => {
             setOrderInfo({
-              "full_name": "",
-              "status": "в обработке",
-              "tag": "",
-              "channel": "",
-              "address": "",
-              "task": "",
-              "note": "",
-              "comment": "",
-              "storage": "",
-              "project": "",
-              "phone_number": "",
-              "email": "",
-              "products_in_order": []
-            })
-          }
+              full_name: "",
+              status: "в обработке",
+              tag: "",
+              channel: "",
+              address: "",
+              task: "",
+              note: "",
+              comment: "",
+              storage: "",
+              project: "",
+              phone_number: "",
+              email: "",
+              modifications_in_order: [],
+            });
+          },
         };
       case "orderPageConfig":
         return {
@@ -105,9 +102,9 @@ const OrderData = observer(({configName, showNewOrder}) => {
           isShowFiles: true,
           isShowHeaderBtn: false,
           wrapperClassName: "orderDate-page",
-          orderDataHeaderClassName: 'orderData__header-page',
-          orderDataInfoHeaderClassName: 'orderDataInfo__header-page',
-          startFunc: getOrderData
+          orderDataHeaderClassName: "orderData__header-page",
+          orderDataInfoHeaderClassName: "orderDataInfo__header-page",
+          startFunc: getOrderData,
         };
       default:
         return null;
@@ -118,29 +115,53 @@ const OrderData = observer(({configName, showNewOrder}) => {
     try {
       const response = await getOrderById(id);
       setOrderInfo(response.data);
+      console.log(response.data);
       // setUnformateDate(response.data.order_date);
       // setOrdersDate(formatDateTime(response.data.order_date));
       // console.log(ordersDate)
-      setOrdersProducts(response.data.products_in_order);
+      setOrdersModifications(response.data.modifications_in_order);
     } catch (error) {
       setIsLoading(true);
-      setErrorText(error.response.data.detail)
+      setErrorText(error.response.data.detail);
     }
   };
 
-  // useEffect(() => {
-  //   console.log(ordersProducts)
-  // }, [ordersProducts])
+  useEffect(() => {
+    console.log(ordersModifications);
+  }, [ordersModifications]);
 
   useEffect(() => {
     currentConfig?.startFunc();
   }, [currentConfig, id]);
 
+  async function fetchProducts(isArchived) {
+    try {
+      const response = await getProducts(isArchived);
+      const newProducts = response.data.reduce((acc, row) => {
+        row.modifications.forEach((modification) => {
+          acc[modification.id] = {
+            displayName: `${row.name} (${modification.size})`,
+            ...row,
+          };
+        });
+        return acc;
+      }, {});
+      setProducts(newProducts);
+    } catch (e) {
+      console.error(e);
+      setErrorText(e.response.data.detail);
+    }
+  }
+
   useEffect(() => {
     if (orderInfo) {
       setIsLoading(false);
     }
-  }, [orderInfo])
+  }, [orderInfo]);
+
+  useEffect(() => {
+    fetchProducts(false);
+  }, []);
 
   const handleChange = (e, field) => {
     const value = e.target.value;
@@ -150,7 +171,7 @@ const OrderData = observer(({configName, showNewOrder}) => {
   const handleUpdate = (e, field) => {
     const value = e.target.value;
     updateOrderInfo(field, value);
-  }
+  };
 
   const handleFileChange = (e, index) => {
     const newSelectedFiles = [...selectedFiles];
@@ -161,10 +182,10 @@ const OrderData = observer(({configName, showNewOrder}) => {
   const updateOrderInfo = async (key, value) => {
     try {
       await patchOrder(id, key, value);
-      setSuccessText("Значение успешно изменено!")
+      setSuccessText("Значение успешно изменено!");
     } catch (error) {
       console.error(error);
-      setErrorText(error.response.data.detail)
+      setErrorText(error.response.data.detail);
     }
   };
 
@@ -204,48 +225,112 @@ const OrderData = observer(({configName, showNewOrder}) => {
     }
   };
 
-  // const columnConfig = {
-  //   товары: {
-  //     className: "orderdata-column orderdata-name",
-  //     content: (row) => {
-  //       return row.name ? (
-  //         <div className="orderdata-column-container">{row.name}</div>
-  //       ) : null;
-  //     },
-  //   },
-  //   // количество: {
-  //   //   className: "orderdata-column orderdata-quantity",
-  //   //   content: (row) => {
-  //   //     return row.name ? (
-  //   //       <div className="orderdata-column-container">{row.name}</div>
-  //   //     ) : null;
-  //   //   },
-  //   // },
-  //   остаток: {
-  //     className: "orderdata-column orderdata-remains",
-  //     content: (row) => {
-  //       return row.remaining ? (
-  //         <div className="orderdata-column-container">{row.remaining + ' ' + row.measure}</div>
-  //       ) : null;
-  //     },
-  //   },
-  //   цена: {
-  //     className: "orderdata-column orderdata-remains",
-  //     content: (row) => {
-  //       return row.price ? (
-  //         <div className="orderdata-column-container">{row.price + ' ₽'}</div>
-  //       ) : null;
-  //     },
-  //   },
-  //   'стоимость доставки': {
-  //     className: "orderdata-column orderdata-remains",
-  //     content: (row) => {
-  //       return row.price ? (
-  //         <div className="orderdata-column-container">{row.price + ' ₽'}</div>
-  //       ) : null;
-  //     },
-  //   },
+  const columnConfig = {
+    Товары: {
+      className: "orderdata-column orderdata-name",
+      content: (row) => {
+        return (
+          <div className="orderdata-column-wrapper">
+            <button className="orderdata-column__close-btn">
+              <img
+                src={close}
+                alt="close btn"
+                className="orderdata-column__close-img"
+              />
+            </button>
+            <div className="orderdata-column-container">
+              {products[row.modification.id]?.displayName}
+            </div>
+          </div>
+        );
+      },
+    },
+    Количество: {
+      className: "orderdata-column orderdata-quantity",
+      content: (row) => {
+        // return (
+        //   <div className="orderdata-column-container">{row.name}</div>
+        // );
+      },
+    },
+    Остаток: {
+      className: "orderdata-column orderdata-remains",
+      content: (row) => {
+        return (
+          <div className="orderdata-column-container">
+            {row.modification.remaining}
+          </div>
+        );
+      },
+    },
+    Цена: {
+      className: "orderdata-column orderdata-remains",
+      content: (row) => {
+        return (
+          <div className="orderdata-column-container">
+            {products[row.modification.id]?.price + " ₽"}
+          </div>
+        );
+      },
+    },
+    Сумма: {
+      className: "orderdata-column orderdata-remains",
+      content: (row) => {
+        // return row.price ? (
+        //   <div className="orderdata-column-container">{row.price + ' ₽'}</div>
+        // ) : null;
+      },
+    },
+  };
+
+  const totalInfoConfig = {
+    Товары: {
+      className: "orderdata-total-column orderdata-name",
+   
+    },
+    Количество: {
+      className: "orderdata-total-column orderdata-quantity",
+    
+    },
+    Остаток: {
+      className: "orderdata-total-column orderdata-remains",
+
+      
+    },
+    Цена: {
+      className: "orderdata-total-column orderdata-remains",
+    
+    },
+    Сумма: {
+      className: "orderdata-total-column orderdata-remains",
+    }
+  };
+  
+  // const removeProduct = (id) => {
+  //   setOrdersModifications((prev) => {
+  //   })
   // }
+
+  useEffect(() => {
+    const newModifications = ordersModifications.map((modification) => ({
+      amount: 1,
+      modification: {
+        size: modification.modification.size,
+        article: modification.modification.article,
+        remaining: modification.modification.remaining,
+        id: modification.modification.id,
+        product_id: modification.modification.product_id,
+      },
+      modification_id: modification.modification.id
+    }));
+
+    console.log(newModifications);
+
+    // setOrderInfo((prev) => ({
+    //   ...prev,
+    //   modifications_in_order: [...prev?.modifications_in_order, ...newModifications],
+    // }));
+  }, [ordersModifications]);
 
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (
@@ -256,18 +341,70 @@ const OrderData = observer(({configName, showNewOrder}) => {
   };
 
   const renderRows = () => {
-    return filteredProducts.map((row, rowIndex) => (
-      <tr key={rowIndex}>
+    return ordersModifications.map((row, rowIndex) => (
+      <Fragment key={rowIndex}>
+        <tr className="orderdata-column-tr">
+          {selectedColumns.map((column, colIndex) => {
+            const className = columnConfig[column]?.className;
+            return (
+              <td key={colIndex} className={className}>
+                {columnConfig[column]?.content(row)}
+              </td>
+            );
+          })}
+        </tr>
+        {rowIndex === ordersModifications.length - 1 && (
+          <div className="orderData__table__add">
+            <span
+              className="orderData__table__add-btn"
+              onClick={() => {
+                setIsShowProductTable(true);
+              }}
+            ></span>
+          </div>
+        )}
+      </Fragment>
+    ));
+  };
+
+  const renderTotalInfoRow = () => {
+    const totalAmount = ordersModifications.reduce((sum, row) => sum + row.amount, 0);
+    const totalRemaining = ordersModifications.reduce((sum, row) => sum + row.modification.remaining, 0);
+    const totalPrice = ordersModifications.reduce((sum, row) => sum + (products[row.modification.id]?.price || 0), 0);
+    const totalSum = ordersModifications.reduce((sum, row) => sum + (row.amount * (products[row.modification.id]?.price || 0)), 0);
+  
+    return (
+      <tr>
         {selectedColumns.map((column, colIndex) => {
-          const className = columnConfig[column]?.className;
+          const className = totalInfoConfig[column]?.className;
+          let content;
+          switch (column) {
+            case "Товары":
+              content = 'Общие данные';
+              break;
+            case "Количество":
+              // content = totalAmount;
+              break;
+            case "Остаток":
+              content = totalRemaining;
+              break;
+            case "Цена":
+              content = totalPrice + " ₽";
+              break;
+            case "Сумма":
+              content = totalSum + " ₽";
+              break;
+            default:
+              content = "";
+          }
           return (
             <td key={colIndex} className={className}>
-              {columnConfig[column]?.content(row)}
+              {content}
             </td>
           );
         })}
       </tr>
-    ));
+    );
   };
 
   if (isLoading) {
@@ -348,7 +485,11 @@ const OrderData = observer(({configName, showNewOrder}) => {
       </div>
       <div className="orderDataInfo">
         <div className="orderDataInfo__personalInfo">
-          <div className={`${currentConfig.orderDataInfoHeaderClassName}`}>
+          <div
+            className={`${currentConfig.orderDataInfoHeaderClassName} ${
+              orderInfo.full_name === "" ? "warning" : ""
+            }`}
+          >
             {currentConfig?.isShowHeaderBtn && (
               <p
                 className={`orderDataInfo_fullName-text ${
@@ -375,7 +516,11 @@ const OrderData = observer(({configName, showNewOrder}) => {
               </Link>
             )}
           </div>
-          <div className="orderDataInfo__email">
+          <div
+            className={`orderDataInfo__email ${
+              orderInfo.email === "" ? "warning" : ""
+            }`}
+          >
             <p
               className={`orderDataInfo__email-text ${
                 // orderInfo.email != ""
@@ -402,7 +547,9 @@ const OrderData = observer(({configName, showNewOrder}) => {
               />
             </div>
           </div>
-          <div className="orderDataInfo__tel">
+          <div className={`orderDataInfo__tel ${
+              orderInfo.phone_number === "" ? "warning" : ""
+            }`}>
             <p className="orderDataInfo__tel-text orderDataInfo-text">
               Телефон
             </p>
@@ -540,14 +687,34 @@ const OrderData = observer(({configName, showNewOrder}) => {
           ))}
         </div>
       )}
-      <table className="orderData__table">
-        <thead>
-          <tr>{renderHeaders()}</tr>
-        </thead>
-        {/* <tbody>{renderRows()}</tbody> */}
-      </table>
-      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+      <div className="orderData__table">
+        <table className="orderData__table-table">
+          <thead>
+            <tr>{renderHeaders()}</tr>
+          </thead>
+          <tbody className="orderData__table-tbody">{renderRows()}</tbody>
+          {renderTotalInfoRow()}
+        </table>
+      </div>
+      {isShowProductTable && (
+        <ProductTable
+          showComponent={setIsShowProductTable}
+          configName="addProductConfig"
+          addedProducts={setOrdersModifications}
+        />
+      )}
+      {errorText && (
+        <NotificationManager
+          errorMessage={errorText}
+          resetFunc={resetErrorText}
+        />
+      )}
+      {successText && (
+        <NotificationManager
+          successMessage={successText}
+          resetFunc={resetSuccessText}
+        />
+      )}
     </div>
   );
 });

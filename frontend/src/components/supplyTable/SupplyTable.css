@@ -3,7 +3,7 @@
     top: 20px;
     border: 1px solid rgba(0, 0, 0, 0.3);
     background-color: rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(40px);
+    backdrop-filter: blur(5px);
     border-radius: 7px;
     z-index: 5;
     width: 1612px;
@@ -86,11 +86,19 @@
     /* padding-left: 10px; */
 }
 
+.supplyTable__content-item.warning .supplyTable__conterAgent-text{
+    color: red;
+}
+
 .supplyTable__conterAgent-input{
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 7px;
     padding: 3px 10px;
     width: 188px;
+}
+
+.supplyTable__content-item.warning .supplyTable__conterAgent-input{
+    border: 1px solid red;
 }
 
 .supplyTable__conterAgent-message{
@@ -272,6 +280,8 @@
     width: 100%;
     border: 1px solid rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
+    max-height: 350px;
+    overflow: auto
 }
 
 .supplyTable-products-table-new{
@@ -280,6 +290,8 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
     border-radius: 7px; 
+    max-height: 350px;
+    overflow: auto
 }
 
 .supplyTable__table-header{
@@ -313,6 +325,12 @@
 .supply-party-column-header:last-child,
 .supply-party-column:last-child{
     border-right: none
+}
+
+.supply-party-column__container{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .supplyTable__expenses{

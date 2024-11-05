@@ -368,6 +368,22 @@ const Parties = observer(() => {
     // const tags = new Set(response.data.map((row) => row.tag));
     // setTagsStatuses(tags);
   }, [parties])
+  
+  useEffect(() => {
+
+    if (activeCheckboxCount > 0) {
+      warehouseTableBtnContainerRef.current.style.display = "flex";
+    } else {
+      warehouseTableBtnContainerRef.current.style.display = "none";
+    }
+  
+    setActiveCheckboxCount(Math.floor(activeCheckboxCount));
+    setActiveCheckboxIds(
+      activeCheckboxIds.filter(
+        (item, index) => activeCheckboxIds.indexOf(item) === index
+      )
+    );
+  }, [activeCheckboxCount]);
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {

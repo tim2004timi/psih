@@ -23,7 +23,8 @@ const PartiesService = {
   },
 
   deleteParties(arr) {
-    return instance.delete(`${serverUrl}/api/parties/multiple/`, arr);
+    console.log(arr)
+    return instance.delete(`${serverUrl}/api/parties/multiple/`, { data: arr });
   },
 
   uploadPartyFile(id, file) {

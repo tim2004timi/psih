@@ -13,8 +13,8 @@ import UserStore from '../../../../../../UserStore'
 import { observer } from "mobx-react-lite";
 
 const ProductFiles = observer(() => {
-  // const { currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig } =
-  //   useOutletContext();
+  const { currentProduct, setCurrentProduct, currentProductsFiles, setCurrentProductsFiles, currentConfig } =
+    useOutletContext();
   const columnFilesHeaders = ["название", "размер", "дата", "сотрудник", "с", 'x'];
   const [isFilesShowDragandDrop, setIsFilesShowDragandDrop] = useState([]);
   const [isDragging, setIsDragging] = useState(false);

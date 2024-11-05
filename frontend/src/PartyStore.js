@@ -53,7 +53,9 @@ class PartyStore {
         }
     }
 
+
     async deleteParties(arr) {
+        console.log(arr)
         try {
             const resp = await PartiesService.deleteParties(arr)
             console.log(resp.data)
