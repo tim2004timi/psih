@@ -74,7 +74,7 @@
 .orderDataInfo {
     display: flex;
     justify-content: space-between;
-    width: 82.3%;
+    /* width: 82.3%; */
     margin: 0 auto 56px;
 }
 
@@ -337,7 +337,33 @@
 
 .orderData__tableSettins {
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.orderData__tableSettins-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.orderData__promoCode,
+.orderData__discount{
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.orderData__promoCode-text,
+.orderData__discount-text{
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+}
+.orderData__promoCode-input,
+.orderData__discount-input{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    padding-left: 5px;
 }
 
 .OrderData__tableSettins-btn {
@@ -372,8 +398,8 @@
     position: relative;
 }
 
-.orderdata-column-tr:nth-last-child(2) {
-    height: 90px;
+.orderdata-column-tr:last-child {
+    height: 50px;
     position: relative;
 }
 

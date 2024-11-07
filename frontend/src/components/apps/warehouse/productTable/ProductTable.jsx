@@ -537,7 +537,7 @@ const ProductTable = observer(
                 <div className="product-table__saveBtn">
                   <button
                     onClick={() => {
-                      addedProducts((prev) => [...prev, ...addSelectedItems()]);
+                      addedProducts(addSelectedItems());
                       showComponent(false)
                     }}
                     className="product-table__saveBtn-button"

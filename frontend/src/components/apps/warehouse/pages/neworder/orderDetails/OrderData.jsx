@@ -13,6 +13,7 @@ import {
   patchOrder,
 } from "../../../../../../API/ordersAPI";
 import { getProducts } from "../../../../../../API/productsApi";
+import { Tooltip } from "react-tooltip";
 import settings from "../../../../../../assets/img/table-settings.svg";
 import InputMask from "react-input-mask";
 import { formatDateTime } from "../../../../../../API/formateDateTime";
@@ -21,23 +22,30 @@ import NotificationManager from "../../../../../notificationManager/Notification
 import NotificationStore from "../../../../../../NotificationStore";
 import { observer } from "mobx-react-lite";
 import ProductTable from "../../../productTable/ProductTable";
+import UserStore from "../../../../../../UserStore";
+import download from "../../../../../../assets/img/product_file_download.png";
+import StatusDropDownList from "../../../../../statusDropDownList/StatusDropDownList";
+import TagDropDownList from "../../../../../tagDropDownList/tagDropDownList";
 
 const OrderData = observer(({ configName, showNewOrder }) => {
   const { id } = useParams();
   const [orderInfo, setOrderInfo] = useState();
+  const { currentUser, getCurrentUser } = UserStore;
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedFiles, setSelectedFiles] = useState([[], []]);
-  const [statusObj, setStatusObj] = useState({});
-  const [tagObj, setTagObj] = useState({});
-  const fileInputRef = useRef(null);
+  // const [selectedFiles, setSelectedFiles] = useState([[], []]);
+  // const [statusObj, setStatusObj] = useState({});
+  // const [tagObj, setTagObj] = useState({});
+  // const fileInputRef = useRef(null);
   // const [localPhone, setLocalPhone] = useState('')
   const phoneInputRef = useRef(null);
   const [isShowProductTable, setIsShowProductTable] = useState(false);
   const [unformateDate, setUnformateDate] = useState("");
   const [products, setProducts] = useState({});
   const [ordersModifications, setOrdersModifications] = useState([]);
+  const [ordersFiles, setOrdersFiles] = useState([]);
   // let {ordersDate, setOrdersDate} = useOutletContext();
   const columns = ["Товары", "Количество", "Остаток", "Цена", "Сумма"];
+  const dropdowndRef = useRef(null);
   const [selectedColumns, setSelectedColumns] = useState([
     "Товары",
     "Количество",
@@ -45,11 +53,21 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     "Цена",
     "Сумма",
   ]);
+  const columnFilesHeaders = [
+    "название",
+    "размер",
+    "дата",
+    "сотрудник",
+    "с",
+    "x",
+  ];
   const [showColumnList, setShowColumnList] = useState(false);
 
   const columnsListRef = useRef(null);
 
   const [currentConfig, setCurrentConfig] = useState(null);
+
+  const fileInputRef = useRef(null);
 
   const {
     errorText,
@@ -59,6 +77,118 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     resetErrorText,
     resetSuccessText,
   } = NotificationStore;
+
+  const columnFilesConfig = {
+    // изображение: {
+    //   className: "product-file-column",
+    //   content: (row) => {
+    //     return (
+    //     // (row.image != false && row.url != null) &&
+    //       <div className="product-file-column__container">
+    //         {/* <img src={tshirts} alt="img" className="product-file-column__img"/> */}
+    //         {row.img}
+    //         {/* src={getFullImageUrl(serverUrl, image.url)} */}
+    //       </div>
+    //     );
+    //   },
+    // },
+    название: {
+      className: "supply-file-column",
+      content: (row) => {
+        let fileName;
+        if (id) {
+          fileName = getImgName(row.url);
+        } else {
+          fileName = row.name;
+        }
+        return (
+          // (row.image != false && row.url != null) &&
+          <div
+            data-tooltip-id="supply-file-name-tooltip"
+            data-tooltip-content={fileName}
+            className="supply-file-column__container"
+          >
+            {fileName}
+          </div>
+        );
+      },
+    },
+    размер: {
+      className: "supply-file-column",
+      content: (row) => {
+        return (
+          row.size != null && (
+            <div className="supply-file-column__container">
+              {id ? row.size : (row.size / 1000000).toFixed(1) + " мб"}
+            </div>
+          )
+        );
+      },
+    },
+    дата: {
+      className: "supply-file-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="supply-file-column__container">
+            {formatDateTime(id ? row.created_at : new Date())}
+          </div>
+        );
+      },
+    },
+    сотрудник: {
+      className: "supply-file-column",
+      content: (row) => {
+        return (
+          // row.size != null &&
+          <div className="supply-file-column__container">
+            {id ? row.user.username : currentUser.username}
+          </div>
+        );
+      },
+    },
+    с: {
+      className: "supply-file-column",
+      content: (row) => {
+        return (
+          <div className="supply-file-column__container">
+            <a
+              href={id ? row.url : row.name}
+              download={id ? row.url : row.name}
+              className="supply-file-column__btn"
+            >
+              <img
+                src={download}
+                alt="download"
+                className="supply-file-column__img"
+              />
+            </a>
+          </div>
+        );
+      },
+    },
+    x: {
+      className: "supply-file-column",
+      content: (row) => {
+        return (
+          <div className="supply-file-column__container">
+            <button
+              className="supply-file-column__btn"
+              onClick={() => {
+                removeFile(row.id);
+              }}
+            >
+              <img
+                src={close}
+                alt="close"
+                className="supply-file-column__img"
+              />
+            </button>
+          </div>
+        );
+      },
+    },
+  };
 
   useEffect(() => {
     setCurrentConfig(returnConfig(configName));
@@ -120,15 +250,16 @@ const OrderData = observer(({ configName, showNewOrder }) => {
       // setOrdersDate(formatDateTime(response.data.order_date));
       // console.log(ordersDate)
       setOrdersModifications(response.data.modifications_in_order);
+      setOrdersFiles(response.data.files)
     } catch (error) {
       setIsLoading(true);
       setErrorText(error.response.data.detail);
     }
   };
 
-  useEffect(() => {
-    console.log(ordersModifications);
-  }, [ordersModifications]);
+  // useEffect(() => {
+  //   console.log(ordersModifications);
+  // }, [ordersModifications]);
 
   useEffect(() => {
     currentConfig?.startFunc();
@@ -161,6 +292,9 @@ const OrderData = observer(({ configName, showNewOrder }) => {
 
   useEffect(() => {
     fetchProducts(false);
+    if (id == undefined) {
+      getCurrentUser()
+    }
   }, []);
 
   const handleChange = (e, field) => {
@@ -173,11 +307,32 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     updateOrderInfo(field, value);
   };
 
-  const handleFileChange = (e, index) => {
-    const newSelectedFiles = [...selectedFiles];
-    newSelectedFiles[index] = Array.from(e.target.files);
-    setSelectedFiles(newSelectedFiles);
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || e.dataTransfer.files);
+
+    if (id == undefined) {
+      files.forEach((file) => {
+        setOrdersFiles((prevFiles) => [...prevFiles, file]);
+      });
+      return;
+    }
+
+    // uploadFiles(files, id);
   };
+
+  const uploadFiles = (files, id) =>
+    files.map(async (file) => {
+      // console.log(file)
+      try {
+        const response = await uploadPartyFile(id, file);
+        setOrdersFiles((prevFiles) => [...prevFiles, response]);
+      } catch (error) {
+        console.error("Ошибка при загрузке файла:", error);
+        setErrorText(error.response.data.detail);
+      }
+    });
+
+  const handleClick = () => fileInputRef.current.click();
 
   const updateOrderInfo = async (key, value) => {
     try {
@@ -225,13 +380,23 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     }
   };
 
+  const handleAddSelectedItems = (newItems) => {
+    const uniqueNewObjects = newItems.filter(newObj => 
+      !ordersModifications.some(existingObj => existingObj.modification.id === newObj.modification.id)
+    );
+    setOrdersModifications((prev) => [...prev, ...uniqueNewObjects])
+  }
+
   const columnConfig = {
     Товары: {
       className: "orderdata-column orderdata-name",
       content: (row) => {
         return (
           <div className="orderdata-column-wrapper">
-            <button className="orderdata-column__close-btn">
+            <button
+              className="orderdata-column__close-btn"
+              onClick={() => removeModification(row.modification.id)}
+            >
               <img
                 src={close}
                 alt="close btn"
@@ -301,32 +466,46 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     },
   };
 
-  // const removeProduct = (id) => {
-  //   setOrdersModifications((prev) => {
-  //   })
-  // }
+  // добавить patch
+  const removeModification = (id) => {
+    const updatedModifications = ordersModifications.filter((obj) => obj.modification.id !== id);
+    setOrdersModifications(updatedModifications);
+  };
 
-  // useEffect(() => {
-  //   const newModifications = ordersModifications.map((modification) => ({
-  //     amount: 1,
-  //     modification: {
-  //       size: modification.modification.size,
-  //       article: modification.modification.article,
-  //       remaining: modification.modification.remaining,
-  //       id: modification.modification.id,
-  //       product_id: modification.modification.product_id,
-  //     },
-  //     modification_id: modification.modification.id,
-  //   }));
+  const renderFileHeaders = () => {
+    return columnFilesHeaders.map((column, index) => (
+      <th key={index} className="supply-file-column-header">
+        {column}
+      </th>
+    ));
+  };
 
-  //   console.log(newModifications);
-  //   // console.log(orderInfo?.modifications_in_order)
+  const renderFileRows = () => {
+    return ordersFiles.map((row, rowIndex) => (
+      <tr key={rowIndex}>
+        {columnFilesHeaders.map((column, colIndex) => {
+          const className = columnFilesConfig[column]?.className;
+          const content = columnFilesConfig[column]?.content(row);
 
-  //   // setOrderInfo((prev) => ({
-  //   //   ...prev,
-  //   //   modifications_in_order: [...(prev?.modifications_in_order || []), ...newModifications],
-  //   // }));
-  // }, [ordersModifications]);
+          // Проверка на корректность возвращаемого значения
+          if (
+            typeof content !== "string" &&
+            typeof content !== "number" &&
+            !React.isValidElement(content)
+          ) {
+            console.error(`Invalid content for column ${column}:`, content);
+            return null; // или другой fallback
+          }
+
+          return (
+            <td key={colIndex} className={className}>
+              {content}
+            </td>
+          );
+        })}
+      </tr>
+    ));
+  };
 
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (
@@ -337,7 +516,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   };
 
   const renderRows = () => {
-    return ordersModifications.map((row, rowIndex) => (
+    return ordersModifications?.map((row, rowIndex) => (
       <Fragment key={rowIndex}>
         <tr className="orderdata-column-tr">
           {selectedColumns.map((column, colIndex) => {
@@ -349,7 +528,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
             );
           })}
         </tr>
-        {rowIndex === ordersModifications.length - 1 && (
+        {/* {rowIndex === ordersModifications.length - 1 && (
           <div className="orderData__table__add">
             <span
               className="orderData__table__add-btn"
@@ -358,25 +537,25 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               }}
             ></span>
           </div>
-        )}
+        )} */}
       </Fragment>
     ));
   };
 
   const renderTotalInfoRow = () => {
-    const totalAmount = ordersModifications.reduce(
+    const totalAmount = ordersModifications?.reduce(
       (sum, row) => sum + row.amount,
       0
     );
-    const totalRemaining = ordersModifications.reduce(
+    const totalRemaining = ordersModifications?.reduce(
       (sum, row) => sum + row.modification.remaining,
       0
     );
-    const totalPrice = ordersModifications.reduce(
+    const totalPrice = ordersModifications?.reduce(
       (sum, row) => sum + (products[row.modification.id]?.price || 0),
       0
     );
-    const totalSum = ordersModifications.reduce(
+    const totalSum = ordersModifications?.reduce(
       (sum, row) =>
         sum + row.amount * (products[row.modification.id]?.price || 0),
       0
@@ -464,6 +643,8 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           </div>
         )}
         <div className="orderData__header-data">
+          <StatusDropDownList />
+          <TagDropDownList />
           {/* <DropDownList
             statusList={true}
             startItem={currentConfig.newDropDownList ? "статус заказа" : orderInfo.status}
@@ -661,12 +842,54 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               </div>
             </div>
           </div>
+          <div className="supplyTable__table-wrapper">
+            <table className="supplyTable__table">
+              <thead className="supplyTable__table-header">
+                <tr>{renderFileHeaders()}</tr>
+              </thead>
+              <tbody>{renderFileRows()}</tbody>
+            </table>
+            <Tooltip id="category-tooltip" />
+            <div className="supplyTable__table-add">
+              <span
+                className="supplyTable__table-add-btn"
+                // onClick={() => setIsFilesShowDragandDrop(!isFilesShowDragandDrop)}
+                onClick={() => handleClick()}
+              ></span>
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+                multiple
+                accept="image/*"
+              />
+            </div>
+          </div>
         </div>
         {currentConfig.isShowFiles && (
           <div className="orderDataInfo__files"></div>
         )}
       </div>
       <div className="orderData__tableSettins">
+        <div className="orderData__tableSettins-wrapper">
+          <button
+            className="supplyTable__productTableBtn-add"
+            onClick={() => {
+              setIsShowProductTable(true);
+            }}
+          >
+            Добавить товар
+          </button>
+          <div className="orderData__promoCode">
+            <p className="orderData__promoCode-text">Промокод</p>
+            <input type="text" className="orderData__promoCode-input" />
+          </div>
+          <div className="orderData__discount">
+            <p className="orderData__discount-text">Скидка</p>
+            <input type="text" className="orderData__discount-input" />
+          </div>
+        </div>
         <button
           className="OrderData__tableSettins-btn"
           onClick={() => {
@@ -711,7 +934,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
         <ProductTable
           showComponent={setIsShowProductTable}
           configName="addProductConfig"
-          addedProducts={setOrdersModifications}
+          addedProducts={handleAddSelectedItems}
         />
       )}
       {errorText && (
