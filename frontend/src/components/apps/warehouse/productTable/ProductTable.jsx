@@ -232,6 +232,7 @@ const ProductTable = observer(
         .filter((product) => activeCheckboxIds.includes(product.id))
         .reduce((acc, product) => {
           acc.push({
+            amount: 1,
             modification: {
               size: product.size,
               article: product.article,
@@ -239,6 +240,7 @@ const ProductTable = observer(
               id: product.id,
               product_id: product.product_id,
             },
+            id: product.id
           });
           return acc;
         }, []);

@@ -32,7 +32,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   const fileInputRef = useRef(null);
   // const [localPhone, setLocalPhone] = useState('')
   const phoneInputRef = useRef(null);
-  const [isShowProductTable, setIsShowProductTable] = useState(false)
+  const [isShowProductTable, setIsShowProductTable] = useState(false);
   const [unformateDate, setUnformateDate] = useState("");
   const [products, setProducts] = useState({});
   const [ordersModifications, setOrdersModifications] = useState([]);
@@ -115,7 +115,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     try {
       const response = await getOrderById(id);
       setOrderInfo(response.data);
-      console.log(response.data);
+      // console.log(response.data);
       // setUnformateDate(response.data.order_date);
       // setOrdersDate(formatDateTime(response.data.order_date));
       // console.log(ordersDate)
@@ -286,51 +286,47 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   const totalInfoConfig = {
     Товары: {
       className: "orderdata-total-column orderdata-name",
-   
     },
     Количество: {
       className: "orderdata-total-column orderdata-quantity",
-    
     },
     Остаток: {
       className: "orderdata-total-column orderdata-remains",
-
-      
     },
     Цена: {
       className: "orderdata-total-column orderdata-remains",
-    
     },
     Сумма: {
       className: "orderdata-total-column orderdata-remains",
-    }
+    },
   };
-  
+
   // const removeProduct = (id) => {
   //   setOrdersModifications((prev) => {
   //   })
   // }
 
-  useEffect(() => {
-    const newModifications = ordersModifications.map((modification) => ({
-      amount: 1,
-      modification: {
-        size: modification.modification.size,
-        article: modification.modification.article,
-        remaining: modification.modification.remaining,
-        id: modification.modification.id,
-        product_id: modification.modification.product_id,
-      },
-      modification_id: modification.modification.id
-    }));
+  // useEffect(() => {
+  //   const newModifications = ordersModifications.map((modification) => ({
+  //     amount: 1,
+  //     modification: {
+  //       size: modification.modification.size,
+  //       article: modification.modification.article,
+  //       remaining: modification.modification.remaining,
+  //       id: modification.modification.id,
+  //       product_id: modification.modification.product_id,
+  //     },
+  //     modification_id: modification.modification.id,
+  //   }));
 
-    console.log(newModifications);
+  //   console.log(newModifications);
+  //   // console.log(orderInfo?.modifications_in_order)
 
-    // setOrderInfo((prev) => ({
-    //   ...prev,
-    //   modifications_in_order: [...prev?.modifications_in_order, ...newModifications],
-    // }));
-  }, [ordersModifications]);
+  //   // setOrderInfo((prev) => ({
+  //   //   ...prev,
+  //   //   modifications_in_order: [...(prev?.modifications_in_order || []), ...newModifications],
+  //   // }));
+  // }, [ordersModifications]);
 
   const renderHeaders = () => {
     return selectedColumns.map((column, index) => (
@@ -368,11 +364,24 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   };
 
   const renderTotalInfoRow = () => {
-    const totalAmount = ordersModifications.reduce((sum, row) => sum + row.amount, 0);
-    const totalRemaining = ordersModifications.reduce((sum, row) => sum + row.modification.remaining, 0);
-    const totalPrice = ordersModifications.reduce((sum, row) => sum + (products[row.modification.id]?.price || 0), 0);
-    const totalSum = ordersModifications.reduce((sum, row) => sum + (row.amount * (products[row.modification.id]?.price || 0)), 0);
-  
+    const totalAmount = ordersModifications.reduce(
+      (sum, row) => sum + row.amount,
+      0
+    );
+    const totalRemaining = ordersModifications.reduce(
+      (sum, row) => sum + row.modification.remaining,
+      0
+    );
+    const totalPrice = ordersModifications.reduce(
+      (sum, row) => sum + (products[row.modification.id]?.price || 0),
+      0
+    );
+    const totalSum = ordersModifications.reduce(
+      (sum, row) =>
+        sum + row.amount * (products[row.modification.id]?.price || 0),
+      0
+    );
+
     return (
       <tr>
         {selectedColumns.map((column, colIndex) => {
@@ -380,7 +389,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           let content;
           switch (column) {
             case "Товары":
-              content = 'Общие данные';
+              content = "Общие данные";
               break;
             case "Количество":
               // content = totalAmount;
@@ -392,7 +401,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               content = totalPrice + " ₽";
               break;
             case "Сумма":
-              content = totalSum + " ₽";
+              // content = totalSum + " ₽";
               break;
             default:
               content = "";
@@ -484,12 +493,12 @@ const OrderData = observer(({ configName, showNewOrder }) => {
         )}
       </div>
       <div className="orderDataInfo">
-        <div className="orderDataInfo__personalInfo">
-          <div
-            className={`${currentConfig.orderDataInfoHeaderClassName} ${
-              orderInfo.full_name === "" ? "warning" : ""
-            }`}
-          >
+        <div
+          className={`orderDataInfo__personalInfo ${
+            orderInfo.full_name === "" ? "warning" : ""
+          }`}
+        >
+          <div className={`${currentConfig.orderDataInfoHeaderClassName}`}>
             {currentConfig?.isShowHeaderBtn && (
               <p
                 className={`orderDataInfo_fullName-text ${
@@ -547,9 +556,11 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               />
             </div>
           </div>
-          <div className={`orderDataInfo__tel ${
+          <div
+            className={`orderDataInfo__tel ${
               orderInfo.phone_number === "" ? "warning" : ""
-            }`}>
+            }`}
+          >
             <p className="orderDataInfo__tel-text orderDataInfo-text">
               Телефон
             </p>
