@@ -30,6 +30,7 @@ class PartyStore {
         try {
             const resp = await PartiesService.createParty(obj)
             console.log(resp.data)
+            return resp
         } catch(e) {
             throw (e)
         }
@@ -68,6 +69,7 @@ class PartyStore {
         try {
             const resp = await PartiesService.uploadPartyFile(id, file)
             console.log(resp.data)
+            return resp
         } catch(e) {
             throw (e)
         }

@@ -81,6 +81,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
     название: {
       className: "supply-file-column",
       content: (row) => {
+        // console.log(toJS(row))
         let fileName;
         if (id) {
           fileName = getImgName(row.url);
@@ -343,6 +344,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
       setPartyFiles((prevFiles) =>
         prevFiles.filter((file) => file.id !== fileId)
       );
+      setSuccessText("Файл удалён")
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail);
@@ -356,7 +358,8 @@ const SupplyTable = observer(({ configName, showPage }) => {
       // console.log(file)
       try {
         const response = await uploadPartyFile(id, file);
-        setPartyFiles((prevFiles) => [...prevFiles, response]);
+        setPartyFiles((prevFiles) => [...prevFiles, response.data]);
+        setSuccessText('Файл загружен')
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
         setErrorText(error.response.data.detail);
@@ -380,9 +383,9 @@ const SupplyTable = observer(({ configName, showPage }) => {
     setCurrentParty((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    console.log(toJS(partyModifications))
-  }, [partyModifications])
+  // useEffect(() => {
+  //   console.log(toJS(partyModifications))
+  // }, [partyModifications])
 
   const handleUpdate = (value, field) => {
     if (id == undefined) return;
@@ -438,13 +441,14 @@ const SupplyTable = observer(({ configName, showPage }) => {
     return Object.values(newFieldValidity).every(isValid => isValid);
   }
 
-  const createNewParty = () => {
+  const createNewParty = async() => {
     if (!isImportantFieldsFilled(currentParty)) {
       setErrorText('Заполните необходимые поля!');
       return;
     }
 
-    createParty(currentParty)
+    const resp = await createParty(currentParty)
+    uploadFiles(partyFiles, resp.data.id);
     showPage(false)
     setSuccessText("Новая партия создана");
   };
@@ -512,7 +516,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
       <tr key={rowIndex}>
         {columnPartiesHeaders.map((column, colIndex) => {
           const className = columnPartiesConfig[column]?.className;
-          console.log(toJS(row))
+          // console.log(toJS(row))
           return (
             <td key={colIndex} className={className}>
               {columnPartiesConfig[column]?.content(row, rowIndex)}

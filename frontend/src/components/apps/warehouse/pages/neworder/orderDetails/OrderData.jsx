@@ -11,6 +11,8 @@ import {
   createOrder,
   getOrderById,
   patchOrder,
+  uploadOrderFile,
+  deleteOrderFile
 } from "../../../../../../API/ordersAPI";
 import { getProducts } from "../../../../../../API/productsApi";
 import { Tooltip } from "react-tooltip";
@@ -26,6 +28,7 @@ import UserStore from "../../../../../../UserStore";
 import download from "../../../../../../assets/img/product_file_download.png";
 import StatusDropDownList from "../../../../../statusDropDownList/StatusDropDownList";
 import TagDropDownList from "../../../../../tagDropDownList/tagDropDownList";
+import getImgName from '../../../../../../API/getImgName'
 
 const OrderData = observer(({ configName, showNewOrder }) => {
   const { id } = useParams();
@@ -257,6 +260,21 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     }
   };
 
+  const removeFile = async(fileId) => {
+    try {
+      if (id != undefined) {
+        await deleteOrderFile(fileId);
+      }
+      setOrdersFiles((prevFiles) =>
+        prevFiles.filter((file) => file.id !== fileId)
+      );
+      setSuccessText('Файл удалён')
+    } catch (e) {
+      console.error(e);
+      setErrorText(e.response.data.detail)
+    }
+  }
+
   // useEffect(() => {
   //   console.log(ordersModifications);
   // }, [ordersModifications]);
@@ -317,15 +335,17 @@ const OrderData = observer(({ configName, showNewOrder }) => {
       return;
     }
 
-    // uploadFiles(files, id);
+    uploadFiles(files, id);
   };
 
   const uploadFiles = (files, id) =>
     files.map(async (file) => {
       // console.log(file)
       try {
-        const response = await uploadPartyFile(id, file);
-        setOrdersFiles((prevFiles) => [...prevFiles, response]);
+        const response = await uploadOrderFile(id, file);
+        console.log(response.data)
+        setOrdersFiles((prevFiles) => [...prevFiles, response.data]);
+        setSuccessText('Файл добавлен')
       } catch (error) {
         console.error("Ошибка при загрузке файла:", error);
         setErrorText(error.response.data.detail);

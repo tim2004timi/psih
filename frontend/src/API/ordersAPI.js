@@ -55,3 +55,34 @@ export async function deleteOrders(idsArr) {
         throw e;
     }
 }
+
+export async function uploadOrderFile(orderId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const response = await instance.post(
+            `${serverUrl}/api/orders/${orderId}/upload-file/`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+        );
+        // console.log(response);
+        return response;
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function deleteOrderFile(fileId) {
+    try {
+        let response = await instance.delete(`${serverUrl}/api/orders/files/?file_id=${fileId}`);
+        // console.log(response)
+        return response
+    } catch (e) {
+        throw e;
+    }
+}
