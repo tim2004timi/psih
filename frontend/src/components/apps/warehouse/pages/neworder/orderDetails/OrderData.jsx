@@ -316,8 +316,17 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   }, []);
 
   const handleChange = (e, field) => {
-    const value = e.target.value;
-    setOrderInfo((prev) => ({ ...prev, [field]: value }));
+    
+    if (e.target !== undefined) {
+      setOrderInfo((prev) => ({ ...prev, [field]: e.target.value }));
+    } else {
+      console.log(e, field);
+      setOrderInfo((prev) => ({ ...prev, [field]: e }));
+      updateOrderInfo(field, e);
+    }
+
+    // console.log(value, field);
+    // setOrderInfo((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleUpdate = (e, field) => {
@@ -663,8 +672,8 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           </div>
         )}
         <div className="orderData__header-data">
-          <StatusDropDownList />
-          <TagDropDownList />
+          <StatusDropDownList selectedItem={orderInfo.status} changeFunc={handleChange}/>
+          <TagDropDownList selectedItem={orderInfo.tag} changeFunc={handleChange}/>
           {/* <DropDownList
             statusList={true}
             startItem={currentConfig.newDropDownList ? "статус заказа" : orderInfo.status}

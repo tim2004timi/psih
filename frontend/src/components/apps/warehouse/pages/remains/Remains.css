@@ -118,6 +118,13 @@
     align-items: center;
     padding: 0px 33px 0px 10px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-trigger__content{
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdown-content {

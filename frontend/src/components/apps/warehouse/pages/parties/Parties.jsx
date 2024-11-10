@@ -12,6 +12,8 @@ import { formatDateTime } from "../../../../../API/formateDateTime";
 import './Parties.css'
 import SupplyTable from '../../../../supplyTable/SupplyTable';
 import { Link } from "react-router-dom";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+// import NewFilterDropDown from "../../../../newFilterDropDown/NewFilterDropDown.jsx";
 
 const Parties = observer(() => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -34,6 +36,10 @@ const Parties = observer(() => {
   const inputPokupatelRef = useRef(null);
 
   const inputDateOrderRef = useRef(null);
+
+  const [uniqueFilterItems, setUniqueFilterItems] = useState({});
+  const [selectedParties, setSelectedParties] = useState({});
+  const [isFilterParties, setIsFilterParties] = useState(false)
 
   const warehouseTableBtnContainerRef = useRef(null);
 
@@ -310,6 +316,47 @@ const Parties = observer(() => {
     setActiveCheckboxIds(idsCount);
   };
 
+  const handleSelect = (field, item) => {
+    setSelectedParties((prevSelectedParties) => {
+      const fieldItems = prevSelectedParties[field] || [];
+      const isSelected = fieldItems.includes(item);
+
+      if (isSelected) {
+        // Если элемент уже выбран, удаляем его
+        return {
+          ...prevSelectedParties,
+          [field]: fieldItems.filter((selectedItem) => selectedItem !== item),
+        };
+      } else {
+        // Если элемент не выбран, добавляем его
+        return {
+          ...prevSelectedParties,
+          [field]: [...fieldItems, item],
+        };
+      }
+    });
+
+    // Обновляем uniqueFilterItems
+    setUniqueFilterItems((prevUniqueFilterItems) => {
+      const fieldItems = prevUniqueFilterItems[field] || [];
+      const isSelected = fieldItems.includes(item);
+
+      if (isSelected) {
+        // Если элемент уже выбран, удаляем его
+        return {
+          ...prevUniqueFilterItems,
+          [field]: fieldItems.filter((uniqueItem) => uniqueItem !== item),
+        };
+      } else {
+        // Если элемент не выбран, добавляем его
+        return {
+          ...prevUniqueFilterItems,
+          [field]: [...fieldItems, item],
+        };
+      }
+    });
+  };
+
   const renderStatusList = (row) => {
     return (
       <div className="column-status__list-container">
@@ -363,11 +410,25 @@ const Parties = observer(() => {
       return acc;
     }, {});
     setCheckboxStates(initialCheckboxStates);
-    // const statuses = new Set(parties.map((row) => row.status));
-    // setUniqueStatuses(statuses);
-    // const tags = new Set(response.data.map((row) => row.tag));
-    // setTagsStatuses(tags);
+    const uniqueFilterItems = {
+      agent_name: Array.from(
+        new Set(parties.map((party) => party.agent_name))
+      ),
+      status: Array.from(new Set(parties.map((party) => party.status))),
+      party_date: Array.from(new Set(parties.map((party) => party.party_date))),
+      id: Array.from(new Set(parties.map((party) => party.id))),
+      tag: Array.from(new Set(parties.map((party) => party.tag))),
+    };
+
+    setUniqueFilterItems(uniqueFilterItems);
   }, [parties])
+
+  // const handleSetUniqueFilterItems = (field) => {
+  //   setUniqueFilterItems((prevState) => ({
+  //     ...prevState,
+  //     [field]: Array.from(new Set(parties.map((party) => party[field]))),
+  //   }))
+  // }
   
   useEffect(() => {
 
@@ -502,70 +563,6 @@ const Parties = observer(() => {
             {isNewSupply && (
               <SupplyTable showPage={setIsNewSupply}/>
             )}
-            {/* <div className="search">
-              <div className="search__btn">
-                <button
-                  className="search__btn-button"
-                  onClick={() =>
-                    (searchableContentRef.current.style.display = "flex")
-                  }
-                >
-                  <img src={search} alt="" className="search__btn-img" />
-                </button>
-              </div>
-              <div className="searchable-content" ref={searchableContentRef}>
-                <div className="searchable-content__separator"></div>
-                <input
-                  type="text"
-                  className="searchable-content__input"
-                  placeholder="Поиск..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button
-                  onClick={() => searchAndHighlight(searchTerm)}
-                  className="searchButtonClickText_h"
-                >
-                  Search
-                </button>
-                <div className="searchable-content__wrapper">
-                  <button
-                    className="searchable-content__btn"
-                    onClick={handlePrevious}
-                  >
-                    <img
-                      src={up_btn}
-                      alt="up"
-                      className="searchable-content__img"
-                    />
-                  </button>
-                  <button
-                    className="searchable-content__btn"
-                    onClick={handleNext}
-                  >
-                    <img
-                      src={down_btn}
-                      alt="down"
-                      className="searchable-content__img"
-                    />
-                  </button>
-                  <button
-                    className="searchable-content__btn"
-                    onClick={() => {
-                      setSearchTerm("");
-                      clearHighlights();
-                      searchableContentRef.current.style.display = "none";
-                    }}
-                  >
-                    <img
-                      src={close}
-                      alt="close"
-                      className="searchable-content__img--close"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div> */}
           </div>
           <div
             className="warehouse-table-btn__container"
@@ -627,35 +624,69 @@ const Parties = observer(() => {
         <div className="filter">
           <div className="filter__content" ref={filterRef}>
             <div className="filter__content-wrapper">
-              {/* <div className="filter__search">
-                <div className="filter__search-container">
-                  <div className="filter__search-img-container">
-                    <img
-                      src={search}
-                      alt="search"
-                      className="filter__search-img"
-                    />
-                  </div>
-                  <input type="text" className="filter__search-input" placeholder='Поиск по системе' />
-                  <input
-                    type="text"
-                    placeholder="Поиск..."
-                    // value={searchTerm}
-                    // onChange={(e) => highlightText(e.target.value)}
-                  />
-                  <button onClick={
-                                        () => {
-                                            highlightText()
-                                            setIsFilterOpen(false)
-                                        }
-                                    }>Найти</button>
-                  <SearchableContent />
-                </div>
-              </div> */}
               <div className="filter__container">
                 <div className="filter__item">
                   <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedParties.id?.length > 0
+                            ? selectedParties.id
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        className="dropdown-content"
+                      >
+                        {selectedParties.id?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("id", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedParties.id?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.id).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("id", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Дата</p>

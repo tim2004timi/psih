@@ -1,8 +1,8 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./StatusDropDownList.css";
 
-const StatusDropDownList = () => {
+const StatusDropDownList = ({selectedItem, changeFunc, updateFunc}) => {
   const [statusList, setStatusList] = useState([
     "в обработке",
     "возврат",
@@ -15,6 +15,10 @@ const StatusDropDownList = () => {
     setSelectedStatusList(status);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    setSelectedStatusList(selectedItem);
+  }, [selectedItem])
 
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -44,6 +48,8 @@ const StatusDropDownList = () => {
                 onSelect={(event) => {
                   event.preventDefault();
                   selectStatus(status);
+                  changeFunc(status, 'status')
+                  updateFunc(status, 'status')
                 }}
               >
                 {status}

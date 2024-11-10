@@ -14,6 +14,8 @@ import { toJS } from "mobx";
 import NotificationStore from "../../NotificationStore";
 import NotificationManager from "../notificationManager/NotificationManager";
 import ProductTable from "../apps/warehouse/productTable/ProductTable";
+import TagDropDownList from "../tagDropDownList/tagDropDownList";
+import StatusDropDownList from "../statusDropDownList/StatusDropDownList";
 
 const SupplyTable = observer(({ configName, showPage }) => {
   const { id } = useParams();
@@ -380,6 +382,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
   };
 
   const handleChange = (value, field) => {
+    // console.log(value, field);
     setCurrentParty((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -388,9 +391,9 @@ const SupplyTable = observer(({ configName, showPage }) => {
   // }, [partyModifications])
 
   const handleUpdate = (value, field) => {
-    if (id == undefined) return;
-    // console.log(value, field);
-    updateProductInfo(field, value);
+    // if (id == undefined) return;
+    console.log(value, field);
+    // updateProductInfo(field, value);
   };
 
   const handleColumnSelect = (column) => {
@@ -568,9 +571,9 @@ const SupplyTable = observer(({ configName, showPage }) => {
       <div className="supplyTable__content">
         <div className="supplyTable__content-items">
           <div className="supplyTable__content-wrapper">
-            <div 
+            <div
               className={`supplyTable__content-item ${
-                currentParty.agent_name === '' ? "warning" : ""
+                currentParty.agent_name === "" ? "warning" : ""
               }`}
             >
               <p className="supplyTable__conterAgent-text">Контрагент</p>
@@ -588,10 +591,11 @@ const SupplyTable = observer(({ configName, showPage }) => {
               </Link>
             )}
           </div>
-          <div 
+          <div
             className={`supplyTable__content-item ${
-              currentParty.phone_number === '' ? "warning" : ""
-            }`}>
+              currentParty.phone_number === "" ? "warning" : ""
+            }`}
+          >
             <p className="supplyTable__conterAgent-text">Телефон</p>
             <input
               type="text"
@@ -637,31 +641,19 @@ const SupplyTable = observer(({ configName, showPage }) => {
         <div className="supplyTable__content-items">
           <div className="supplyTable__content-item">
             <p className="supplyTable__conterAgent-text">Статус</p>
-            {/* <input
-              type="text"
-              className="supplyTable__conterAgent-input"
-              value={currentParty.agent_name}
-              onChange={(e) =>
-                handleChange(e.target.value, "storage")
-              }
-              onBlur={(e) =>
-                handleUpdate(e.target.value, "storage")
-              }
-            /> */}
+            <StatusDropDownList
+              selectedItem={currentParty.status}
+              changeFunc={handleChange}
+              updateFunc={handleUpdate}
+            />
           </div>
           <div className="supplyTable__content-item">
             <p className="supplyTable__conterAgent-text">Тег</p>
-            {/* <input
-              type="text"
-              className="supplyTable__conterAgent-input"
-              value={currentParty.phone_number}
-              onChange={(e) =>
-                handleChange(e.target.value, "project")
-              }
-              onBlur={(e) =>
-                handleUpdate(e.target.value, "project")
-              }
-            /> */}
+            <TagDropDownList
+              selectedItem={currentParty.tag}
+              changeFunc={handleChange}
+              updateFunc={handleUpdate}
+            />
           </div>
         </div>
         <div className="supplyTable__content-item">
@@ -775,22 +767,22 @@ const SupplyTable = observer(({ configName, showPage }) => {
         <p className="supplyTable__total-cost">{`Общая стоимость ${4}`}</p>
       </div>
       <Tooltip id="supply-party-name-tooltip" />
-      { id !== undefined && (
-              <>
-                {errorText && (
-                  <NotificationManager
-                    errorMessage={errorText}
-                    resetFunc={resetErrorText}
-                  />
-                )}
-                {successText && (
-                  <NotificationManager
-                    successMessage={successText}
-                    resetFunc={resetSuccessText}
-                  />
-                )}
-              </>
-            )}
+      {id !== undefined && (
+        <>
+          {errorText && (
+            <NotificationManager
+              errorMessage={errorText}
+              resetFunc={resetErrorText}
+            />
+          )}
+          {successText && (
+            <NotificationManager
+              successMessage={successText}
+              resetFunc={resetSuccessText}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 });
