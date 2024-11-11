@@ -187,7 +187,7 @@ const Parties = observer(() => {
       content: (row) => {
         const isChecked = checkboxStates[row.id] || false;
         return (
-          row.tag != null && (
+          row.tag !== '' && (
             <div
               className={`column-tag__container ${
                 isChecked ? "highlighted-cell" : ""
@@ -415,7 +415,7 @@ const Parties = observer(() => {
         new Set(parties.map((party) => party.agent_name))
       ),
       status: Array.from(new Set(parties.map((party) => party.status))),
-      party_date: Array.from(new Set(parties.map((party) => party.party_date))),
+      party_date: Array.from(new Set(parties.map((party) => formatDateTime(party.party_date)))),
       id: Array.from(new Set(parties.map((party) => party.id))),
       tag: Array.from(new Set(parties.map((party) => party.tag))),
     };
@@ -690,14 +690,69 @@ const Parties = observer(() => {
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Дата</p>
-                  <input
-                    className="filter__input filter__input--date"
-                    type="date"
-                    ref={inputDateOrderRef}
-                  />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedParties.party_date?.length > 0
+                            ? selectedParties.party_date
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        className="dropdown-content"
+                      >
+                        {selectedParties.party_date?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("party_date", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedParties.party_date?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.party_date).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("party_date", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
-                  <p className="filter__text">Покупатель</p>
+                  <p className="filter__text">Поставщик</p>
                   <input
                     className="filter__input filter__input--pokupatel"
                     type="text"
@@ -706,11 +761,129 @@ const Parties = observer(() => {
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Статус</p>
-                  <FilterDropDownList />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedParties.status?.length > 0
+                            ? selectedParties.status
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        className="dropdown-content"
+                      >
+                        {selectedParties.status?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("status", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedParties.status?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.status).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("status", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
                   <p className="filter__text">Тег</p>
-                  <FilterDropDownList />
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedParties.tag?.length > 0
+                            ? selectedParties.tag
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        className="dropdown-content"
+                      >
+                        {selectedParties.tag?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("tag", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedParties.tag?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.tag).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("tag", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
               </div>
               <div className="filter-btn-container">
