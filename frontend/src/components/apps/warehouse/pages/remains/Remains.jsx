@@ -490,16 +490,14 @@ const Remains = observer(() => {
       </th>
     ));
   };
-  // useEffect(() => {
-  //   if (inputNameRef) {
-  //     console.log(inputNameRef.current?.value);
-  //   }
-  // }, [inputNameRef.current]);
 
   const renderRows = () => {
     const filteredProducts = isFilterProducts
       ? products.filter((row) => {
-          if (Object.keys(selectedProducts).length === 0 && inputNameRef.current?.value === '') {
+          if (
+            Object.keys(selectedProducts).length === 0 &&
+            inputNameRef.current?.value === ""
+          ) {
             return true;
           }
 

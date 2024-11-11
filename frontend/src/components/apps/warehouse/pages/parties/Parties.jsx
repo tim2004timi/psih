@@ -14,6 +14,7 @@ import SupplyTable from '../../../../supplyTable/SupplyTable';
 import { Link } from "react-router-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 // import NewFilterDropDown from "../../../../newFilterDropDown/NewFilterDropDown.jsx";
+import {toJS} from "mobx";
 
 const Parties = observer(() => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -24,6 +25,8 @@ const Parties = observer(() => {
   const [showStatusList, setShowStatusList] = useState(false);
   const [lastSelectedIndex, setLastSelectedIndex] = useState(null);
 
+  const [isFilterProducts, setIsFilterProducts] = useState(false)
+
   let initialCheckboxStates;
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
   const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
@@ -33,9 +36,7 @@ const Parties = observer(() => {
   const [isNewSupply, setIsNewSupply] = useState(false);
   const [isPageSupply, setIsPageSupply] = useState(false);
 
-  const inputPokupatelRef = useRef(null);
-
-  const inputDateOrderRef = useRef(null);
+  const inputNameRef = useRef(null);
 
   const [uniqueFilterItems, setUniqueFilterItems] = useState({});
   const [selectedParties, setSelectedParties] = useState({});
@@ -316,6 +317,10 @@ const Parties = observer(() => {
     setActiveCheckboxIds(idsCount);
   };
 
+  // useEffect(() => {
+  //   console.log(selectedParties);
+  // }, [selectedParties]);
+
   const handleSelect = (field, item) => {
     setSelectedParties((prevSelectedParties) => {
       const fieldItems = prevSelectedParties[field] || [];
@@ -397,6 +402,23 @@ const Parties = observer(() => {
 
   const showFilter = () => {
     setIsFilterOpen(!isFilterOpen);
+  };
+
+  const handleClearFilter = () => {
+    setIsFilterProducts(false)
+    setSelectedParties({})
+    inputNameRef.current.value = ''
+    const uniqueFilterItems = {
+      agent_name: Array.from(
+        new Set(parties.map((party) => party.agent_name))
+      ),
+      status: Array.from(new Set(parties.map((party) => party.status))),
+      party_date: Array.from(new Set(parties.map((party) => formatDateTime(party.party_date)))),
+      id: Array.from(new Set(parties.map((party) => party.id))),
+      tag: Array.from(new Set(parties.map((party) => party.tag))),
+    };
+
+    setUniqueFilterItems(uniqueFilterItems);
   };
 
   useEffect(() => {
@@ -483,63 +505,56 @@ const Parties = observer(() => {
   // }, [selectedFilterItems]);
 
   const renderRows = () => {
-    return (
-      parties
-        //   .filter((row) => {
-        //     if (Object.keys(selectedFilterItems).length === 0) {
-        //       return true;
-        //     }
+    const filteredProducts = isFilterProducts
+      ? parties.filter((row) => {
+          if (
+            Object.keys(selectedParties).length === 0 &&
+            inputNameRef.current?.value === ""
+          ) {
+            return true;
+          }
 
-        //     let date;
+          const idMatches =
+            !("id" in selectedParties) || selectedParties.id?.includes(row.id);
+          const nameMatches =
+            inputNameRef.current?.value === "" ||
+            row.agent_name?.includes(inputNameRef?.current?.value);
+          const party_dateMatches =
+            !("party_date" in selectedParties) ||
+            selectedParties.party_date?.includes(formatDateTime(row.party_date));
+          const statusMatches =
+            !("status" in selectedParties) ||
+            selectedParties.status?.includes(row.status);
+          const tagMatches =
+            !("tag" in selectedParties) ||
+            selectedParties.tag?.includes(row.tag);
+          const priceMatches =
+            !("price" in selectedParties) ||
+            selectedParties.price?.includes(row.price);
 
-        //     if (selectedFilterItems.order_date.length !== 0) {
-        //       date = formatDateTime(selectedFilterItems.order_date);
-        //     }
+          return (
+            idMatches &&
+            nameMatches &&
+            party_dateMatches &&
+            statusMatches &&
+            tagMatches &&
+            priceMatches
+          );
+        })
+      : parties;
 
-        //     const idMatches =
-        //       selectedFilterItems.id.length === 0 ||
-        //       selectedFilterItems.id.includes(row.id);
-        //     const statusMatches =
-        //       selectedFilterItems.status.length === 0 ||
-        //       selectedFilterItems.status.includes(row.status);
-        //     const nameMatches =
-        //       selectedFilterItems.full_name.length === 0 ||
-        //       row.full_name.includes(selectedFilterItems.full_name);
-        //     const tagMatches =
-        //       selectedFilterItems.tag.length === 0 ||
-        //       selectedFilterItems.tag.includes(row.tag);
-
-        //     if (selectedFilterItems.order_date.length !== 0) {
-        //       const filterDate = new Date(selectedFilterItems.order_date);
-        //       const rowDate = new Date(row.order_date);
-
-        //       const dateMatches =
-        //         formatDateTime(filterDate) === formatDateTime(rowDate);
-
-        //       return (
-        //         idMatches &&
-        //         statusMatches &&
-        //         nameMatches &&
-        //         tagMatches &&
-        //         dateMatches
-        //       );
-        //     }
-
-        //     return idMatches && statusMatches && nameMatches && tagMatches;
-        //   })
-        .map((row, rowIndex) => (
-          <tr key={rowIndex} className="table-row">
-            {selectedColumns.map((column, colIndex) => {
-              const className = columnConfig[column]?.className;
-              return (
-                <td key={colIndex} className={className}>
-                  {columnConfig[column]?.content(row)}
-                </td>
-              );
-            })}
-          </tr>
-        ))
-    );
+    return filteredProducts.map((row, rowIndex) => (
+      <tr key={rowIndex} className="table-row">
+        {selectedColumns.map((column, colIndex) => {
+          const className = columnConfig[column]?.className;
+          return (
+            <td key={colIndex} className={className}>
+              {columnConfig[column]?.content(row)}
+            </td>
+          );
+        })}
+      </tr>
+    ));
   };
 
   return (
@@ -756,7 +771,7 @@ const Parties = observer(() => {
                   <input
                     className="filter__input filter__input--pokupatel"
                     type="text"
-                    ref={inputPokupatelRef}
+                    ref={inputNameRef}
                   />
                 </div>
                 <div className="filter__item">
@@ -890,17 +905,19 @@ const Parties = observer(() => {
                 <PopularButton
                   text={"Очистить всё"}
                   isHover={true}
-                  //   onClick={() => clearSelectedItems()}
+                  onClick={() => {
+                    handleClearFilter();
+                    setIsFilterOpen(false);
+                  }}
                 />
                 <PopularButton
                   text={"Применить"}
                   isHover={true}
-                  //   onClick={() => {
-                  //     handleFilterSelection();
-                  //     clearSelectedItems();
-                  //     setIsFilterOpen(false);
-                  //     // console.log(inputDateOrderRef.current.value);
-                  //   }}
+                  onClick={() => {
+                    setIsFilterProducts(true);
+                    setIsFilterOpen(false);
+                    // handleClearFilter();
+                  }}
                 />
               </div>
             </div>
