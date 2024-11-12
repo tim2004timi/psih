@@ -6,7 +6,6 @@ import PopularButton from "../../../../popularButton/PopularButton";
 import search from "../../../../../assets/img/search_btn.svg";
 import settings from "../../../../../assets/img/table-settings.svg";
 import { Link } from "react-router-dom";
-import FilterDropDownList from "../../../../filterDropDownList/FilterDropDownList";
 import deleteTable from "../../../../../assets/img/delete-table.png";
 import archiveBtn from "../../../../../assets/img/toArchive-btn.png";
 import archiveBtnHover from "../../../../../assets/img/fromArchive-btn.png";
@@ -29,6 +28,7 @@ import getArticleName from '../../../../../API/getArticleName.js'
 import NotificationManager from "../../../../notificationManager/NotificationManager";
 import NotificationStore from "../../../../../NotificationStore";
 import { observer } from 'mobx-react-lite';
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const Products = observer(() => {
   const dispatch = useDispatch();
@@ -63,6 +63,12 @@ const Products = observer(() => {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState({});
+  const [isFilterProducts, setIsFilterProducts] = useState(false)
+
+  const inputNameRef = useRef(null);
+
+  const [uniqueFilterItems, setUniqueFilterItems] = useState({});
 
   const [isCategoriesSettingsOpen, setIsCategoriesSettingsOpen] =
     useState(false);
@@ -233,23 +239,23 @@ const Products = observer(() => {
     }
   };
 
-  useEffect(() => {
-    if (isFilterOpen || showColumnList) {
-      document.addEventListener("mousedown", handleOutsideClick);
-    } else {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    }
+  // useEffect(() => {
+  //   if (isFilterOpen || showColumnList) {
+  //     document.addEventListener("mousedown", handleOutsideClick);
+  //   } else {
+  //     document.removeEventListener("mousedown", handleOutsideClick);
+  //   }
 
-    if (isFilterOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+  //   if (isFilterOpen) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "auto";
+  //   }
 
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [isFilterOpen, showColumnList]);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleOutsideClick);
+  //   };
+  // }, [isFilterOpen, showColumnList]);
 
   async function fetchCategories() {
     try {
@@ -265,7 +271,7 @@ const Products = observer(() => {
       ]);
     } catch (e) {
       if (error.response && error.response.status === 401) {
-        console.log('Unauthorized: Please log in again.');
+        // console.log('Unauthorized: Please log in again.');
       } else {
         console.error(error);
         setErrorText(e.response.data.detail);
@@ -274,6 +280,75 @@ const Products = observer(() => {
     }
   }
 
+  const handleSelect = (field, item) => {
+    setSelectedProducts((prevSelectedProducts) => {
+      const fieldItems = prevSelectedProducts[field] || [];
+      const isSelected = fieldItems.includes(item);
+
+      if (isSelected) {
+        // Если элемент уже выбран, удаляем его
+        return {
+          ...prevSelectedProducts,
+          [field]: fieldItems.filter((selectedItem) => selectedItem !== item),
+        };
+      } else {
+        // Если элемент не выбран, добавляем его
+        return {
+          ...prevSelectedProducts,
+          [field]: [...fieldItems, item],
+        };
+      }
+    });
+
+    // Обновляем uniqueFilterItems
+    setUniqueFilterItems((prevUniqueFilterItems) => {
+      const fieldItems = prevUniqueFilterItems[field] || [];
+      const isSelected = fieldItems.includes(item);
+
+      if (isSelected) {
+        // Если элемент уже выбран, удаляем его
+        return {
+          ...prevUniqueFilterItems,
+          [field]: fieldItems.filter((uniqueItem) => uniqueItem !== item),
+        };
+      } else {
+        // Если элемент не выбран, добавляем его
+        return {
+          ...prevUniqueFilterItems,
+          [field]: [...fieldItems, item],
+        };
+      }
+    });
+  };
+
+  const handleClearFilter = () => {
+    setIsFilterProducts(false)
+    setSelectedProducts({})
+    inputNameRef.current.value = ''
+    const remainingSums = productsNA.reduce((acc, item) => {
+      acc[item.id] = item.modifications.reduce(
+        (modAcc, modification) => modAcc + modification.remaining,
+        0
+      );
+      return acc;
+    }, {});
+
+    const uniqueFilterItems = {
+      article: Array.from(
+        new Set(
+          productsNA.map((product) => getArticleName(product?.modifications[0]?.article))
+        )
+      ),
+      price: Array.from(
+        new Set(productsNA.map((product) => product.price))
+      ),
+      remaining: Array.from(
+        new Set(productsNA.map((product) => remainingSums[product.id]))
+      ),
+    };
+
+    setUniqueFilterItems(uniqueFilterItems);
+  };
 
   async function fetchProducts(isArchived) {
     try {
@@ -285,18 +360,35 @@ const Products = observer(() => {
         return acc;
       }, {});
       setCheckboxStates(initialCheckboxStates);
+
+      const remainingSums = response.data.reduce((acc, item) => {
+        acc[item.id] = item.modifications.reduce(
+          (modAcc, modification) => modAcc + modification.remaining,
+          0
+        );
+        return acc;
+      }, {});
+
+      const uniqueFilterItems = {
+        article: Array.from(
+          new Set(
+            response.data.map((product) => getArticleName(product?.modifications[0]?.article))
+          )
+        ),
+        price: Array.from(
+          new Set(response.data.map((product) => product.price))
+        ),
+        remaining: Array.from(
+          new Set(response.data.map((product) => remainingSums[product.id]))
+        ),
+      };
+
+      setUniqueFilterItems(uniqueFilterItems);
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail);
     }
   }
-
-  const filterProductsByCategories = (category) => {
-    const newProducts = productsNA.filter(
-      (product) => product.category.name === category
-    );
-    setFilteredProducts(newProducts);
-  };
 
   useEffect(() => {
     fetchCategories();
@@ -305,8 +397,13 @@ const Products = observer(() => {
 
   useEffect(() => {
     if (categories.length > 0) {
-      filterProductsByCategories(categories[0]);
-      setSelectedCategory(categories[0]);
+      if (selectedCategory == null) {
+        filterProductsByCategories(categories[0]);
+        setSelectedCategory(categories[0]);
+      } else {
+        filterProductsByCategories(selectedCategory);
+        setSelectedCategory(selectedCategory);
+      }
     }
   }, [categories, productsNA]);
 
@@ -520,6 +617,19 @@ const Products = observer(() => {
     ));
   };
 
+  const filterProductsByCategories = (category) => {
+    // console.log('Категория:', category);
+    const newProducts = productsNA.filter(
+      (product) => product.category.name === category
+    );
+    setFilteredProducts(newProducts);
+  };
+
+  // useEffect(() => {
+  //   console.log('filteredProducts:', filteredProducts);
+  // }, [filteredProducts]);
+  
+
   const renderCategoriesSettingsBtn = () => {
     return categories.map((category, index) => (
       <div className="categories-settings__btn-item" key={index}>
@@ -549,7 +659,39 @@ const Products = observer(() => {
   };
 
   const renderRows = () => {
-    return filteredProducts.map((row, rowIndex) => (
+    const filteredByFilterProducts = isFilterProducts
+      ? filteredProducts.filter((row) => {
+          if (
+            Object.keys(selectedProducts).length === 0 &&
+            inputNameRef.current?.value === ""
+          ) {
+            return true;
+          }
+          // console.log('filteredProducts:', filteredProducts)
+          const nameMatches =
+            inputNameRef.current?.value === "" ||
+            row.name?.includes(inputNameRef?.current?.value);
+          const articleMatches =
+            !("article" in selectedProducts) ||
+            selectedProducts.article?.includes(getArticleName(row?.modifications[0]?.article));
+          const priceMatches =
+            !("price" in selectedProducts) ||
+            selectedProducts.price?.includes(row.price);
+          const remainingMatches =
+            !("remaining" in selectedProducts) ||
+            selectedProducts.remaining?.includes(row.modifications[0].remaining);
+
+          return (
+            articleMatches && nameMatches && remainingMatches && priceMatches
+          );
+        })
+      : filteredProducts;
+
+    // console.log('filteredByFilterProducts', filteredByFilterProducts)
+    // console.log('filteredProducts', filteredProducts)
+    // console.log(isFilterProducts)
+
+    return filteredByFilterProducts.map((row, rowIndex) => (
       <tr key={rowIndex}>
         {selectedColumns.map((column, colIndex) => {
           const className = columnConfig[column]?.className;
@@ -598,7 +740,8 @@ const Products = observer(() => {
             />
             {isShowArchive && (
               <ProductTable
-                showArchive={setIsShowArchive}
+                showComponent={setIsShowArchive}
+                // path="/products"
                 configName="archiveConfig"
               />
             )}
@@ -627,8 +770,8 @@ const Products = observer(() => {
             </button>
             <button
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
-              onClick={() => {
-                deleteSelectedProducts(activeCheckboxIds);
+              onClick={async() => {
+                await deleteSelectedProducts(activeCheckboxIds);
                 fetchProducts(false);
               }}
             >
@@ -685,67 +828,215 @@ const Products = observer(() => {
         <div className="filter">
           <div className="filter__content" ref={filterRef}>
             <div className="filter__content-wrapper">
-              <div className="filter__search">
-                <div className="filter__search-container">
-                  <div className="filter__search-img-container">
-                    <img
-                      src={search}
-                      alt="search"
-                      className="filter__search-img"
-                    />
-                  </div>
-                  {/* <input type="text" className="filter__search-input" placeholder='Поиск по системе' /> */}
-                  <input
-                    type="text"
-                    placeholder="Поиск..."
-                    // value={searchTerm}
-                    onChange={(e) => highlightText(e.target.value)}
-                  />
-                  {/* <button onClick={
-                                        () => {
-                                            highlightText()
-                                            setIsFilterOpen(false)
-                                        }
-                                    }>Найти</button> */}
-                  {/* <SearchableContent /> */}
-                </div>
-              </div>
               <div className="filter__container">
                 <div className="filter__item">
-                  <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList />
+                  <p className="filter__text">Название</p>
+                  <input
+                    className="filter__input filter__input--pokupatel"
+                    type="text"
+                    ref={inputNameRef}
+                  />
                 </div>
                 <div className="filter__item">
-                  <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList />
+                  <p className="filter__text">Артикул</p>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedProducts.article?.length > 0
+                            ? selectedProducts.article
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content">
+                        {selectedProducts.article?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("article", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.article?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.article).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("article", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
-                  <p className="filter__text">Номер заказа</p>
-                  <FilterDropDownList />
+                  <p className="filter__text">Цена</p>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedProducts.price?.length > 0
+                            ? selectedProducts.price
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content">
+                        {selectedProducts.price?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("price", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.price?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.price).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("price", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
                 <div className="filter__item">
-                  <p className="filter__text">Статус</p>
-                  <FilterDropDownList />
-                </div>
-                <div className="filter__item">
-                  <p className="filter__text">Тег</p>
-                  <FilterDropDownList />
+                  <p className="filter__text">Остатки</p>
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button className="dropdown-trigger">
+                        <div className="dropdown-trigger__content">
+                          {selectedProducts.remaining?.length > 0
+                            ? selectedProducts.remaining
+                                .map((field) => field)
+                                .join(", ")
+                            : ""}
+                        </div>
+                        <div className="filterdropdownlist__content-btn">
+                          <span
+                            className={`filterdropdownlist__arrow 
+                              \${
+                                // isOpen ? "filterdropdownlist__arrow-active" : ""
+                              // }`}
+                          >
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                            <span className="filterdropdownlist__arrow-btn"></span>
+                          </span>
+                        </div>
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content className="dropdown-content">
+                        {selectedProducts.remaining?.map((item, index) => (
+                          <DropdownMenu.Item
+                            key={index}
+                            className="dropdown-item dropdown-item--selected"
+                            onSelect={(event) => {
+                              event.preventDefault();
+                              handleSelect("remaining", item);
+                            }}
+                          >
+                            {item}
+                          </DropdownMenu.Item>
+                        ))}
+                        {selectedProducts.remaining?.length > 0 && (
+                          <div className="dropdown-separator"></div>
+                        )}
+                        {Array.from(uniqueFilterItems.remaining).map(
+                          (item, index) => (
+                            <DropdownMenu.Item
+                              key={index}
+                              className="dropdown-item"
+                              onSelect={(event) => {
+                                event.preventDefault();
+                                handleSelect("remaining", item);
+                              }}
+                            >
+                              {item}
+                            </DropdownMenu.Item>
+                          )
+                        )}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
                 </div>
               </div>
               <div className="filter-btn-container">
                 <PopularButton
-                  text={"Очистить всё"}
+                  text="Очистить всё"
                   isHover={true}
-                  onClick={() => clearSelectedItems()}
+                  onClick={() => {
+                    handleClearFilter();
+                    setIsFilterOpen(false);
+                  }}
                 />
                 <PopularButton
                   text={"Применить"}
                   isHover={true}
                   onClick={() => {
-                    clearSelectedItems();
-                    handleFilterSelection();
+                    setIsFilterProducts(true);
                     setIsFilterOpen(false);
-                    // console.log(inputDateOrderRef.current.value);
+                    // handleClearFilter();
                   }}
                 />
               </div>
@@ -822,8 +1113,18 @@ const Products = observer(() => {
         </div>
         <Tooltip id="category-tooltip" />
       </div>
-      {errorText && <NotificationManager errorMessage={errorText} resetFunc={resetErrorText}/>}
-      {successText && <NotificationManager successMessage={successText} resetFunc={resetSuccessText} />}
+      {errorText && (
+        <NotificationManager
+          errorMessage={errorText}
+          resetFunc={resetErrorText}
+        />
+      )}
+      {successText && (
+        <NotificationManager
+          successMessage={successText}
+          resetFunc={resetSuccessText}
+        />
+      )}
     </>
   );
 });

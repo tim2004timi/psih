@@ -1,10 +1,32 @@
+.product-table-overlay-add{
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0);
+  /* top: 192px; */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
 .product-table-overlay{
   position: fixed;
   background-color: rgba(0, 0, 0, 0);
   top: 192px;
+  /* top: 0; */
   right: 0;
   bottom: 0;
   left: 0;
+}
+
+.product-table-add{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1612px;
+  min-height: 748px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 7px;
+  z-index: 4;
 }
 
 .product-table {
@@ -15,7 +37,12 @@
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 7px;
   z-index: 4;
+}
 
+.product-table__wrapper-add{
+  display: flex;
+  position: relative;
+  min-height: 748px;
 }
 
 .product-table__wrapper{
@@ -24,12 +51,12 @@
 }
 
 .product-table__navbar {
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(230, 230, 230, 1);
   backdrop-filter: blur(40px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 70px;
+  gap: 30px;
   padding: 19px 48px 20px 48px;
   width: 240px;
   flex: 0 0 240px;
@@ -42,6 +69,12 @@
   cursor: pointer;
   background-color: transparent;
   padding: 4px 29px;
+  transition: all 0.3s;
+}
+
+.product-table__saveBtn-button:hover{
+  background-color: #000;
+  color: #fff;
 }
 
 .product-table__navbar-container {
@@ -103,7 +136,7 @@
 }
 
 .product-table__content {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 1);
   padding: 16px 56px 20px 0;
   flex: 1 1 auto;
   position: relative;

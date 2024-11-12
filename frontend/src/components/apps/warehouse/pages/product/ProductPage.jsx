@@ -120,7 +120,7 @@ const ProductPage = observer(() => {
     <>
       <div className="product__header">
         <div className="back-btn">
-          <Link to={"/products"}>
+          <Link to={-1}>
             <button className="back-btn__btn">
               <div className="back-btn__arrow"></div>
             </button>

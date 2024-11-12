@@ -133,16 +133,6 @@ const ProductFiles = observer(() => {
   };
 
   const removeFile = async(fileId) => {
-    // if (currentConfig.newProductFlag) {
-    //   try {
-    //     setProductsImages((prevImages) =>
-    //       prevImages.filter((img) => img.name !== cnt)
-    //     );
-    //   } catch (e) {
-    //     console.error(e);
-    //     setErrorText(e.response.data.detail)
-    //   }
-    // } else {
       try {
         if (currentConfig.productPageFlag) {
           await deleteProductFile(fileId);

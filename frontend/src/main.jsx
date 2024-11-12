@@ -30,6 +30,7 @@ import PrivateRoute from './components/apps/PrivateRoute.jsx';
 import AuthStore from "./AuthStore.js";
 
 import ProfilePage from './components/apps/profilePage/ProfilePage.jsx';
+import SupplyTable from './components/supplyTable/SupplyTable.jsx';
 
 const router = createBrowserRouter([
   {
@@ -119,6 +120,10 @@ const router = createBrowserRouter([
           {
             path: "parties",
             element: <Parties />,
+          },
+          {
+            path: "parties/:id",
+            element: <SupplyTable />
           },
         ]
       },

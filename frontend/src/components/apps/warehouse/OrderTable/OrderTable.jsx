@@ -173,12 +173,12 @@ const OrderTable = observer(({
       );
       setShowStatusList((prev) => ({ ...prev, [orderId]: false }));
 
-      setUniqueStatuses((prevStatuses) => {
-        const newStatuses = new Set(prevStatuses);
-        newStatuses.add(newStatus);
-        handleStatusList(Array.from(newStatuses));
-        return newStatuses;
-      });
+      // setUniqueStatuses((prevStatuses) => {
+      //   const newStatuses = new Set(prevStatuses);
+      //   newStatuses.add(newStatus);
+      //   handleStatusList(Array.from(newStatuses));
+      //   return newStatuses;
+      // });
       setSuccessText('Статус успешно обновлен!')
     } catch (error) {
       console.error("Error updating order status:", error);

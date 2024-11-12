@@ -344,3 +344,106 @@
     width: 183px;
 } */
 
+.dropdown-trigger {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    width: 165px;
+    height: 29px;
+    position: relative;
+    cursor: pointer;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0px 33px 0px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-trigger__content{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-content {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 22px 20px;
+    border-radius: 7px;
+    width: 165px;
+    color: #000;
+    backdrop-filter: blur(10px);
+    z-index: 5;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+}
+
+.dropdown-item {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.dropdown-item--selected{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+}
+
+.dropdown-item:hover {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+}
+
+.dropdown-separator {
+    border-top: 1px solid #ccc;
+}
+
+.filterdropdownlist__content-btn{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 3px;
+}
+
+.filterdropdownlist__arrow{
+    width: 1.25rem;
+    height: 1.25rem;
+    display: inline-block;
+    position: relative;
+}
+
+.filterdropdownlist__arrow-btn{
+    top: 0.5rem;
+    position: absolute;
+    width: 12px;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.filterdropdownlist__arrow-btn:first-of-type{
+    left: 0;
+    transform: rotate(45deg);
+}
+
+.filterdropdownlist__arrow-btn:last-of-type{
+    right: 0;
+    transform: rotate(-45deg);
+}
+
+.filterdropdownlist__arrow-active .filterdropdownlist__arrow-btn:first-of-type{
+    transform: rotate(-45deg);
+}
+
+.filterdropdownlist__arrow-active .filterdropdownlist__arrow-btn:last-of-type{
+    transform: rotate(45deg);
+}
