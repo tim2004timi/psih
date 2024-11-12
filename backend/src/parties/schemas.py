@@ -20,6 +20,7 @@ class PartyBase(BaseModel):
     storage: str | None = None
     project: str | None = None
     phone_number: str | None = None
+    overheads: int
 
 
 class PartyCreate(PartyBase):
@@ -29,6 +30,7 @@ class PartyCreate(PartyBase):
 class PartyUpdatePartial(PartyBase):
     agent_name: str | None = None
     status: StatusEnum | None = None
+    overheads: int | None = None
     modifications_in_party: List["ModificationInPartyCreateWithoutParty"] | None = None
 
 

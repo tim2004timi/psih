@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from starlette import status
 from fastapi import HTTPException, UploadFile
 
-from .schemas import PartyCreate
+from .schemas import PartyCreate, PartyUpdatePartial
 from ..parties.models import Party
 from ..products.models import (
     Modification,
@@ -57,6 +57,16 @@ async def create_party(session: AsyncSession, party_create: PartyCreate) -> Part
         )
         session.add(modification_in_party)
     await session.commit()
+    return await get_party_by_id(session=session, party_id=party.id)
+
+
+async def update_party(
+    session: AsyncSession, party: Party, party_update: PartyUpdatePartial
+) -> Party:
+    for name, value in party_update.model_dump(exclude_unset=True).items():
+        setattr(party, name, value)
+    await session.commit()
+    await session.refresh(party)
     return await get_party_by_id(session=session, party_id=party.id)
 
 
