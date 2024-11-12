@@ -403,7 +403,7 @@ const ProfilePage = observer(() => {
           </button>
         </div>
         <div className="admin-page-user__back-btn">
-          <Link to={"/"}>
+          <Link to={-1}>
             <button className="back-btn__btn">
               <div className="back-btn__arrow"></div>
             </button>

@@ -104,10 +104,15 @@ const ProductTable = observer(
 
     useEffect(() => {
       if (categories.length > 0) {
-        filterProductsByCategories(categories[0]);
-        setSelectedCategory(categories[0]);
+        if (selectedCategory == null) {
+          filterProductsByCategories(categories[0]);
+          setSelectedCategory(categories[0]);
+        } else {
+          filterProductsByCategories(selectedCategory);
+          setSelectedCategory(selectedCategory);
+        }
       }
-    }, [categories, productsA, productsNA]);
+    }, [categories, productsNA, productsA]);
 
     async function fetchCategories() {
       try {
@@ -141,6 +146,7 @@ const ProductTable = observer(
     async function fetchProductsA() {
       try {
         const response = await getProducts(true);
+        // console.log(response.data)
         setProductsA(response.data);
       } catch (e) {
         console.error(e);

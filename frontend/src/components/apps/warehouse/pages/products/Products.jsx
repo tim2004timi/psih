@@ -271,7 +271,7 @@ const Products = observer(() => {
       ]);
     } catch (e) {
       if (error.response && error.response.status === 401) {
-        console.log('Unauthorized: Please log in again.');
+        // console.log('Unauthorized: Please log in again.');
       } else {
         console.error(error);
         setErrorText(e.response.data.detail);
@@ -397,8 +397,13 @@ const Products = observer(() => {
 
   useEffect(() => {
     if (categories.length > 0) {
-      filterProductsByCategories(categories[0]);
-      setSelectedCategory(categories[0]);
+      if (selectedCategory == null) {
+        filterProductsByCategories(categories[0]);
+        setSelectedCategory(categories[0]);
+      } else {
+        filterProductsByCategories(selectedCategory);
+        setSelectedCategory(selectedCategory);
+      }
     }
   }, [categories, productsNA]);
 
@@ -682,7 +687,7 @@ const Products = observer(() => {
         })
       : filteredProducts;
 
-    console.log('filteredByFilterProducts', filteredByFilterProducts)
+    // console.log('filteredByFilterProducts', filteredByFilterProducts)
     // console.log('filteredProducts', filteredProducts)
     // console.log(isFilterProducts)
 
@@ -765,8 +770,8 @@ const Products = observer(() => {
             </button>
             <button
               className="warehouse-table-btn  warehouse-table-btn__delete-table"
-              onClick={() => {
-                deleteSelectedProducts(activeCheckboxIds);
+              onClick={async() => {
+                await deleteSelectedProducts(activeCheckboxIds);
                 fetchProducts(false);
               }}
             >

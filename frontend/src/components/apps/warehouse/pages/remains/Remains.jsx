@@ -237,7 +237,6 @@ const Remains = observer(() => {
   };
 
   const handleCheckboxChange = (rowId, id_row, event) => {
-    console.log(id_row)
     event.stopPropagation();
     setLastSelectedIndex(rowId);
 
