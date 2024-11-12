@@ -30,6 +30,8 @@ class OrderBase(BaseModel):
 
 class OrderCreate(OrderBase):
     modifications_in_order: List["ModificationInOrderCreateWithoutOrder"] = []
+    discount: int = 0
+    promo: str | None = None
 
 
 class OrderUpdatePartial(OrderBase):
@@ -44,6 +46,8 @@ class Order(OrderBase):
 
     id: int
     messages: str | None
+    discount: int = 0
+    promo: str | None = None
     # summ: int
     order_date: datetime
 

@@ -22,6 +22,7 @@ class Party(Base):
     storage: Mapped[str | None]
     project: Mapped[str | None]
     phone_number: Mapped[str]
+    overheads: Mapped[int]
 
     modifications_in_party: Mapped[list["ModificationInParty"]] = relationship(
         back_populates="party", cascade="all, delete-orphan", passive_deletes=True

@@ -6,7 +6,7 @@ from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import db_manager
-from .schemas import PartyWithoutProducts, Party, PartyCreate
+from .schemas import PartyWithoutProducts, Party, PartyCreate, PartyUpdatePartial
 from ..auth.dependencies import get_current_active_auth_user
 from ..dependencies import check_permission, Permission
 from . import service
@@ -50,6 +50,17 @@ async def create_party(
     session: AsyncSession = Depends(db_manager.session_dependency),
 ):
     return await service.create_party(session=session, party_create=party_crate)
+
+
+@router.patch(path="/", response_model=Party, description="Update partial new party")
+async def update_party(
+    party_update: PartyUpdatePartial,
+    session: AsyncSession = Depends(db_manager.session_dependency),
+    party: Party = Depends(dependencies.party_by_id_dependency),
+):
+    return await service.update_party(
+        session=session, party_update=party_update, party=party
+    )
 
 
 @router.post(
