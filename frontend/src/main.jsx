@@ -31,6 +31,7 @@ import AuthStore from "./AuthStore.js";
 
 import ProfilePage from './components/apps/profilePage/ProfilePage.jsx';
 import SupplyTable from './components/supplyTable/SupplyTable.jsx';
+import Loader from './components/loader/Loader.jsx';
 
 const router = createBrowserRouter([
   {
@@ -149,6 +150,10 @@ const router = createBrowserRouter([
     path: "/sign-up",
     element: <RegForm />, 
   },
+  {
+    path: "/loader",
+    element: <Loader />, 
+  }
 ]);
 
 AuthStore.initializeAuthState();
