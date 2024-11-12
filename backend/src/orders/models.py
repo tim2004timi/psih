@@ -28,6 +28,8 @@ class Order(Base):
     project: Mapped[str | None]
     phone_number: Mapped[str]
     email: Mapped[str | None]
+    discount: Mapped[int] = mapped_column(default=0)
+    promo: Mapped[str | None]
     # summ: Mapped[int | None] = mapped_column(nullable=True, default=0)
 
     modifications_in_order: Mapped[list["ModificationInOrder"]] = relationship(

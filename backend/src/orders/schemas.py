@@ -26,6 +26,8 @@ class OrderBase(BaseModel):
     project: str | None = None
     phone_number: str | None = None
     email: EmailStr | None = None
+    discount: int = 0
+    promo: str | None = None
 
 
 class OrderCreate(OrderBase):
