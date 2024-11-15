@@ -671,29 +671,10 @@ const OrderData = observer(({ configName, showNewOrder }) => {
             </div>
           </div>
         )}
-        <div className="orderData__header-data">
+        {currentConfig?.isShowLink && <div className="orderData__header-data--page">
           <StatusDropDownList selectedItem={orderInfo.status} changeFunc={handleChange}/>
           <TagDropDownList selectedItem={orderInfo.tag} changeFunc={handleChange}/>
-          {/* <DropDownList
-            statusList={true}
-            startItem={currentConfig.newDropDownList ? "статус заказа" : orderInfo.status}
-            // rowId={orderInfo.id}
-            statusObj={id ? null : handleStatusObj}
-            currentPage="orders"
-          />
-          <DropDownList
-            statusList={false}
-            isItemLink={false}
-            startItem={
-              currentConfig.newDropDownList ? "тег" : (orderInfo.tag === null ? "нет" : orderInfo.tag)
-            }
-            items={["бартер", "нет"]}
-            tagClass={true}
-            // rowId={orderInfo.id}
-            tagObj={id ? null : handleTagObj}
-            currentPage="orders"
-          /> */}
-        </div>
+        </div>}
         {currentConfig?.isShowLink && (
           <div className="orderData__header-settings">
             <button className="OrderData__settings-btn">
@@ -702,6 +683,10 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           </div>
         )}
       </div>
+      {currentConfig?.isShowHeaderBtn && <div className="orderData__header-data--new">
+          <StatusDropDownList selectedItem={orderInfo.status} changeFunc={handleChange}/>
+          <TagDropDownList selectedItem={orderInfo.tag} changeFunc={handleChange}/>
+        </div>}
       <div className="orderDataInfo">
         <div
           className={`orderDataInfo__personalInfo ${
