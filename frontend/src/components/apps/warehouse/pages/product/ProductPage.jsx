@@ -21,6 +21,7 @@ import Product from "./Product";
 import NotificationManager from "../../../../notificationManager/NotificationManager";
 import NotificationStore from "../../../../../NotificationStore";
 import { observer } from 'mobx-react-lite';
+import Loader from "../../../../loader/Loader.jsx";
 
 const ProductPage = observer(() => {
   const { id } = useParams();
@@ -108,7 +109,7 @@ const ProductPage = observer(() => {
 
 
   if (isLoading) {
-    return <div>Загрузка...</div>;
+    return <Loader />;
   }
 
   if (!currentProduct) {
@@ -120,7 +121,7 @@ const ProductPage = observer(() => {
     <>
       <div className="product__header">
         <div className="back-btn">
-          <Link to={-1}>
+          <Link to={'/products'}>
             <button className="back-btn__btn">
               <div className="back-btn__arrow"></div>
             </button>

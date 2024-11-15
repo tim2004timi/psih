@@ -29,6 +29,7 @@ import download from "../../../../../../assets/img/product_file_download.png";
 import StatusDropDownList from "../../../../../statusDropDownList/StatusDropDownList";
 import TagDropDownList from "../../../../../tagDropDownList/tagDropDownList";
 import getImgName from '../../../../../../API/getImgName'
+import Loader from "../../../../../loader/Loader";
 
 const OrderData = observer(({ configName, showNewOrder }) => {
   const { id } = useParams();
@@ -625,7 +626,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (
