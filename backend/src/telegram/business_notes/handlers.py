@@ -41,11 +41,6 @@ class BusinessNoteState(StatesGroup):
 async def business_notes_callback(
     callback: CallbackQuery,
 ) -> tuple[str, InlineKeyboardMarkup | None]:
-    inline_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="Назад", callback_data="menu")],
-        ]
-    )
     async with db_manager.session_maker() as session:
         tg_username = "@" + callback.from_user.username
         user = await get_user_by_tg_username(session=session, tg_username=tg_username)
@@ -57,8 +52,9 @@ async def business_notes_callback(
     for note in notes:
         summ += note.amount
         message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
-        message += f"Сумма: {note.amount} ₽\n"
-        message += f"Описание: {note.name}\n\n"
+        message += f"Сумма: {note.amount} ₽\n" \
+                   f"\n"
+        # message += f"Описание: {note.name}\n\n" TODO: change
 
     inline_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
@@ -167,8 +163,9 @@ async def choose_remove_business_note(
         message += (
             f"<b><i>{i+1}) 🕒 {convert_to_moscow_time(notes[i].created_at)} </i></b>\n"
         )
-        message += f"    Сумма: {notes[i].amount} ₽\n"
-        message += f"    Описание: {notes[i].name}\n\n"
+        message += f"    Сумма: {notes[i].amount} ₽\n" \
+                   f"\n"
+        # message += f"    Описание: {notes[i].name}\n\n" TODO: change
         summ += notes[i].amount
         i += 1
     message += "<i>Выберете номер записи, которую хотите удалить</i>"
@@ -249,8 +246,9 @@ async def other_business_notes_callback(
         for note in users_notes[user]:
             summ += note.amount
             message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
-            message += f"Сумма: {note.amount} ₽\n"
-            message += f"Описание: {note.name}\n\n"
+            message += f"Сумма: {note.amount} ₽\n" \
+                       f"\n"
+            # message += f"Описание: {note.name}\n\n" TODO: change
         message = message.format(user.username, summ)
 
     if not message:
