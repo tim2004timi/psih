@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useParams, useNavigate, Outlet } from "react-router-dom";
 import PartyStore from "../../PartyStore";
 import close from "../../assets/img/close_filter.png";
@@ -20,7 +20,7 @@ import StatusDropDownList from "../statusDropDownList/StatusDropDownList";
 const SupplyTable = observer(({ configName, showPage }) => {
   const { id } = useParams();
   const [currentConfig, setCurrentConfig] = useState(null);
-  const { party, getPartyById, deletePartyFile, uploadPartyFile, createParty } = PartyStore;
+  const { party, getPartyById, deletePartyFile, uploadPartyFile, createParty, patchParty } = PartyStore;
   const { currentUser, getCurrentUser } = UserStore;
   const [currentParty, setCurrentParty] = useState({});
   const [products, setProducts] = useState({});
@@ -286,13 +286,14 @@ const SupplyTable = observer(({ configName, showPage }) => {
     } else {
       setCurrentParty({
         'agent_name': "",
-        'status': "на складе",
+        'status': "",
         'tag': "",
         'note': "",
         'storage': "",
         'project': "",
         'phone_number': "",
         'modifications_in_party': [],
+        'overheads': 0,
       });
     }
     getCurrentUser();
@@ -333,6 +334,20 @@ const SupplyTable = observer(({ configName, showPage }) => {
       setErrorText(e.response.data.detail);
     }
   }
+
+  const totalCostPrice = useMemo(() => {
+    return partyModifications.reduce((total, modification) => {
+      const product = products[modification.modification.id];
+      return total + (product?.cost_price || 0) * modification.amount;
+    }, 0);
+  }, [partyModifications, products]);
+
+  const totalCost = useMemo(() => {
+    return partyModifications.reduce((total, modification) => {
+      const product = products[modification.modification.id];
+      return total + (product?.price || 0) * modification.amount;
+    }, 0);
+  }, [partyModifications, products]);
 
   // useEffect(() => {
   //   console.log(products);
@@ -391,9 +406,15 @@ const SupplyTable = observer(({ configName, showPage }) => {
   // }, [partyModifications])
 
   const handleUpdate = (value, field) => {
-    // if (id == undefined) return;
+    if (id == undefined) return;
     console.log(value, field);
-    // updateProductInfo(field, value);
+    try {
+      patchParty(id, { [field]: value });
+      setSuccessText('Изменения сохранены');
+    } catch (e) {
+      console.error(e);
+      setErrorText(e?.response?.data?.detail);
+    }
   };
 
   const handleColumnSelect = (column) => {
@@ -695,9 +716,10 @@ const SupplyTable = observer(({ configName, showPage }) => {
       </div>
       <div
         className={`${
-          id !== undefined
-            ? "supplyTable__productTableBtn-addnone"
-            : "supplyTable__productTableBtn"
+          // id !== undefined
+          //   ? "supplyTable__productTableBtn-addnone"
+            // : 
+            "supplyTable__productTableBtn"
         }`}
       >
         <button
@@ -759,12 +781,21 @@ const SupplyTable = observer(({ configName, showPage }) => {
           {partyModifications && renderPartiesRows()}
         </tbody>
       </table>
-      <div className="supplyTable__expenses">{`Накладные расходы ${4}`}</div>
+      <div className="supplyTable__expenses">
+        {`Накладные расходы`}
+        <input
+          type="text"
+          className="supplyTable__expenses-input"
+          value={currentParty.overheads}
+          onChange={(e) => handleChange(e.target.value, "overheads")}
+          onBlur={(e) => handleUpdate(e.target.value, "overheads")}
+        />
+      </div>
       <div className="supplyTable__total">
         <p className="supplyTable__total-costprice">
-          {`Общая себестоимость ${4}`}
+          {`Общая себестоимость ${totalCostPrice}`}
         </p>
-        <p className="supplyTable__total-cost">{`Общая стоимость ${4}`}</p>
+        <p className="supplyTable__total-cost">{`Общая стоимость ${totalCost}`}</p>
       </div>
       <Tooltip id="supply-party-name-tooltip" />
       {id !== undefined && (

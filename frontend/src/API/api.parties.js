@@ -10,9 +10,9 @@ const PartiesService = {
     return instance.post(`${serverUrl}/api/parties/`, obj);
   },
 
-  // patchUser(id, obj) {
-  //     return instance.patch(`${serverUrl}/api/users/?user_id=${id}`, obj);
-  // },
+  patchParty(id, obj) {
+      return instance.patch(`${serverUrl}/api/parties/?party_id=${id}`, obj);
+  },
 
   getPartyById(id) {
     return instance.get(`${serverUrl}/api/parties/${id}/`);

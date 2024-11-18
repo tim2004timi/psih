@@ -226,6 +226,8 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               phone_number: "",
               email: "",
               modifications_in_order: [],
+              discount: 0,
+              promo: ''
             });
           },
         };
@@ -365,6 +367,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   const handleClick = () => fileInputRef.current.click();
 
   const updateOrderInfo = async (key, value) => {
+    if (id == undefined) return
     try {
       await patchOrder(id, key, value);
       setSuccessText("Значение успешно изменено!");
@@ -510,6 +513,41 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     ));
   };
 
+  const isImportantFieldsFilled = (currentOrder) => {
+    const newFieldValidity = {
+      full_name: currentOrder.full_name !== '',
+      status: currentOrder.status != '',
+      phone_number: currentOrder.phone_number !== '',
+      email: currentOrder.email !== ''
+    };
+  
+    return Object.values(newFieldValidity).every(isValid => isValid);
+  }
+
+  async function createNewOrder(currentOrder) {
+    console.log(currentOrder)
+    if (!isImportantFieldsFilled(currentOrder)) {
+      setErrorText('Заполните необходимые поля!');
+      return;
+    }
+
+    if (currentOrder.modifications_in_order.length === 0) {
+      setErrorText('Должен быть хотя бы один товар!');
+      return;
+    }
+
+    try{
+      const response = await createOrder(currentOrder);
+      // console.log(response.data);
+      showNewOrder(false)
+      setSuccessText("Продукт создан!")
+    } catch (error) {
+      console.error(error);
+      setErrorText(error.response.data.detail)
+    }
+
+  }
+
   const renderFileRows = () => {
     return ordersFiles.map((row, rowIndex) => (
       <tr key={rowIndex}>
@@ -652,7 +690,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
               <button
                 className="product__save-btn-button"
                 onClick={() => {
-                  createNewProduct(currentProduct);
+                  createNewOrder(orderInfo);
                 }}
               >
                 Сохранить
@@ -672,10 +710,18 @@ const OrderData = observer(({ configName, showNewOrder }) => {
             </div>
           </div>
         )}
-        {currentConfig?.isShowLink && <div className="orderData__header-data--page">
-          <StatusDropDownList selectedItem={orderInfo.status} changeFunc={handleChange}/>
-          <TagDropDownList selectedItem={orderInfo.tag} changeFunc={handleChange}/>
-        </div>}
+        {currentConfig?.isShowLink && (
+          <div className="orderData__header-data--page">
+            <StatusDropDownList
+              selectedItem={orderInfo?.status}
+              changeFunc={handleChange}
+            />
+            <TagDropDownList
+              selectedItem={orderInfo?.tag}
+              changeFunc={handleChange}
+            />
+          </div>
+        )}
         {currentConfig?.isShowLink && (
           <div className="orderData__header-settings">
             <button className="OrderData__settings-btn">
@@ -684,10 +730,18 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           </div>
         )}
       </div>
-      {currentConfig?.isShowHeaderBtn && <div className="orderData__header-data--new">
-          <StatusDropDownList selectedItem={orderInfo.status} changeFunc={handleChange}/>
-          <TagDropDownList selectedItem={orderInfo.tag} changeFunc={handleChange}/>
-        </div>}
+      {currentConfig?.isShowHeaderBtn && (
+        <div className="orderData__header-data--new">
+          <StatusDropDownList
+            selectedItem={orderInfo.status}
+            changeFunc={handleChange}
+          />
+          <TagDropDownList
+            selectedItem={orderInfo.tag}
+            changeFunc={handleChange}
+          />
+        </div>
+      )}
       <div className="orderDataInfo">
         <div
           className={`orderDataInfo__personalInfo ${
@@ -898,11 +952,23 @@ const OrderData = observer(({ configName, showNewOrder }) => {
           </button>
           <div className="orderData__promoCode">
             <p className="orderData__promoCode-text">Промокод</p>
-            <input type="text" className="orderData__promoCode-input" />
+            <input
+              type="text"
+              className="orderData__promoCode-input"
+              value={orderInfo.promo || ""}
+              onChange={(e) => handleChange(e, "promo")}
+              onBlur={(e) => handleUpdate(e, "promo")}
+            />
           </div>
           <div className="orderData__discount">
             <p className="orderData__discount-text">Скидка</p>
-            <input type="text" className="orderData__discount-input" />
+            <input
+              type="text"
+              className="orderData__discount-input"
+              value={orderInfo.discount || ""}
+              onChange={(e) => handleChange(e, "discount")}
+              onBlur={(e) => handleUpdate(e, "discount")}
+            />
           </div>
         </div>
         <button

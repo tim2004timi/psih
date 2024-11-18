@@ -345,3 +345,11 @@
     gap: 15px;
     margin-bottom: 20px;
 }
+
+.supplyTable__expenses-input{
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 7px;
+    padding: 3px 10px;
+    width: 188px;
+    margin-left: 10px;
+}

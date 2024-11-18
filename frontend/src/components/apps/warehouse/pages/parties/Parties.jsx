@@ -284,6 +284,10 @@ const Parties = observer(() => {
     // console.log(activeCheckboxIds.filter((item, index) => activeCheckboxIds.indexOf(item) === index))
   }, [activeCheckboxCount]);
 
+  useEffect(() => {
+    console.log(activeCheckboxCount)
+  }, [activeCheckboxCount])
+
   const handleColumnSelect = (column) => {
     if (selectedColumns.includes(column)) {
       setSelectedColumns(selectedColumns.filter((col) => col !== column));
