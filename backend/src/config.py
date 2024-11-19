@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     db_name: str
     db_echo: bool
     bot_token: str
+    api_token: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

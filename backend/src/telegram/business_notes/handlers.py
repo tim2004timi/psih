@@ -105,14 +105,10 @@ async def business_note_amount_state(message: Message, state: FSMContext):
         return
 
     await state.update_data(amount=int(amount))
-    await state.set_state(BusinessNoteState.name)
-    await message.answer("🔖 Введите комментарий:")
-
-
-@router.message(BusinessNoteState.name)
-@permission_decorator(Permission.ADMIN)
-async def business_note_name_state(message: Message, state: FSMContext):
-    await state.update_data(name=message.text)
+    # await state.set_state(BusinessNoteState.name)
+    # await message.answer("🔖 Введите комментарий:")
+    # TODO: Изменить, когда нужен будет комментарий
+    await state.update_data(name="")
     data = await state.get_data()
 
     inline_keyboard = InlineKeyboardMarkup(
@@ -144,6 +140,43 @@ async def business_note_name_state(message: Message, state: FSMContext):
         return
     await message.answer("✅ Запись создана успешно!", reply_markup=inline_keyboard)
     await state.clear()
+
+
+# @router.message(BusinessNoteState.name)
+# @permission_decorator(Permission.ADMIN)
+# async def business_note_name_state(message: Message, state: FSMContext):
+#     await state.update_data(name=message.text)
+#     data = await state.get_data()
+#
+#     inline_keyboard = InlineKeyboardMarkup(
+#         inline_keyboard=[
+#             [
+#                 InlineKeyboardButton(
+#                     text="🗒 Ваши личные записи", callback_data="business-notes"
+#                 )
+#             ],
+#             [InlineKeyboardButton(text="📋 Меню", callback_data="menu")],
+#         ]
+#     )
+#
+#     try:
+#         async with db_manager.session_maker() as session:
+#             note_create = BusinessNoteCreate(
+#                 name=data["name"],
+#                 amount=data["amount"],
+#                 user_id=data["user_id"],
+#             )
+#             await create_business_note(
+#                 session=session, business_note_create=note_create
+#             )
+#     except Exception as e:
+#         await message.answer(
+#             f"❌ Запись не записана! \nОшибка:\n<tg-spoiler>{e}</tg-spoiler>",
+#             reply_markup=inline_keyboard,
+#         )
+#         return
+#     await message.answer("✅ Запись создана успешно!", reply_markup=inline_keyboard)
+#     await state.clear()
 
 
 @router.callback_query(F.data.startswith("rm-choice-business-note"))
