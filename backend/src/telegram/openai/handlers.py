@@ -3,16 +3,14 @@ from aiogram import Router, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from src.config import settings
+from src.config import settings, CHAT_GPT_ADMIN_RULE
 
 
 router = Router()
-API_URL = "https://api.openai.com/v1/chat/completions"
+API_URL = settings.proxy_url + "/v1/chat/completions"
+
 chat_history = [
-    {"role": "system", "content": "Ты ассистент в интернет системе 'psihsystem', "
-                                  "который отвечает на вопросы администратора этой системе. "
-                                  "Система представляет интернет-магазин одежды, интернет управление складом, "
-                                  "коммуникация с клиентами интернет-магазина"}
+    {"role": "system", "content": CHAT_GPT_ADMIN_RULE}
 ]
 
 
@@ -24,7 +22,7 @@ async def ask_chatgpt(prompt: str) -> str:
     data = {
         "model": "gpt-4o",
         "messages": [*chat_history, {"role": "user", "content": prompt}],
-        "temperature": 0.7,
+        "temperature": 0.5,
     }
 
     async with httpx.AsyncClient() as client:
