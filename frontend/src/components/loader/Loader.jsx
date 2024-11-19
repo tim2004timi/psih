@@ -4,14 +4,14 @@ import logo from '../../assets/img/logo.svg'
 
 const Loader = () => {
     return (
-      <div class="loader-container">
-        <div class="loader">
-          <div className="bar bar1"></div>
-          <div className="bar bar2"></div>
+      <div className="loader-container">
+        <div className="loader">
+          <div className="loader-bar"></div>
+          <div className="loader-bar"></div>
+          <a className="loader__logo">
+            <img src={logo} alt="logo" className="loader__logo-img" />
+          </a>
         </div>
-        <a className="logo">
-          <img src={logo} alt="logo" className="logo__img" />
-        </a>
       </div>
     );
 }

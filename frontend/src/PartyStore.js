@@ -36,6 +36,16 @@ class PartyStore {
         }
     }
 
+    async patchParty(id, obj) {
+        try {
+            const resp = await PartiesService.patchParty(id, obj)
+            console.log(resp.data)
+            return resp?.data
+        } catch(e) {
+            throw (e)
+        }
+    }
+
     async getPartyById(id) {
         try {
             const resp = await PartiesService.getPartyById(id)

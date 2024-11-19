@@ -328,8 +328,8 @@
 
 .column-name__container-img:hover .column-name__img {
     transform: scale(10) translate(20px, 5px);
-    border-radius: 7px;
-    box-shadow: 0 0 0 0.4px black;
+    border-radius: 1px;
+    box-shadow: 0 0 0 0.2px black;
 }
 
 /* .column-article{

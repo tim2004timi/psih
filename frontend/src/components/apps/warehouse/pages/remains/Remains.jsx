@@ -13,6 +13,7 @@ import NotificationManager from "../../../../notificationManager/NotificationMan
 import NotificationStore from "../../../../../NotificationStore";
 import { observer } from "mobx-react-lite";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import Loader from "../../../../loader/Loader";
 
 const Remains = observer(() => {
   const [products, setProducts] = useState([]);
@@ -534,7 +535,7 @@ const Remains = observer(() => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (
