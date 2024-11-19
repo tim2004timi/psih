@@ -210,10 +210,14 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
       try {
         if (currentConfig.productPageFlag) {
           await deleteProductImg(cnt);
-        }
-        setProductsImages((prevImages) =>
+          setProductsImages((prevImages) =>
+          prevImages.filter((img) => img.id !== cnt)
+        );
+        } else {
+          setProductsImages((prevImages) =>
           prevImages.filter((img) => img.name !== cnt)
         );
+        }
         setSuccessText("Фотография удалена!")
       } catch (e) {
         console.error(e);
@@ -291,6 +295,7 @@ const Product = observer(({ currentProductArr, configName, showNewProduct }) => 
           setErrorText(error.response.data.detail)
         }
       })
+      navigate('/products')
       showNewProduct(false)
       setSuccessText("Продукт создан!")
       navigate('/products')

@@ -38,7 +38,7 @@ class UserStore {
             console.log(resp.data)
         } catch(e) {
             console.log(e)
-            this.setErrorText(e.response.data.detail)
+            this.setErrorText(e.response.data.detail[0].msg)
         }
     }
 

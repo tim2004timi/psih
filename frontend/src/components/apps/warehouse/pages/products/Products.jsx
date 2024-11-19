@@ -391,8 +391,16 @@ const Products = observer(() => {
   }
 
   useEffect(() => {
+    console.log("на странице products");
     fetchCategories();
     fetchProducts(false);
+
+    const intervalId = setInterval(() => {
+      fetchCategories();
+      fetchProducts(false);
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {

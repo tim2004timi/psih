@@ -212,11 +212,11 @@ const ProfilePage = observer(() => {
     setIsShowPasswordPopup(false);
   };
 
-  useEffect(() => {
-    if (profilePageErrorText) {
-      console.log(profilePageErrorText);
-    }
-  }, [profilePageErrorText]);
+  // useEffect(() => {
+  //   if (profilePageErrorText) {
+  //     console.log(profilePageErrorText);
+  //   }
+  // }, [profilePageErrorText]);
 
   const passwordPopup = () => {
     return (
@@ -250,6 +250,36 @@ const ProfilePage = observer(() => {
       </div>
     );
   };
+
+  const isImportantFieldsFilled = (currentUserState) => {
+    const newFieldValidity = {
+      username: currentUserState.username !== '',
+      tg_username: currentUserState.tg_username !== '',
+      password: currentUserState.password !== '',
+    };
+  
+    return Object.values(newFieldValidity).every(isValid => isValid);
+  }
+
+  const createNewUser = async(newUserState) => {
+    if (!isImportantFieldsFilled(newUserState)) {
+      setProfilePageErrorText('Заполните необходимые поля!');
+      return;
+    }
+
+    await createUser(newUserState);
+    setIsShowNewUserPopup(false);
+    getUsers();
+    setNewUserState({
+      access_storage: false,
+      access_crm: false,
+      access_message: false,
+      access_analytics: false,
+      username: "",
+      tg_username: "",
+      password: "",
+    })
+  }
 
   const newUserPopup = () => {
     return (
@@ -365,8 +395,7 @@ const ProfilePage = observer(() => {
               className="admin-page-user__button admin-page-user__button--p30"
               onClick={(e) => {
                 // console.log(newUserState)
-                createUser(newUserState);
-                setIsShowNewUserPopup(false);
+                createNewUser(newUserState)
               }}
             >
               Сохранить

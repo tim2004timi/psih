@@ -428,6 +428,12 @@ const Parties = observer(() => {
   useEffect(() => {
     getParties();
     //   console.log(parties);
+
+    const intervalId = setInterval(() => {
+      getParties();
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -592,8 +598,8 @@ const Parties = observer(() => {
             </div>
             <button
               className="warehouse-table-btn warehouse-table-btn__delete-table"
-              onClick={() => {
-                deleteParties(activeCheckboxIds);
+              onClick={async() => {
+                await deleteParties(activeCheckboxIds);
                 getParties();
               }}
             >

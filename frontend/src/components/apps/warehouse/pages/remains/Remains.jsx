@@ -11,7 +11,7 @@ import FilterDropDownList from "../../../../filterDropDownList/FilterDropDownLis
 import { getProducts, deleteProducts } from "../../../../../API/productsApi";
 import NotificationManager from "../../../../notificationManager/NotificationManager";
 import NotificationStore from "../../../../../NotificationStore";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react-lite"; 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Loader from "../../../../loader/Loader";
 
@@ -43,28 +43,12 @@ const Remains = observer(() => {
   const columnsListRef = useRef(null);
   const columnsListBtnRef = useRef(null);
 
-  const [isFetchData, setIsFetchData] = useState(false);
-
-  const [idList, setIdList] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
-
-  const [statusList, setStatusList] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState([]);
-
-  const [tagList, setTagList] = useState(null);
-  const [selectedTag, setSelectedTag] = useState([]);
-
   const [checkboxStates, setCheckboxStates] = useState({});
   const [activeCheckboxCount, setActiveCheckboxCount] = useState(0);
   const [activeCheckboxIds, setActiveCheckboxIds] = useState([]);
   const [selectedFilterItems, setSelectedFilterItems] = useState({});
 
-  const [isClearFDDlistSelectedItems, setIsClearFDDlistSelectedItems] =
-    useState(false);
-
   const inputNameRef = useRef(null);
-
-  const inputDateOrderRef = useRef(null);
 
   const warehouseTableBtnContainerRef = useRef(null);
 
@@ -151,6 +135,12 @@ const Remains = observer(() => {
 
   useEffect(() => {
     fetchAllProducts();
+
+    const intervalId = setInterval(() => {
+      fetchAllProducts();
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const showFilter = () => {
@@ -240,7 +230,7 @@ const Remains = observer(() => {
   const handleCheckboxChange = (rowId, id_row, event) => {
     event.stopPropagation();
     setLastSelectedIndex(rowId);
-
+    console.log()
     let countChange = 0;
 
     setCheckboxStates((prevState) => {
@@ -290,42 +280,42 @@ const Remains = observer(() => {
     setActiveCheckboxCount((prevCount) => prevCount + countChange);
   };
 
-  useEffect(() => {
-    const handleDocumentClick = (event) => {
-      if (
-        !event.target.closest(".table") &&
-        initialCheckboxStates !== undefined
-      ) {
-        setCheckboxStates(initialCheckboxStates);
-        setActiveCheckboxCount(0);
-      }
-    };
-
-    document.addEventListener("click", handleDocumentClick);
-
-    return () => {
-      document.removeEventListener("click", handleDocumentClick);
-    };
-  }, [initialCheckboxStates]);
-
   // useEffect(() => {
-  //   if (activeCheckboxCount > 0) {
-  //     if (warehouseTableBtnContainerRef.current) {
-  //       warehouseTableBtnContainerRef.current.style.display = "flex";
+  //   const handleDocumentClick = (event) => {
+  //     if (
+  //       !event.target.closest(".table") &&
+  //       initialCheckboxStates !== undefined
+  //     ) {
+  //       setCheckboxStates(initialCheckboxStates);
+  //       setActiveCheckboxCount(0);
   //     }
-  //   } else {
-  //     if (warehouseTableBtnContainerRef.current) {
-  //       warehouseTableBtnContainerRef.current.style.display = "none";
-  //     }
-  //   }
+  //   };
 
-  //   setActiveCheckboxCount(Math.floor(activeCheckboxCount));
-  //   setActiveCheckboxIds(
-  //     activeCheckboxIds.filter(
-  //       (item, index) => activeCheckboxIds.indexOf(item) === index
-  //     )
-  //   );
-  // }, [activeCheckboxCount]);
+  //   document.addEventListener("click", handleDocumentClick);
+
+  //   return () => {
+  //     document.removeEventListener("click", handleDocumentClick);
+  //   };
+  // }, [initialCheckboxStates]);
+
+  useEffect(() => {
+    if (activeCheckboxCount > 0) {
+      if (warehouseTableBtnContainerRef.current) {
+        warehouseTableBtnContainerRef.current.style.display = "flex";
+      }
+    } else {
+      if (warehouseTableBtnContainerRef.current) {
+        warehouseTableBtnContainerRef.current.style.display = "none";
+      }
+    }
+
+    setActiveCheckboxCount(Math.floor(activeCheckboxCount));
+    setActiveCheckboxIds(
+      activeCheckboxIds.filter(
+        (item, index) => activeCheckboxIds.indexOf(item) === index
+      )
+    );
+  }, [activeCheckboxCount]);
 
   async function deleteSelectedProducts(idArr) {
     try {
@@ -406,6 +396,7 @@ const Remains = observer(() => {
                   className="column-number-input__custom-products"
                   onClick={(event) => {
                     handleCheckboxChange(row.id, row.id_row, event);
+                    console.log(row)
                     event.preventDefault();
                   }}
                 ></span>
