@@ -1,5 +1,6 @@
 from aiogram import Dispatcher, Router, F
 from aiogram.filters import Command
+from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     Message,
     CallbackQuery,
@@ -30,18 +31,21 @@ async def cmd_start(message: Message):
 
 
 @router.message(Command("menu"))
-async def cmd_menu(message: Message):
+async def cmd_menu(message: Message, state: FSMContext):
+    await state.clear()
     await menu(event=message)
 
 
 @router.callback_query(F.data == "menu")
 @edit_message
-async def menu_callback(callback: CallbackQuery) -> tuple[str, InlineKeyboardMarkup]:
+async def menu_callback(callback: CallbackQuery, state: FSMContext) -> tuple[str, InlineKeyboardMarkup]:
+    await state.clear()
     return await menu(event=callback)
 
 
 @router.message(F.text == "📋 Меню")
-async def menu_message(message: Message):
+async def menu_message(message: Message, state: FSMContext):
+    await state.clear()
     await menu(event=message)
 
 
