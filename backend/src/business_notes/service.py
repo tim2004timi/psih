@@ -26,15 +26,6 @@ async def get_all_business_notes(session: AsyncSession) -> List[BusinessNote]:
     return list(business_notes)
 
 
-# async def get_business_notes_by_user_id(
-#     session: AsyncSession, user_id: int
-# ) -> List[BusinessNote]:
-#     stmt = select(BusinessNote).where(BusinessNote.user_id == user_id)
-#     result: Result = await session.execute(stmt)
-#     business_notes = result.scalars().all()
-#     return list(business_notes)
-
-
 async def get_business_note_by_id(
     session: AsyncSession, business_note_id: int
 ) -> BusinessNote:
