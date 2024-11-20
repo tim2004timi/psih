@@ -488,8 +488,8 @@ const Orders = observer(() => {
             </button> */}
             <button
               className="warehouse-table-btn warehouse-table-btn__delete-table"
-              onClick={() => {
-                deleteSelectedOrders(activeCheckboxIds);
+              onClick={async() => {
+                await deleteSelectedOrders(activeCheckboxIds);
                 setIsFetchData(true);
               }}
             >

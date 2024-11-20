@@ -145,11 +145,17 @@ const OrderTable = observer(({
       }
     };
 
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 60000); 
+  
     document.addEventListener("click", handleDocumentClick);
 
     return () => {
-      document.removeEventListener("click", handleDocumentClick);
+      clearInterval(intervalId); 
+      document.removeEventListener("click", handleDocumentClick); 
     };
+
   }, [dispatch]);
 
   const getStatusStyle = (status) => {

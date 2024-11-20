@@ -69,7 +69,7 @@ class PartyStore {
         console.log(arr)
         try {
             const resp = await PartiesService.deleteParties(arr)
-            console.log(resp.data)
+            // console.log(resp.data)
         } catch(e) {
             throw (e)
         }
