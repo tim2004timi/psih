@@ -15,6 +15,7 @@ from src.users.models import User
 
 class Permission(Enum):
     ADMIN = 1
+    ALL = 2
 
 
 def permission_decorator(permission: Permission):
