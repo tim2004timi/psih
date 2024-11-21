@@ -68,6 +68,7 @@ const ProductPage = observer(() => {
     try {
       const response = await getProductById(id);
       setCurrentProduct(response.data);
+      setIsLoading(false)
     } catch (e) {
       console.error(e);
       setErrorText(e.response.data.detail)
@@ -77,7 +78,6 @@ const ProductPage = observer(() => {
   useEffect(() => {
     fetchProducts(null);
     fetchProduct(id)
-    setIsLoading(false)
   }, [id]);
 
   useEffect(() => {

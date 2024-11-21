@@ -31,7 +31,7 @@ import TagDropDownList from "../../../../../tagDropDownList/tagDropDownList";
 import getImgName from '../../../../../../API/getImgName'
 import Loader from "../../../../../loader/Loader";
 
-const OrderData = observer(({ configName, showNewOrder }) => {
+const OrderData = observer(({ configName, showNewOrder, isUpdateList }) => {
   const { id } = useParams();
   const [orderInfo, setOrderInfo] = useState();
   const { currentUser, getCurrentUser } = UserStore;
@@ -251,14 +251,27 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     try {
       const response = await getOrderById(id);
       setOrderInfo(response.data);
-      // console.log(response.data);
-      // setUnformateDate(response.data.order_date);
-      // setOrdersDate(formatDateTime(response.data.order_date));
-      // console.log(ordersDate)
-      setOrdersModifications(response.data.modifications_in_order);
-      setOrdersFiles(response.data.files)
+      console.log(response.data);
+  
+      if (response.data.modifications_in_order) {
+        const modificationsForPatch = response.data.modifications_in_order.reduce((acc, row) => {
+          acc.push({
+            amount: row.amount,
+            modification: row.modification,
+            modification_id: row.id
+          });
+          return acc;
+        }, []); 
+  
+        setOrdersModifications(modificationsForPatch);
+      } else {
+        setOrdersModifications([]);
+      }
+  
+      setOrdersFiles(response.data.files);
     } catch (error) {
       setIsLoading(true);
+      console.error(error);
       setErrorText(error.response.data.detail);
     }
   };
@@ -419,6 +432,20 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     );
     setOrdersModifications((prev) => [...prev, ...uniqueNewObjects])
   }
+  useEffect(() => {
+    if (id != undefined) return;
+
+    const updatedModifications = ordersModifications.map((modification) => ({
+      amount: modification.amount,
+      modification: modification.modification,
+      modification_id: modification.id,
+    }));
+    console.log(updatedModifications);
+    setOrderInfo((prev) => ({
+      ...prev,
+      modifications_in_order: updatedModifications,
+    }));
+  }, [ordersModifications]);
 
   const columnConfig = {
     Товары: {
@@ -445,10 +472,38 @@ const OrderData = observer(({ configName, showNewOrder }) => {
     },
     Количество: {
       className: "orderdata-column orderdata-quantity",
-      content: (row) => {
-        // return (
-        //   <div className="orderdata-column-container">{row.name}</div>
-        // );
+      content: (row, rowIndex) => {
+        return (
+          <div className="supply-party-column__container">
+            <input
+              type="text"
+              className="supplyTable__conterAgent-input"
+              value={ordersModifications[rowIndex]?.amount}
+              onChange={(e) => {
+                const newAmount = Number(e.target.value);
+                setOrdersModifications((prev) => {
+                  const newModifications = [...prev];
+                  newModifications[rowIndex] = {
+                    ...newModifications[rowIndex],
+                    amount: newAmount,
+                  };
+                  return newModifications;
+                });
+              }}
+              // onBlur={(e) => {
+              //   const newAmount = Number(e.target.value);
+              //   setOrdersModifications((prev) => {
+              //     const newModifications = [...prev];
+              //     newModifications[rowIndex] = {
+              //       ...newModifications[rowIndex],
+              //       amount: newAmount,
+              //     };
+              //     return newModifications;
+              //   });
+              // }}
+            />
+          </div>
+        );
       },
     },
     Остаток: {
@@ -525,7 +580,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
   }
 
   async function createNewOrder(currentOrder) {
-    console.log(currentOrder)
+
     if (!isImportantFieldsFilled(currentOrder)) {
       setErrorText('Заполните необходимые поля!');
       return;
@@ -538,7 +593,8 @@ const OrderData = observer(({ configName, showNewOrder }) => {
 
     try{
       const response = await createOrder(currentOrder);
-      // console.log(response.data);
+      console.log(response.data);
+      isUpdateList(true)
       showNewOrder(false)
       setSuccessText("Продукт создан!")
     } catch (error) {
@@ -591,7 +647,7 @@ const OrderData = observer(({ configName, showNewOrder }) => {
             const className = columnConfig[column]?.className;
             return (
               <td key={colIndex} className={className}>
-                {columnConfig[column]?.content(row)}
+                {columnConfig[column]?.content(row, rowIndex)}
               </td>
             );
           })}

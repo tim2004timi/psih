@@ -402,6 +402,7 @@ const Orders = observer(() => {
               <OrderData
                 configName="newOrderConfig"
                 showNewOrder={setIsNewOrder}
+                isUpdateList={setIsFetchData}
               />
             )}
             {/* <div className="search">

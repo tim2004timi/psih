@@ -29,6 +29,7 @@ import NotificationManager from "../../../../notificationManager/NotificationMan
 import NotificationStore from "../../../../../NotificationStore";
 import { observer } from 'mobx-react-lite';
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import Loader from "../../../../loader/Loader.jsx";
 
 const Products = observer(() => {
   const dispatch = useDispatch();
@@ -391,7 +392,7 @@ const Products = observer(() => {
   }
 
   useEffect(() => {
-    console.log("на странице products");
+    // console.log("на странице products");
     fetchCategories();
     fetchProducts(false);
 
@@ -695,9 +696,9 @@ const Products = observer(() => {
         })
       : filteredProducts;
 
-    // console.log('filteredByFilterProducts', filteredByFilterProducts)
+    console.log('filteredByFilterProducts', filteredByFilterProducts)
     // console.log('filteredProducts', filteredProducts)
-    // console.log(isFilterProducts)
+    console.log('isFilterProducts', isFilterProducts)
 
     return filteredByFilterProducts.map((row, rowIndex) => (
       <tr key={rowIndex}>
@@ -712,6 +713,10 @@ const Products = observer(() => {
       </tr>
     ));
   };
+
+  // if (!productsNA || productsNA.length === 0) {
+  //   return <Loader />;
+  // }
 
   return (
     <>
