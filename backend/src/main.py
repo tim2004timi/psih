@@ -12,6 +12,7 @@ from .users.router import router as users_router
 from .parties.router import router as parties_router
 from .collections.router import router as collections_router
 from .business_notes.router import router as business_notes_router
+from .gpt_chat.models import GPTMessage
 
 from .database import Base
 from .config import UPLOAD_DIR, DEV

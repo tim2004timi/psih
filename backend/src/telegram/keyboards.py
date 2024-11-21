@@ -12,7 +12,8 @@ menu_inline_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text="🗒 Бизнес записи", callback_data="business-notes"
             ),
-        ]
+        ],
+        [InlineKeyboardButton(text="🤖 AI Ассистент", callback_data="gpt_menu"),]
     ]
 )
 

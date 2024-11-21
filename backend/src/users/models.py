@@ -26,3 +26,4 @@ class User(Base):
 
     files: Mapped[list["File"]] = relationship(back_populates="user")
     business_notes: Mapped[list["BusinessNote"]] = relationship(back_populates="user")
+    gpt_messages: Mapped[list["GPTMessage"]] = relationship(back_populates="user")
