@@ -16,11 +16,12 @@ import NotificationManager from "../notificationManager/NotificationManager";
 import ProductTable from "../apps/warehouse/productTable/ProductTable";
 import TagDropDownList from "../tagDropDownList/tagDropDownList";
 import StatusDropDownList from "../statusDropDownList/StatusDropDownList";
+import Loader from "../loader/Loader";
 
 const SupplyTable = observer(({ configName, showPage }) => {
   const { id } = useParams();
   const [currentConfig, setCurrentConfig] = useState(null);
-  const { party, getPartyById, deletePartyFile, uploadPartyFile, createParty, patchParty } = PartyStore;
+  const { party, getParties, getPartyById, deletePartyFile, uploadPartyFile, createParty, patchParty, isLoading } = PartyStore;
   const { currentUser, getCurrentUser } = UserStore;
   const [currentParty, setCurrentParty] = useState({});
   const [products, setProducts] = useState({});
@@ -286,7 +287,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
     } else {
       setCurrentParty({
         'agent_name': "",
-        'status': "",
+        'status': "на складе",
         'tag': "",
         'note': "",
         'storage': "",
@@ -401,9 +402,9 @@ const SupplyTable = observer(({ configName, showPage }) => {
     setCurrentParty((prev) => ({ ...prev, [field]: value }));
   };
 
-  // useEffect(() => {
-  //   console.log(toJS(partyModifications))
-  // }, [partyModifications])
+  useEffect(() => {
+    console.log(toJS(currentParty))
+  }, [currentParty])
 
   const handleUpdate = (value, field) => {
     if (id == undefined) return;
@@ -473,6 +474,7 @@ const SupplyTable = observer(({ configName, showPage }) => {
 
     const resp = await createParty(currentParty)
     uploadFiles(partyFiles, resp.data.id);
+    getParties()
     showPage(false)
     setSuccessText("Новая партия создана");
   };
@@ -550,6 +552,10 @@ const SupplyTable = observer(({ configName, showPage }) => {
       </tr>
     ));
   };
+
+  if (isLoading) {
+    return (<Loader />)
+  }
 
   return (
     <div
@@ -662,19 +668,19 @@ const SupplyTable = observer(({ configName, showPage }) => {
         <div className="supplyTable__content-items">
           <div className="supplyTable__content-item">
             <p className="supplyTable__conterAgent-text">Статус</p>
-            <StatusDropDownList
+            {/* <StatusDropDownList
               selectedItem={currentParty.status}
               changeFunc={handleChange}
               updateFunc={handleUpdate}
-            />
+            /> */}
           </div>
           <div className="supplyTable__content-item">
             <p className="supplyTable__conterAgent-text">Тег</p>
-            <TagDropDownList
+            {/* <TagDropDownList
               selectedItem={currentParty.tag}
               changeFunc={handleChange}
               updateFunc={handleUpdate}
-            />
+            /> */}
           </div>
         </div>
         <div className="supplyTable__content-item">

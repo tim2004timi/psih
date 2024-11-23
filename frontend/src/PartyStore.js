@@ -4,6 +4,7 @@ import PartiesService from './API/api.parties';
 class PartyStore {
     parties = []
     party = {}
+    isLoading = true
 
     constructor() {
         makeAutoObservable(this, {}, { autoBind: true });
@@ -15,6 +16,10 @@ class PartyStore {
 
     setParty(obj) {
         this.party = obj;
+    }
+    
+    setIsLoading(bool) {
+        this.isLoading = bool;
     }
 
     async getParties() {
@@ -50,6 +55,7 @@ class PartyStore {
         try {
             const resp = await PartiesService.getPartyById(id)
             this.setParty(resp.data)
+            this.setIsLoading(false)
         } catch(e) {
             throw (e)
         }
@@ -92,6 +98,10 @@ class PartyStore {
         } catch(e) {
             throw (e)
         }
+    }
+
+    resetIsLoading() {
+        this.setIsLoading(true)
     }
 }
 

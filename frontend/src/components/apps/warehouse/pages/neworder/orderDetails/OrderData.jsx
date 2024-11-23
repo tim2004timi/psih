@@ -262,7 +262,7 @@ const OrderData = observer(({ configName, showNewOrder, isUpdateList }) => {
           });
           return acc;
         }, []); 
-  
+        console.log(modificationsForPatch)
         setOrdersModifications(modificationsForPatch);
       } else {
         setOrdersModifications([]);
@@ -430,22 +430,36 @@ const OrderData = observer(({ configName, showNewOrder, isUpdateList }) => {
     const uniqueNewObjects = newItems.filter(newObj => 
       !ordersModifications.some(existingObj => existingObj.modification.id === newObj.modification.id)
     );
-    setOrdersModifications((prev) => [...prev, ...uniqueNewObjects])
-  }
-  useEffect(() => {
-    if (id != undefined) return;
 
-    const updatedModifications = ordersModifications.map((modification) => ({
+    const updatedModifications = uniqueNewObjects.map((modification) => ({
       amount: modification.amount,
       modification: modification.modification,
       modification_id: modification.id,
     }));
-    console.log(updatedModifications);
+    setOrdersModifications((prev) => [...prev, ...updatedModifications])
     setOrderInfo((prev) => ({
       ...prev,
       modifications_in_order: updatedModifications,
     }));
-  }, [ordersModifications]);
+    
+  }
+
+  // useEffect(() => {
+  //   // if (id != undefined) return;
+
+  //   const updatedModifications = ordersModifications.map((modification) => ({
+  //     amount: modification.amount,
+  //     modification: modification.modification,
+  //     modification_id: modification.id,
+  //   }));
+    
+  //   setOrderInfo((prev) => ({
+  //     ...prev,
+  //     modifications_in_order: updatedModifications,
+  //   }));
+
+  //   // updateOrderInfo('modifications_in_order', updatedModifications)
+  // }, [ordersModifications]);
 
   const columnConfig = {
     Товары: {
@@ -557,7 +571,9 @@ const OrderData = observer(({ configName, showNewOrder, isUpdateList }) => {
   // добавить patch
   const removeModification = (id) => {
     const updatedModifications = ordersModifications.filter((obj) => obj.modification.id !== id);
+    console.log(updatedModifications)
     setOrdersModifications(updatedModifications);
+    updateOrderInfo('modifications_in_order', updatedModifications)
   };
 
   const renderFileHeaders = () => {
@@ -695,7 +711,7 @@ const OrderData = observer(({ configName, showNewOrder, isUpdateList }) => {
               content = "Общие данные";
               break;
             case "Количество":
-              // content = totalAmount;
+              content = totalAmount;
               break;
             case "Остаток":
               content = totalRemaining;
