@@ -27,6 +27,8 @@ from src.telegram.utils import (
 from src.users.service import get_user_by_tg_username
 
 router = Router()
+NOTES_RANGE = 100
+OTHERS_NOTES_RANGE = 20
 
 
 class BusinessNoteState(StatesGroup):
@@ -35,12 +37,16 @@ class BusinessNoteState(StatesGroup):
     user_id = State()
 
 
-@router.callback_query(F.data == "business-notes")
+@router.callback_query(F.data.startswith("business-notes"))
 @permission_decorator(Permission.ADMIN)
 @edit_message
 async def business_notes_callback(
     callback: CallbackQuery,
 ) -> tuple[str, InlineKeyboardMarkup | None]:
+    try:
+        page = int(callback.data.split("_")[1])
+    except IndexError:
+        page = 0
     async with db_manager.session_maker() as session:
         tg_username = "@" + callback.from_user.username
         user = await get_user_by_tg_username(session=session, tg_username=tg_username)
@@ -49,15 +55,23 @@ async def business_notes_callback(
     message = "🗒 <b>Ваши личные записи\n💰 Всего: {0} ₽</b>\n\n"
 
     summ = 0
-    for note in notes:
+    for i, note in enumerate(notes):
+        if NOTES_RANGE * page <= i < NOTES_RANGE * (page + 1):
+            message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
+            message += f"Сумма: {note.amount} ₽\n" \
+                       f"\n"
+            # message += f"Описание: {note.name}\n\n" TODO: change
         summ += note.amount
-        message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
-        message += f"Сумма: {note.amount} ₽\n" \
-                   f"\n"
-        # message += f"Описание: {note.name}\n\n" TODO: change
 
+    next_page = page + 1 if len(notes) > (page + 1) * NOTES_RANGE else 0
     inline_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="➡️ Далее",
+                    callback_data=f"business-notes_{next_page}",
+                )
+            ],
             [
                 InlineKeyboardButton(
                     text="✏️ Добавить запись",
@@ -72,7 +86,7 @@ async def business_notes_callback(
             ],
             [
                 InlineKeyboardButton(
-                    text="❔ Записи других", callback_data=f"other-business-notes"
+                    text="❔ Последние записи других", callback_data=f"other-business-notes"
                 )
             ],
             [InlineKeyboardButton(text="Назад", callback_data="menu")],
@@ -276,7 +290,10 @@ async def other_business_notes_callback(
     for user in users_notes:
         summ = 0
         message += "ℹ️ <b>Пользователь: {0}\n💰 Всего: {1} ₽</b>\n\n"
-        for note in users_notes[user]:
+        notes = users_notes[user][::-1]
+        notes = notes[:OTHERS_NOTES_RANGE] if len(notes) > OTHERS_NOTES_RANGE else notes
+        notes = notes[::-1]
+        for note in notes:
             summ += note.amount
             message += f"🕒<b><i> {convert_to_moscow_time(note.created_at)}</i></b>\n"
             message += f"Сумма: {note.amount} ₽\n" \
