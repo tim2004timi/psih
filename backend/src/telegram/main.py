@@ -9,6 +9,7 @@ from .business_notes.handlers import (
     register_handlers as register_business_notes_handlers,
 )
 from .openai.handlers import register_handlers as register_openai_handlers
+from .channel_auto_reply.handlers import register_handlers as register_channel_auto_reply
 from src import main as fastapi_main
 
 
@@ -32,6 +33,7 @@ async def main() -> None:
     register_collection_handlers(dp)
     register_business_notes_handlers(dp)
     register_openai_handlers(dp)
+    register_channel_auto_reply(dp)
     await bot.set_my_commands(commands)
 
     try:

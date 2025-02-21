@@ -13,7 +13,8 @@ menu_inline_keyboard = InlineKeyboardMarkup(
                 text="🗒 Бизнес записи", callback_data="business-notes"
             ),
         ],
-        [InlineKeyboardButton(text="🤖 AI Ассистент", callback_data="gpt_menu"),]
+        [InlineKeyboardButton(text="🤖 AI Ассистент", callback_data="gpt_menu"),],
+        [InlineKeyboardButton(text="📎 Автоответ в канале", callback_data="channel_auto_reply"),]
     ]
 )
 
