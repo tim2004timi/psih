@@ -1,5 +1,5 @@
 import json
-from io import BytesIO
+from time import time
 
 from aiogram import Router, F, Dispatcher, types
 from aiogram.filters import Command
@@ -14,6 +14,8 @@ from src.channel_auto_reply.service import create_or_update_channel_auto_reply, 
 
 
 router = Router()
+timer = time()
+
 
 class AdminAutoReplyStates(StatesGroup):
     waiting_for_photo = State()
@@ -139,12 +141,18 @@ async def handle_buttons(message: Message, state: FSMContext):
 
 @router.message()
 async def handle_channel_post(message: Message):
+    global timer
     if not message.is_automatic_forward:
         return
     async with db_manager.session_maker() as session:
         config = await get_channel_auto_reply(session)
     if not config:
         return
+
+    if time() - timer < 0.5:
+        return
+
+    timer = time()
 
     kb = None
     if config.buttons:
