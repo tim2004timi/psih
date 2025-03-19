@@ -6,6 +6,7 @@ from aiogram.types import (
     CallbackQuery,
     InlineKeyboardMarkup,
 )
+from aiogram.enums import ChatType
 
 from .redisdb import redis_client
 
@@ -18,8 +19,9 @@ from .utils import (
 router = Router()
 
 
-@router.message(Command("start"))
+@router.message(Command("start"), F.chat.type == ChatType.PRIVATE)
 async def cmd_start(message: Message):
+
     user = await get_user_from_system(event=message)
     if not user:
         return
@@ -30,20 +32,20 @@ async def cmd_start(message: Message):
     )
 
 
-@router.message(Command("menu"))
+@router.message(Command("menu"), F.chat.type == ChatType.PRIVATE)
 async def cmd_menu(message: Message, state: FSMContext):
     await state.clear()
     await menu(event=message)
 
 
-@router.callback_query(F.data == "menu")
+@router.callback_query(F.data == "menu", F.chat.type == ChatType.PRIVATE)
 @edit_message
 async def menu_callback(callback: CallbackQuery, state: FSMContext) -> tuple[str, InlineKeyboardMarkup]:
     await state.clear()
     return await menu(event=callback)
 
 
-@router.message(F.text == "📋 Меню")
+@router.message(F.text == "📋 Меню", F.chat.type == ChatType.PRIVATE)
 async def menu_message(message: Message, state: FSMContext):
     await state.clear()
     await menu(event=message)
