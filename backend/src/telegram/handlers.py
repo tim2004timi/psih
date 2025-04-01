@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import (
     Message,
     CallbackQuery,
-    InlineKeyboardMarkup,
+    InlineKeyboardMarkup, ReplyKeyboardRemove,
 )
 from aiogram.enums import ChatType
 
@@ -38,7 +38,7 @@ async def cmd_menu(message: Message, state: FSMContext):
     await menu(event=message)
 
 
-@router.callback_query(F.data == "menu", F.chat.type == ChatType.PRIVATE)
+@router.callback_query(F.data == "menu")
 @edit_message
 async def menu_callback(callback: CallbackQuery, state: FSMContext) -> tuple[str, InlineKeyboardMarkup]:
     await state.clear()
@@ -68,6 +68,15 @@ async def menu(event) -> None | tuple[str, InlineKeyboardMarkup]:
     elif isinstance(event, Message):
         await event.answer(message, reply_markup=menu_inline_keyboard)
 
+
+# Удаляем reply keyboard Меню из чата
+@router.message(F.text == "-_-")
+async def clear_reply_keyboard(message: Message):
+    mes = await message.answer(
+        ".",
+        reply_markup=ReplyKeyboardRemove()
+    )
+    await mes.delete()
 
 def get_permission_emoji(permission: bool):
     return "▫️" if permission else "▪️"
