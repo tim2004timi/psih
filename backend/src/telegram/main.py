@@ -34,7 +34,7 @@ async def main() -> None:
     register_business_notes_handlers(dp)
     register_openai_handlers(dp)
     register_channel_auto_reply(dp)
-    # await bot.set_my_commands(commands)
+    await bot.set_my_commands([])
 
     try:
         await dp.start_polling(bot)

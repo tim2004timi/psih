@@ -70,7 +70,7 @@ async def menu(event) -> None | tuple[str, InlineKeyboardMarkup]:
 
 
 # Удаляем reply keyboard Меню из чата
-@router.message(F.text == "-_-")
+@router.message(F.text == "📋 Меню", F.chat.type != ChatType.PRIVATE)
 async def clear_reply_keyboard(message: Message):
     mes = await message.answer(
         ".",
