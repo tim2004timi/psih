@@ -47,9 +47,16 @@ async def create_user(session: AsyncSession, user: schemas.UserCreate) -> User:
     try:
         await get_user_by_tg_username(tg_username=user.tg_username, session=session)
     except HTTPException:
+        pass
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Пользователь с tg_username ({user.tg_username}) уже существует найден",
+            detail=str(e)
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Пользователь с tg_username ({user.tg_username}) уже существует",
         )
     hashed_password = hash_password(user.password)
     user = User(
