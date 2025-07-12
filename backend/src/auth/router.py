@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from fastapi.security import HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -12,6 +12,8 @@ from .dependencies import (
     get_current_auth_user_for_refresh,
     get_current_active_auth_user,
     validate_auth_user,
+    check_permission,
+    Permission,
 )
 from .service import login, verify_code
 from ..database import db_manager
@@ -80,3 +82,21 @@ async def auth_refresh_jwt(
     return TokenInfo(
         access_token=access_token,
     )
+
+
+@router.get("/check-permissions", status_code=204)
+async def check_permissions(
+    permission: str = Query(..., regex="^(storage|crm|message|analytics)$"),
+    user: UserSchema = Depends(get_current_active_auth_user),
+):
+    perm_map = {
+        "storage": Permission.STORAGE,
+        "crm": Permission.CRM,
+        "message": Permission.MESSAGE,
+        "analytics": Permission.ANALYTICS,
+    }
+    perm = perm_map[permission]
+    # Проверка через check_permission
+    checker = check_permission(perm)
+    await checker(user)  # выбросит 403 если нет прав
+    return  # 204 No Content
