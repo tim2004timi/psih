@@ -11,10 +11,9 @@ from .dependencies import (
     get_current_token_payload,
     get_current_auth_user_for_refresh,
     get_current_active_auth_user,
-    validate_auth_user,
-    check_permission,
-    Permission,
+    validate_auth_user
 )
+from ..dependencies import check_permission, Permission
 from .service import login, verify_code
 from ..database import db_manager
 from ..users import service
